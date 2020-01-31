@@ -1,8 +1,8 @@
 """
 Small test script to fetch a couple of tweets using tweepy
-around a given hashtag.
+around a given search term.
 
-Usage:  python.py fetch_tweets_by_hashtag.py <hashtag> [<amount>]
+Usage:  python.py fetch_tweets_by_search_term.py <search_term> [<amount>]
 """
 
 import tweepy
@@ -25,15 +25,15 @@ auth.set_access_token(TW_ACCESS_TOKEN, TW_ACCESS_SECRET)
 # Initializing the API handler
 api = tweepy.API(auth)
 
-def search_by_hashtag(hashtag, amount=50):
+def search_by_term(search_term, amount=25):
     """
     Returns a list of recently published tweets
-    for a given hashtag near Caracas, Venezuela.
+    for a given search term near Caracas, Venezuela.
     """
 
     cursor = tweepy.Cursor(
         api.search,
-        q=hashtag,
+        q=search_term,
         geocode=LOCATION_GEOCODE
     ).items(amount)
 
@@ -41,8 +41,8 @@ def search_by_hashtag(hashtag, amount=50):
 
 def main():
     """
-    Main program. Reads the hashtag from standard input, then
-    prints a list with those hashtags.
+    Main program. Reads the search term from standard input, then
+    prints a list with those terms.
     """
 
     # Extract standard input arguments
@@ -50,13 +50,13 @@ def main():
 
     # Print help and exit if there are no arguments
     if not args:
-        print("Usage:\tpython.py fetch_tweets_by_hashtags.py <hashtag> [<amount>]")
+        print("Usage:\tpython.py fetch_tweets_by_search_term.py <search_term> [<amount>]")
         return sys.exit(1)
 
-    hashtag = args[0]
+    search_term = args[0]
 
     # If provided, parse second argument as the amount of tweets to fetch
-    amount = 50
+    amount = 25
     if len(args) > 1:
         try:
             amount = int(args[1])
@@ -65,16 +65,16 @@ def main():
 
     # Gets tweets using the API
     try:
-        tweets = search_by_hashtag(hashtag, amount)
+        tweets = search_by_term(search_term, amount)
     except tweepy.error.TweepError as e:
         print("Twitter API usage raised an error. %s" % e)
         print("Are the environment variables properly set and valid?")
         sys.exit(1)
 
     # Print each tweet information
-    print("Printing up to {0} recent tweets near Caracas, Venezuela (10km radius) with the {1} hashtag...".format(
+    print("Printing up to {0} recent tweets near Caracas, Venezuela (10km radius) with the {1} search term...".format(
         amount,
-        hashtag
+        search_term
     ))
 
     for tweet in tweets:
