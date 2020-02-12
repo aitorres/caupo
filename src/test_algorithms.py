@@ -38,7 +38,7 @@ def plot_results(data, labels, name):
         plt.plot(
             [data[x][0] for x in range(data.shape[0]) if labels[x] == label],
             [data[x][1] for x in range(data.shape[0]) if labels[x] == label],
-            'o' + colors[label],
+            'o' + colors[label % len(colors)],
             label="cluster #{0}".format(label)
         )
         plt.title(name)
