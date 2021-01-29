@@ -34,7 +34,7 @@ def search_by_term(search_term, amount=25):
 
     cursor = tweepy.Cursor(
         api.search,
-        q=search_term,
+        q=f"{search_term} -filter:retweets",
         geocode=LOCATION_GEOCODE
     ).items(amount)
 
