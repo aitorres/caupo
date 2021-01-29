@@ -15,8 +15,9 @@ TW_CONSUMER_SECRET = os.environ.get('TW_CONSUMER_SECRET')
 TW_ACCESS_TOKEN = os.environ.get('TW_ACCESS_TOKEN')
 TW_ACCESS_SECRET = os.environ.get('TW_ACCESS_SECRET')
 
-#? Sets the search within a 10km-radius in Caracas
-LOCATION_GEOCODE = "10.4880,-66.8791,10km"
+#? Sets the search within a certain km radius in Caracas
+KM_DISTANCE = 10
+LOCATION_GEOCODE = f"10.4880,-66.8791,{KM_DISTANCE}km"
 
 # Setting the keys on tweepy
 auth = tweepy.OAuthHandler(TW_CONSUMER_KEY, TW_CONSUMER_SECRET)
@@ -50,16 +51,18 @@ def main():
 
     # Print help and exit if there are no arguments
     if not args:
-        print("Usage:\tpython.py fetch_tweets_by_search_term.py <search_term> [<amount>]")
+        print("Usage:\tpython.py fetch_tweets_by_search_term.py <mode> <search_term> [<amount>]")
+        print("Modes: print|store")
         return sys.exit(1)
 
-    search_term = args[0]
+    mode = args[0]
+    search_term = args[1]
 
     # If provided, parse second argument as the amount of tweets to fetch
     amount = 25
-    if len(args) > 1:
+    if len(args) > 2:
         try:
-            amount = int(args[1])
+            amount = int(args[2])
         except ValueError:
             pass
 
@@ -71,20 +74,18 @@ def main():
         print("Are the environment variables properly set and valid?")
         sys.exit(1)
 
-    # Print each tweet information
-    print("Printing up to {0} recent tweets near Caracas, Venezuela (10km radius) with the {1} search term...".format(
-        amount,
-        search_term
-    ))
+    if mode == "print":
+        # Print each tweet information
+        print(f"Up to {amount} recent tweets near Caracas, Venezuela ({KM_DISTANCE}km radius) for `{search_term}` term...")
 
-    for tweet in tweets:
-        print("Tweet by @{0} on {1}\n{2}\n".format(
-            tweet.user.screen_name,
-            tweet.created_at,
-            tweet.text
-        ))
+        for tweet in tweets:
+            print("Tweet by @{0} on {1}\n{2}\n".format(
+                tweet.user.screen_name,
+                tweet.created_at,
+                tweet.text
+            ))
 
-    print("Done!")
+        print("Done!")
 
 # Runs the main program
 if __name__ == "__main__":
