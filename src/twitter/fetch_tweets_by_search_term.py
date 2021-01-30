@@ -24,7 +24,7 @@ auth = tweepy.OAuthHandler(TW_CONSUMER_KEY, TW_CONSUMER_SECRET)
 auth.set_access_token(TW_ACCESS_TOKEN, TW_ACCESS_SECRET)
 
 # Initializing the API handler
-api = tweepy.API(auth)
+api = tweepy.API(auth, monitor_rate_limit=True, wait_on_rate_limit=True)
 
 def search_by_term(search_term, amount=25):
     """
