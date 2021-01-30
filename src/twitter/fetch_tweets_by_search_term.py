@@ -93,7 +93,7 @@ def main():
         for tweet in tweets:
             tweet_json = tweet._json
             tweet_json['created_at'] = str(tweet.created_at)
-            tweet_json['_id'] = ObjectId(tweet.id)
+            tweet_json['_id'] = ObjectId(tweet.id_str)
             tweet_json = json.dumps(tweet_json)
             try:
                 db.tweets.insert(tweet_json)
