@@ -8,6 +8,7 @@ Usage:  python.py fetch_tweets_by_search_term.py <mode> <search_term>
 import tweepy
 import os
 import sys
+import json
 from pymongo import MongoClient
 
 mongo_client = MongoClient('mongodb://127.0.0.1')
@@ -89,8 +90,14 @@ def main():
     elif mode == "store":
         for tweet in tweets:
             tweet_json = tweet._json
-            print(tweet_json)
-            sys.exit(1)
+            tweet_json['created_at'] = str(tweet.created_at)
+            tweet_json['_id'] = tweet.id
+            tweet_json = json.dumps(tweet_json)
+            try:
+                db.tweets.insert(tweet_json)
+                print(f"Successfully stored tweet {tweet.id}: {tweet.full_text}")
+            except pymongo.errors.DuplicateKeyError:
+                print(f"Skipping duplicate tweet {tweet.id}")
 
 # Runs the main program
 if __name__ == "__main__":
