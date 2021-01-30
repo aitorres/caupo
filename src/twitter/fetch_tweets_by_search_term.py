@@ -2,7 +2,7 @@
 Small test script to fetch a couple of tweets using tweepy
 around a given search term.
 
-Usage:  python.py fetch_tweets_by_search_term.py <mode> <search_term>
+Usage:  python.py fetch_tweets_by_search_term.py <mode> <search_mode> <search_term>
 """
 
 import os
@@ -33,18 +33,36 @@ auth.set_access_token(TW_ACCESS_TOKEN, TW_ACCESS_SECRET)
 api = tweepy.API(auth, wait_on_rate_limit_notify=True, wait_on_rate_limit=True,
                  retry_count=3, retry_delay=5, retry_errors=set([401, 404, 500, 503]))
 
-def get_search_cursor(search_term):
+def get_search_cursor(search_mode, search_term):
     """
     Returns an iterator of recently published tweets
     for a given search term near Caracas, Venezuela.
     """
 
-    return tweepy.Cursor(
-        api.search,
-        q=f"{search_term} -filter:retweets lang:es -filter:links",
-        geocode=LOCATION_GEOCODE,
-        tweet_mode="extended"
-    ).items()
+    if search_mode == "search":
+        return tweepy.Cursor(
+            api.search,
+            q=f"{search_term} -filter:retweets lang:es -filter:links",
+            geocode=LOCATION_GEOCODE,
+            tweet_mode="extended"
+        ).items()
+
+    if search_mode == "search_full_archive":
+        return tweepy.Cursor(
+            api.search_full_archive,
+            environment_name='dev',
+            fromDate=1546300800,
+            query=f"{search_term} -filter:retweets lang:es -filter:links",
+            tweet_mode="extended"
+        ).items()
+
+    if search_mode == "search_30_day":
+        return tweepy.Cursor(
+            api.search_30_day,
+            environment_name='dev',
+            query=f"{search_term} -filter:retweets lang:es -filter:links",
+            tweet_mode="extended"
+        ).items()
 
 def main():
     """
@@ -57,20 +75,25 @@ def main():
 
     # Print help and exit if there are no arguments
     if not args:
-        print("Usage:\tpython.py fetch_tweets_by_search_term.py <mode> <search_term>")
+        print("Usage:\tpython.py fetch_tweets_by_search_term.py <mode> <search_mode> <search_term>")
         print("Modes: print|store")
         return sys.exit(1)
 
     mode = args[0].lower()
-    search_term = args[1]
+    search_mode = args[1].lower()
+    search_term = args[2]
 
     if mode not in ["print", "store"]:
         print("Unknown mode")
         sys.exit(1)
 
+    if search_mode not in ["search", "search_30_day", "search_full_archive"]:
+        print("Unknown search mode")
+        sys.exit(1)
+
     # Gets tweets using the API
     try:
-        tweets = get_search_cursor(search_term)
+        tweets = get_search_cursor(search_mode, search_term)
     except tweepy.error.TweepError as error:
         print("Twitter API usage raised an error. %s" % error)
         print("Are the environment variables properly set and valid?")
