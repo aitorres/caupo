@@ -40,7 +40,7 @@ def get_search_cursor(search_term):
 
     return tweepy.Cursor(
         api.search,
-        q=f"{search_term} -filter:retweets lang:es",
+        q=f"{search_term} -filter:retweets lang:es -filter:links",
         geocode=LOCATION_GEOCODE,
         tweet_mode="extended"
     ).items()
@@ -90,12 +90,12 @@ def main():
     elif mode == "store":
         for tweet in tweets:
             tweet_id = tweet.id
-            existing_document = db.tweets.find_one({"id": tweet_id})
+            existing_document = db.caupo.find_one({"id": tweet_id})
 
             if existing_document is None:
                 tweet_json = tweet._json
                 tweet_json['created_at'] = str(tweet.created_at)
-                db.tweets.insert_one(tweet_json)
+                db.caupo.insert_one(tweet_json)
                 print(f"Successfully stored tweet {tweet.id}: {tweet.full_text}")
             else:
                 print(f"Skipping duplicate tweet {tweet.id}")
