@@ -97,7 +97,7 @@ def main():
             try:
                 db.tweets.insert(tweet_json)
                 print(f"Successfully stored tweet {tweet.id}: {tweet.full_text}")
-            except pymongo.errors.DuplicateKeyError:
+            except DuplicateKeyError:
                 print(f"Skipping duplicate tweet {tweet.id}")
 
 # Runs the main program
