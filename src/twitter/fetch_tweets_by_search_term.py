@@ -130,16 +130,15 @@ def main():
         for tweet in tweets:
             tweet_id = tweet.id
 
-            if remove_rts:
-                try:
-                    tweet_text = tweet.full_text
-                except:
-                    if tweet.truncated:
-                        tweet_text = tweet.extended_tweet['full_text']
-                    else:
-                        tweet_text = tweet.text
+            try:
+                tweet_text = tweet.full_text
+            except:
+                if tweet.truncated:
+                    tweet_text = tweet.extended_tweet['full_text']
+                else:
+                    tweet_text = tweet.text
 
-                if tweet_text.startswith("RT @"):
+            if remove_rts and tweet_text.startswith("RT @"):
                     continue
 
             existing_document = collection.find_one({"id": tweet_id})
@@ -149,7 +148,7 @@ def main():
                 tweet_json['created_at'] = str(tweet.created_at)
                 tweet_json['stored_at'] = str(datetime.now())
                 collection.insert_one(tweet_json)
-                print(f"Successfully stored tweet {tweet.id}: {tweet.full_text}")
+                print(f"Successfully stored tweet {tweet.id}: {tweet_text}")
             else:
                 print(f"Skipping duplicate tweet {tweet.id}")
 
