@@ -2,7 +2,7 @@
 Small test script to fetch a couple of tweets using tweepy
 around a given search term.
 
-Usage:  python.py fetch_tweets_by_search_term.py <search_term> [<amount>]
+Usage:  python.py fetch_tweets_by_search_term.py <mode> <search_term>
 """
 
 import tweepy
@@ -27,19 +27,17 @@ auth.set_access_token(TW_ACCESS_TOKEN, TW_ACCESS_SECRET)
 api = tweepy.API(auth, monitor_rate_limit=True, wait_on_rate_limit=True,
                  retry_count=3, retry_delay=5, retry_errors=set([401, 404, 500, 503]))
 
-def search_by_term(search_term, amount=25):
+def get_search_cursor(search_term):
     """
     Returns an iterator of recently published tweets
     for a given search term near Caracas, Venezuela.
     """
 
-    cursor = tweepy.Cursor(
+    return tweepy.Cursor(
         api.search,
         q=f"{search_term} -filter:retweets lang:es",
         geocode=LOCATION_GEOCODE
     ).items()
-
-    return cursor
 
 def main():
     """
@@ -52,20 +50,12 @@ def main():
 
     # Print help and exit if there are no arguments
     if not args:
-        print("Usage:\tpython.py fetch_tweets_by_search_term.py <mode> <search_term> [<amount>]")
+        print("Usage:\tpython.py fetch_tweets_by_search_term.py <mode> <search_term>")
         print("Modes: print|store")
         return sys.exit(1)
 
     mode = args[0].lower()
     search_term = args[1]
-
-    # If provided, parse second argument as the amount of tweets to fetch
-    amount = 25
-    if len(args) > 2:
-        try:
-            amount = int(args[2])
-        except ValueError:
-            pass
 
     if mode not in ["print", "store"]:
         print("Unknown mode")
@@ -73,7 +63,7 @@ def main():
 
     # Gets tweets using the API
     try:
-        tweets = search_by_term(search_term, amount)
+        tweets = get_search_cursor(search_term)
     except tweepy.error.TweepError as e:
         print("Twitter API usage raised an error. %s" % e)
         print("Are the environment variables properly set and valid?")
@@ -81,7 +71,7 @@ def main():
 
     if mode == "print":
         # Print each tweet information
-        print(f"Up to {amount} recent tweets near Caracas, Venezuela ({KM_DISTANCE}km radius) for `{search_term}` term...")
+        print(f"Recent tweets near Caracas, Venezuela ({KM_DISTANCE}km radius) for `{search_term}` term...")
 
         for tweet in tweets:
             print("Tweet by @{0} on {1}\n{2}\n".format(
