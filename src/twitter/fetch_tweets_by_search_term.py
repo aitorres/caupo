@@ -117,15 +117,22 @@ def main():
 
         print("Done!")
     elif mode == "store":
+        if search_mode == "search":
+            collection = db.tweets
+        elif search_mode == "search_30_day":
+            collection = db.tweets_30_day
+        else:
+            collection = db.tweets_full_archive
+
         for tweet in tweets:
             tweet_id = tweet.id
-            existing_document = db.tweets.find_one({"id": tweet_id})
+            existing_document = collection.find_one({"id": tweet_id})
 
             if existing_document is None:
                 tweet_json = tweet._json
                 tweet_json['created_at'] = str(tweet.created_at)
                 tweet_json['stored_at'] = str(datetime.now())
-                db.tweets.insert_one(tweet_json)
+                collection.insert_one(tweet_json)
                 print(f"Successfully stored tweet {tweet.id}: {tweet.full_text}")
             else:
                 print(f"Skipping duplicate tweet {tweet.id}")
