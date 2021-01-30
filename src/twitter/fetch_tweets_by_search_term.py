@@ -5,10 +5,10 @@ around a given search term.
 Usage:  python.py fetch_tweets_by_search_term.py <mode> <search_term>
 """
 
-import tweepy
 import os
 import sys
-import json
+
+import tweepy
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
