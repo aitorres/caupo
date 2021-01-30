@@ -52,14 +52,14 @@ def get_search_cursor(search_mode, search_term):
             api.search_full_archive,
             environment_name='dev',
             fromDate=1546300800,
-            query=f"{search_term} -is:retweet lang:es -has:links"
+            query=f"{search_term} lang:es -has:links"
         ).items()
 
     if search_mode == "search_30_day":
         return tweepy.Cursor(
             api.search_30_day,
             environment_name='dev',
-            query=f"{search_term} -is:retweet lang:es -has:links"
+            query=f"{search_term} lang:es -has:links"
         ).items()
 
 def main():
