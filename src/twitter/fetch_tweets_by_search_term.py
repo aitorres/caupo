@@ -10,6 +10,7 @@ import os
 import sys
 import json
 from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 
 mongo_client = MongoClient('mongodb://127.0.0.1')
 db = mongo_client.tweets
