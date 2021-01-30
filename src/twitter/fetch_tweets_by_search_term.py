@@ -9,7 +9,6 @@ import tweepy
 import os
 import sys
 import json
-from bson.objectid import ObjectId
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
@@ -91,14 +90,16 @@ def main():
         print("Done!")
     elif mode == "store":
         for tweet in tweets:
-            tweet_json = tweet._json
-            tweet_json['created_at'] = str(tweet.created_at)
-            tweet_json['_id'] = ObjectId(tweet.id_str.encode('utf-8'))
-            tweet_json = json.dumps(tweet_json)
-            try:
+            tweet_id = tweet.id
+            existing_document = db.tweets.find_one({"id": tweet_id})
+
+            if existing_document is None:
+                tweet_json = tweet._json
+                tweet_json['created_at'] = str(tweet.created_at)
+                tweet_json = json.dumps(tweet_json)
                 db.tweets.insert(tweet_json)
                 print(f"Successfully stored tweet {tweet.id}: {tweet.full_text}")
-            except DuplicateKeyError:
+            else:
                 print(f"Skipping duplicate tweet {tweet.id}")
 
 # Runs the main program
