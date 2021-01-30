@@ -52,16 +52,14 @@ def get_search_cursor(search_mode, search_term):
             api.search_full_archive,
             environment_name='dev',
             fromDate=1546300800,
-            query=f"{search_term} lang:es -has:links",
-            tweet_mode="extended"
+            query=f"{search_term} lang:es -has:links"
         ).items()
 
     if search_mode == "search_30_day":
         return tweepy.Cursor(
             api.search_30_day,
             environment_name='dev',
-            query=f"{search_term} lang:es -has:links",
-            tweet_mode="extended"
+            query=f"{search_term} lang:es -has:links"
         ).items()
 
 def main():
@@ -104,10 +102,17 @@ def main():
         print(f"Recent tweets near Caracas ({KM_DISTANCE}km radius) for `{search_term}`:")
 
         for tweet in tweets:
+            try:
+                tweet_text = tweet.full_text
+            except:
+                if tweet.truncated:
+                    tweet_text = tweet.extended_tweet['full_text']
+                else:
+                    tweet_text = tweet.text
             print("Tweet by @{0} on {1}\n{2}\n".format(
                 tweet.user.screen_name,
                 tweet.created_at,
-                tweet.full_text
+                tweet_text
             ))
 
         print("Done!")
