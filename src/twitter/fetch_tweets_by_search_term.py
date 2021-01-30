@@ -10,7 +10,6 @@ import sys
 
 import tweepy
 from pymongo import MongoClient
-from pymongo.errors import DuplicateKeyError
 
 mongo_client = MongoClient('mongodb://127.0.0.1')
 db = mongo_client.tweets
@@ -71,14 +70,14 @@ def main():
     # Gets tweets using the API
     try:
         tweets = get_search_cursor(search_term)
-    except tweepy.error.TweepError as e:
-        print("Twitter API usage raised an error. %s" % e)
+    except tweepy.error.TweepError as error:
+        print("Twitter API usage raised an error. %s" % error)
         print("Are the environment variables properly set and valid?")
         sys.exit(1)
 
     if mode == "print":
         # Print each tweet information
-        print(f"Recent tweets near Caracas, Venezuela ({KM_DISTANCE}km radius) for `{search_term}` term...")
+        print(f"Recent tweets near Caracas ({KM_DISTANCE}km radius) for `{search_term}`:")
 
         for tweet in tweets:
             print("Tweet by @{0} on {1}\n{2}\n".format(
