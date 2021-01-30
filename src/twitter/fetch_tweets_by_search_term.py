@@ -12,7 +12,7 @@ import tweepy
 from pymongo import MongoClient
 
 mongo_client = MongoClient('mongodb://127.0.0.1')
-db = mongo_client.tweets
+db = mongo_client.caupo
 
 #! IMPORTANT: Set the following environment vars
 TW_CONSUMER_KEY = os.environ.get('TW_CONSUMER_KEY')
@@ -90,12 +90,12 @@ def main():
     elif mode == "store":
         for tweet in tweets:
             tweet_id = tweet.id
-            existing_document = db.caupo.find_one({"id": tweet_id})
+            existing_document = db.tweets.find_one({"id": tweet_id})
 
             if existing_document is None:
                 tweet_json = tweet._json
                 tweet_json['created_at'] = str(tweet.created_at)
-                db.caupo.insert_one(tweet_json)
+                db.tweets.insert_one(tweet_json)
                 print(f"Successfully stored tweet {tweet.id}: {tweet.full_text}")
             else:
                 print(f"Skipping duplicate tweet {tweet.id}")
