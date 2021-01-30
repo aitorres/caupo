@@ -96,8 +96,7 @@ def main():
             if existing_document is None:
                 tweet_json = tweet._json
                 tweet_json['created_at'] = str(tweet.created_at)
-                tweet_json = json.dumps(tweet_json)
-                db.tweets.insert(tweet_json)
+                db.tweets.insert_one(tweet_json)
                 print(f"Successfully stored tweet {tweet.id}: {tweet.full_text}")
             else:
                 print(f"Skipping duplicate tweet {tweet.id}")
