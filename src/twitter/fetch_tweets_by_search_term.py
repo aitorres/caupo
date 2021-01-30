@@ -8,6 +8,10 @@ Usage:  python.py fetch_tweets_by_search_term.py <mode> <search_term>
 import tweepy
 import os
 import sys
+from pymongo import MongoClient
+
+mongo_client = MongoClient('mongodb://127.0.0.1')
+db = mongo_client.tweets
 
 #! IMPORTANT: Set the following environment vars
 TW_CONSUMER_KEY = os.environ.get('TW_CONSUMER_KEY')
@@ -83,8 +87,10 @@ def main():
 
         print("Done!")
     elif mode == "store":
-        print("Storage process not implemented!")
-        pass
+        for tweet in tweets:
+            tweet_json = tweet._json
+            print(tweet_json)
+            sys.exit(1)
 
 # Runs the main program
 if __name__ == "__main__":
