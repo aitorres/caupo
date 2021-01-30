@@ -119,13 +119,29 @@ def main():
     elif mode == "store":
         if search_mode == "search":
             collection = db.tweets
+            remove_rts = False
         elif search_mode == "search_30_day":
             collection = db.tweets_30_day
+            remove_rts = True
         else:
             collection = db.tweets_full_archive
+            remove_rts = True
 
         for tweet in tweets:
             tweet_id = tweet.id
+
+            if remove_rts:
+                try:
+                    tweet_text = tweet.full_text
+                except:
+                    if tweet.truncated:
+                        tweet_text = tweet.extended_tweet['full_text']
+                    else:
+                        tweet_text = tweet.text
+
+                if tweet_text.starts_with("RT @"):
+                    continue
+
             existing_document = collection.find_one({"id": tweet_id})
 
             if existing_document is None:
