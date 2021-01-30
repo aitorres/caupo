@@ -36,7 +36,8 @@ def get_search_cursor(search_term):
     return tweepy.Cursor(
         api.search,
         q=f"{search_term} -filter:retweets lang:es",
-        geocode=LOCATION_GEOCODE
+        geocode=LOCATION_GEOCODE,
+        tweet_mode="extended"
     ).items()
 
 def main():
@@ -77,7 +78,7 @@ def main():
             print("Tweet by @{0} on {1}\n{2}\n".format(
                 tweet.user.screen_name,
                 tweet.created_at,
-                tweet.text
+                tweet.full_text
             ))
 
         print("Done!")
