@@ -51,7 +51,7 @@ def get_search_cursor(search_mode, search_term):
         return tweepy.Cursor(
             api.search_full_archive,
             environment_name='dev',
-            fromDate=1546300800,
+            fromDate="201901010000",
             query=f"{search_term} lang:es -has:links"
         ).items()
 
