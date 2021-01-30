@@ -139,7 +139,7 @@ def main():
                     else:
                         tweet_text = tweet.text
 
-                if tweet_text.starts_with("RT @"):
+                if tweet_text.startswith("RT @"):
                     continue
 
             existing_document = collection.find_one({"id": tweet_id})
