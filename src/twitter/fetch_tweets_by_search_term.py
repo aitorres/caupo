@@ -28,17 +28,17 @@ api = tweepy.API(auth)
 
 def search_by_term(search_term, amount=25):
     """
-    Returns a list of recently published tweets
+    Returns an iterator of recently published tweets
     for a given search term near Caracas, Venezuela.
     """
 
     cursor = tweepy.Cursor(
         api.search,
-        q=f"{search_term} -filter:retweets",
+        q=f"{search_term} -filter:retweets lang:es",
         geocode=LOCATION_GEOCODE
-    ).items(amount)
+    ).items()
 
-    return list(cursor)
+    return cursor
 
 def main():
     """
@@ -55,7 +55,7 @@ def main():
         print("Modes: print|store")
         return sys.exit(1)
 
-    mode = args[0]
+    mode = args[0].lower()
     search_term = args[1]
 
     # If provided, parse second argument as the amount of tweets to fetch
@@ -65,6 +65,10 @@ def main():
             amount = int(args[2])
         except ValueError:
             pass
+
+    if mode not in ["print", "store"]:
+        print("Unknown mode")
+        sys.exit(1)
 
     # Gets tweets using the API
     try:
@@ -86,6 +90,9 @@ def main():
             ))
 
         print("Done!")
+    elif mode == "store":
+        print("Storage process not implemented!")
+        pass
 
 # Runs the main program
 if __name__ == "__main__":
