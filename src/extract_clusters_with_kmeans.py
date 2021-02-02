@@ -6,6 +6,8 @@ from functools import partial
 from nltk import download as nltk_download
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import CountVectorizer
 
 from utils import Timer, get_text_from_all_tweets
 
@@ -50,7 +52,25 @@ with Timer("Normalizing tweets' text"):
 
 logger.info("Clean tweet example: %s", " ".join(final_corpus[0]))
 
-# TODO: Vectorizar
+# TODO: Use a better vectorizer
+# Vectorize
+with Timer("Vectorizing tweets"):
+    vectorizer = CountVectorizer()
+    vectors = vectorizer.fit_transform(final_corpus)
+
+# Find clusters
+k_clusters = 2
+with Timer(f"Finding clusters with k={k_clusters}"):
+    km = KMeans(n_clusters=k_clusters)
+    km.fit(vectors)
+
+print("Top terms per cluster:")
+order_centroids = km.cluster_centers_.argsort()[:, ::-1]
+terms = vectorizer.get_feature_names()
+for i in range(number_of_clusters):
+    top_ten_words = [terms[ind] for ind in order_centroids[i, :5]]
+    print("Cluster {}: {}".format(i, ' '.join(top_ten_words)))
+
 # TODO: K-means para hallar los clusters de documentos
 # TODO: Aplicar tf-idf a cada cluster
 # TODO: Ver los 10 términos más importantes
