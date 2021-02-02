@@ -2,14 +2,15 @@ import logging
 
 from functools import partial
 
+from nltk import download as nltk_download
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 from utils import Timer, get_text_from_all_tweets
 
 # Install nltk data, if needed
-nltk.download('stopwords')
-nltk.download('punkt')
+nltk_download('stopwords')
+nltk_download('punkt')
 
 # Load up stopwords
 stop_words = set(stopwords.words('spanish'))
