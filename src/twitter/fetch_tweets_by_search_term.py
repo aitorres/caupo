@@ -25,6 +25,9 @@ TW_ACCESS_SECRET = os.environ.get('TW_ACCESS_SECRET')
 KM_DISTANCE = 10
 LOCATION_GEOCODE = f"10.4880,-66.8791,{KM_DISTANCE}km"
 
+#? This amount will prevent excessive requests that will lead nowhere
+MAX_DUPLICATE_REQUESTS = 10
+
 # Setting the keys on tweepy
 auth = tweepy.OAuthHandler(TW_CONSUMER_KEY, TW_CONSUMER_SECRET)
 auth.set_access_token(TW_ACCESS_TOKEN, TW_ACCESS_SECRET)
@@ -127,6 +130,7 @@ def main():
             collection = db.tweets_full_archive
             remove_rts = True
 
+        duplicate_count = 0
         for tweet in tweets:
             tweet_id = tweet.id
 
@@ -148,9 +152,15 @@ def main():
                 tweet_json['created_at'] = str(tweet.created_at)
                 tweet_json['stored_at'] = str(datetime.now())
                 collection.insert_one(tweet_json)
+                duplicate_count = 0
                 print(f"Successfully stored tweet {tweet.id}: {tweet_text}")
             else:
+                duplicate_count += 1
                 print(f"Skipping duplicate tweet {tweet.id}")
+
+            if duplicate_count >= MAX_DUPLICATE_REQUESTS:
+                print(f"At least {MAX_DUPLICATE_REQUESTS} found in a row. Terminating.")
+                break
 
 # Runs the main program
 if __name__ == "__main__":
