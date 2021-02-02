@@ -18,7 +18,7 @@ with Timer("Getting tweets' text from database"):
     tweets = get_text_from_all_tweets()
     corpus = [t["full_text"] for t in tweets]
 
-logger.info("Amount of tweets: %s", len(tweets))
+logger.info("Amount of tweets: %s", len(corpus))
 
 # Normalize tweets
 with Timer("Normalizing tweets' text"):
