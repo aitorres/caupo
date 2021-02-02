@@ -68,7 +68,7 @@ with Timer(f"Finding clusters with k={k_clusters}"):
 print("Top terms per cluster:")
 order_centroids = km.cluster_centers_.argsort()[:, ::-1]
 terms = vectorizer.get_feature_names()
-for i in range(number_of_clusters):
+for i in range(k_clusters):
     top_ten_words = [terms[ind] for ind in order_centroids[i, :5]]
     print("Cluster {}: {}".format(i, ' '.join(top_ten_words)))
 
