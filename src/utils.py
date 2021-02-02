@@ -1,6 +1,6 @@
 import pymongo
 
-client = MongoClient()
+client = pymongo.MongoClient()
 db = client.caupo
 
 
