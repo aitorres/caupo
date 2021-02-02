@@ -1,6 +1,7 @@
 import logging
 
-from functools import filterfalse, partial
+from itertools import filterfalse
+from functools import partial
 
 from nltk import download as nltk_download
 from nltk.corpus import stopwords
