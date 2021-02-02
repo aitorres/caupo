@@ -45,7 +45,7 @@ with Timer("Normalizing tweets' text"):
     alphanumeric_corpus = map(partial(filter, lambda x: x.isalpha()), splitted_corpus)
 
     logger.info("Removing stopwords")
-    clean_corpus = map(partial(filterfalse, lambda x: x not in stop_words), alphanumeric_corpus)
+    clean_corpus = map(partial(filterfalse, lambda x: x in stop_words), alphanumeric_corpus)
     final_corpus = list(map(list, clean_corpus))
 
 logger.info("Clean tweet example: %s", final_corpus[0])
