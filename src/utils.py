@@ -12,7 +12,9 @@ class Timer:
     """Context handler to measure time of a function"""
 
     def __init__(self, action_name):
-        logger.info("Starting: %s", action_name)
+        self.action_name = action_name
+        logger.info("Starting: %s", self.action_name)
+
         self.start_time = time.time()
         self.end_time = None
 
@@ -23,7 +25,7 @@ class Timer:
         self.end_time = time.time()
         self.duration = self.end_time - self.start_time
 
-        logger.info("Finishing: %s", action_name)
+        logger.info("Finishing: %s", self.action_name)
         logger.debug("Done in %s milliseconds.", self.duration)
 
 
