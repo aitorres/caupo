@@ -34,3 +34,11 @@ def get_all_tweets():
 
     return db.tweets.find()
 
+
+def get_text_from_all_tweets():
+    """
+    Queries and returns a cursor with the text from all texts (filtering out any
+    other attributes)
+    """
+
+    return db.tweets.find({}, {"full_text": 1})
