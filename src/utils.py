@@ -26,7 +26,7 @@ class Timer:
         self.duration = self.end_time - self.start_time
 
         logger.info("Finishing: %s", self.action_name)
-        logger.debug("Done in %s milliseconds.", self.duration)
+        logger.debug("Done in %.2f seconds.", self.duration)
 
 
 def get_all_tweets():
