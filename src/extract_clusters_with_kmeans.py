@@ -48,7 +48,7 @@ with Timer("Normalizing tweets' text"):
     clean_corpus = map(partial(filterfalse, lambda x: x in stop_words), alphanumeric_corpus)
     final_corpus = list(map(list, clean_corpus))
 
-logger.info("Clean tweet example: %s", final_corpus[0])
+logger.info("Clean tweet example: %s", " ".join(final_corpus[0]))
 
 # TODO: Vectorizar
 # TODO: K-means para hallar los clusters de documentos
