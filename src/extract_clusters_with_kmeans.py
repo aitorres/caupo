@@ -60,19 +60,18 @@ with Timer("Vectorizing tweets"):
     vectors = vectorizer.fit_transform(final_corpus)
 
 # Find clusters
+# TODO: Vary amount of clusters
 k_clusters = 2
 with Timer(f"Finding clusters with k={k_clusters}"):
     km = KMeans(n_clusters=k_clusters)
     km.fit(vectors)
 
+# TODO: Obtain top 10 terms through tf-idf on each cluster, maybe
 print("Top terms per cluster:")
 order_centroids = km.cluster_centers_.argsort()[:, ::-1]
 terms = vectorizer.get_feature_names()
 for i in range(k_clusters):
-    top_ten_words = [terms[ind] for ind in order_centroids[i, :5]]
+    top_ten_words = [terms[ind] for ind in order_centroids[i, :10]]
     print("Cluster {}: {}".format(i, ' '.join(top_ten_words)))
 
-# TODO: K-means para hallar los clusters de documentos
-# TODO: Aplicar tf-idf a cada cluster
-# TODO: Ver los 10 términos más importantes
 # TODO: Análisis de sentimiento
