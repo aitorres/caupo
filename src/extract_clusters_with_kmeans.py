@@ -11,7 +11,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from utils import Timer, get_text_from_all_tweets
 
-with Timer("Script preparation")
+with Timer("Script preparation"):
     # Install nltk data, if needed
     nltk_download('stopwords')
     nltk_download('punkt')
@@ -32,7 +32,7 @@ with Timer("Script preparation")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
-with Timer("Main script runtime")
+with Timer("Main script runtime"):
     # Get all tweets
     with Timer("Getting tweets' text from database"):
         tweets = get_text_from_all_tweets()
