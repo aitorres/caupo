@@ -42,6 +42,7 @@ with Timer("Main script runtime"):
     logger.info("Amount of tweets: %s", len(corpus))
 
     # Normalize tweets
+    # TODO: Acentos
     with Timer("Normalizing tweets' text"):
         logger.info("Lowering case")
         lowercase_corpus = map(lambda x: x.lower(), corpus)
@@ -66,12 +67,13 @@ with Timer("Main script runtime"):
         vectors = vectorizer.fit_transform(final_corpus)
 
     # Find clusters
-    # TODO: Vary amount of clusters
+    ks_inertias = {}
     for k_clusters in range(2, 6):
         with Timer(f"Finding clusters with k={k_clusters}"):
             km = KMeans(n_clusters=k_clusters)
             km.fit(vectors)
             logger.info("Inertia with k=%s: %s", k_clusters, km.inertia_)
+            ks_inertias[k_clusters] = km.inertia_
 
         # TODO: Obtain top 10 terms through tf-idf on each cluster, maybe
         print("Top terms per cluster:")
@@ -81,5 +83,9 @@ with Timer("Main script runtime"):
             top_ten_words = [terms[ind] for ind in order_centroids[i, :10]]
             print("Cluster {}: {}".format(i, ' '.join(top_ten_words)))
         print()
+
+    min_inertia = sorted(ks_inertias.items(), key=lambda x: x[1])[0]
+    logger.info("Minimum inertia achieved with k=%s (inertia: %s)", min_inertia[0], min_inertia[1])
+
 
     # TODO: Análisis de sentimiento
