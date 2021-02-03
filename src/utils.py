@@ -43,4 +43,13 @@ def get_text_from_all_tweets():
     other attributes)
     """
 
-    return db.tweets.find({}, {"full_text": 1})
+    uninteresting_usernames = [
+        "SismosVenezuela",
+        "DolarBeta",
+        "tiempo_caracas",
+    ]
+
+    return db.tweets.find(
+        {"user": {"screen_name": { "$nin": uninteresting_usernames }}},
+        {"full_text": 1}
+    )
