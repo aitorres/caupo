@@ -50,6 +50,6 @@ def get_text_from_all_tweets():
     ]
 
     return db.tweets.find(
-        {"user": {"screen_name": { "$nin": uninteresting_usernames }}},
+        {"user.screen_name": { "$nin": uninteresting_usernames }},
         {"full_text": 1}
     )
