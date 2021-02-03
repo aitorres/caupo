@@ -10,7 +10,7 @@ from nltk.tokenize import word_tokenize
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import CountVectorizer
 
-from utils import Timer, get_text_from_all_tweets
+from utils import Timer, get_text_from_all_tweets, remove_accents
 
 with Timer("Script preparation"):
     # Install nltk data, if needed
@@ -42,13 +42,15 @@ with Timer("Main script runtime"):
     logger.info("Amount of tweets: %s", len(corpus))
 
     # Normalize tweets
-    # TODO: Acentos
     with Timer("Normalizing tweets' text"):
         logger.info("Lowering case")
         lowercase_corpus = map(lambda x: x.lower(), corpus)
 
+        logger.info("Removing accents")
+        unaccented_corpus = map(remove_accents, lowercase_corpus)
+
         logger.info("Splitting each tweet into words")
-        splitted_corpus = map(word_tokenize, lowercase_corpus)
+        splitted_corpus = map(word_tokenize, unaccented_corpus)
 
         logger.info("Removing punctuation")
         alphanumeric_corpus = map(partial(filter, lambda x: x.isalpha()), splitted_corpus)
