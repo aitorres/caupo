@@ -1,3 +1,4 @@
+import random
 import logging
 
 from itertools import filterfalse
@@ -53,7 +54,7 @@ with Timer("Main script runtime"):
         corpus_list = list(map(list, clean_corpus))
         final_corpus = list(map(" ".join, corpus_list))
 
-    logger.info("Clean tweet example: %s", final_corpus[0])
+    logger.info("Clean tweet example: %s", random.choice(final_corpus))
 
     # TODO: Use a better vectorizer
     # Vectorize
