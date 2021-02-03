@@ -70,7 +70,7 @@ with Timer("Main script runtime"):
 
     # Find clusters
     ks_inertias = {}
-    for k_clusters in range(2, 6):
+    for k_clusters in range(2, 8):
         with Timer(f"Finding clusters with k={k_clusters}"):
             km = KMeans(n_clusters=k_clusters)
             km.fit(vectors)
