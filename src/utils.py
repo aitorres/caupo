@@ -53,3 +53,14 @@ def get_text_from_all_tweets():
         {"user.screen_name": { "$nin": uninteresting_usernames }},
         {"full_text": 1}
     )
+
+def remove_accents(phrase):
+    accents_map = {
+        'á': 'a',
+        'é': 'e',
+        'í': 'i',
+        'ó': 'o',
+        'ú': 'u',
+    }
+
+    return "".join(map(lambda x: x if x not in accents_map else accents_map[x], phrase))
