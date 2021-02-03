@@ -67,17 +67,19 @@ with Timer("Main script runtime"):
 
     # Find clusters
     # TODO: Vary amount of clusters
-    k_clusters = 2
-    with Timer(f"Finding clusters with k={k_clusters}"):
-        km = KMeans(n_clusters=k_clusters)
-        km.fit(vectors)
+    for k_clusters in range(2, 6):
+        with Timer(f"Finding clusters with k={k_clusters}"):
+            km = KMeans(n_clusters=k_clusters)
+            km.fit(vectors)
+            logger.info("Inertia with k=%s: %s", k_clusters, km.inertia_)
 
-    # TODO: Obtain top 10 terms through tf-idf on each cluster, maybe
-    print("Top terms per cluster:")
-    order_centroids = km.cluster_centers_.argsort()[:, ::-1]
-    terms = vectorizer.get_feature_names()
-    for i in range(k_clusters):
-        top_ten_words = [terms[ind] for ind in order_centroids[i, :10]]
-        print("Cluster {}: {}".format(i, ' '.join(top_ten_words)))
+        # TODO: Obtain top 10 terms through tf-idf on each cluster, maybe
+        print("Top terms per cluster:")
+        order_centroids = km.cluster_centers_.argsort()[:, ::-1]
+        terms = vectorizer.get_feature_names()
+        for i in range(k_clusters):
+            top_ten_words = [terms[ind] for ind in order_centroids[i, :10]]
+            print("Cluster {}: {}".format(i, ' '.join(top_ten_words)))
+        print()
 
     # TODO: Análisis de sentimiento
