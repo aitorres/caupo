@@ -43,14 +43,14 @@ with Timer("Main script runtime"):
 
     # Normalize tweets
     with Timer("Normalizing tweets' text"):
-        logger.info("Splitting each tweet into words")
-        splitted_corpus = map(word_tokenize, corpus)
-
         logger.info("Lowering case")
-        lowercase_corpus = map(lambda x: x.lower(), splitted_corpus)
+        lowercase_corpus = map(lambda x: x.lower(), corpus)
+
+        logger.info("Splitting each tweet into words")
+        splitted_corpus = map(word_tokenize, lowercase_corpus)
 
         logger.info("Removing punctuation")
-        alphanumeric_corpus = map(partial(filter, lambda x: x.isalpha()), lowercase_corpus)
+        alphanumeric_corpus = map(partial(filter, lambda x: x.isalpha()), splitted_corpus)
 
         logger.info("Removing stopwords")
         clean_corpus = map(partial(filterfalse, lambda x: x in stop_words), alphanumeric_corpus)
