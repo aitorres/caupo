@@ -1,14 +1,19 @@
-import random
+"""
+Script for easy running of k-means tests in order to fetch information
+from the stored data.
+"""
+
 import logging
-
-from itertools import filterfalse
+import random
 from functools import partial
+from itertools import filterfalse
 
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk import download as nltk_download
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.cluster import KMeans
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import silhouette_score
 
 from utils import Timer, get_text_from_all_tweets, remove_accents
 
@@ -65,29 +70,31 @@ with Timer("Main script runtime"):
     # TODO: Use a better vectorizer
     # Vectorize
     with Timer("Vectorizing tweets"):
-        vectorizer = CountVectorizer()
-        vectors = vectorizer.fit_transform(final_corpus)
+        model = Doc2Vec([TaggedDocument(doc.split(), [i]) for i, doc in enumerate(final_corpus)],
+                        vector_size=100, window=3, min_count=1, workers=2)
+        vectors = [model.infer_vector(doc.split()) for doc in final_corpus]
 
     # Find clusters
     ks_inertias = {}
-    for k_clusters in range(2, 8):
+    ks_sils = {}
+    for k_clusters in range(2, 20):
         with Timer(f"Finding clusters with k={k_clusters}"):
             km = KMeans(n_clusters=k_clusters)
-            km.fit(vectors)
+            km_result = km.fit(vectors)
+            km_labels = km_result.labels_
             logger.info("Inertia with k=%s: %s", k_clusters, km.inertia_)
             ks_inertias[k_clusters] = km.inertia_
+            sil_score = silhouette_score(vectors, km_labels, metric='euclidean')
+            logger.info("Silhouete score with k=%s: %s", k_clusters, sil_score)
+            ks_sils[k_clusters] = sil_score
 
         # TODO: Obtain top 10 terms through tf-idf on each cluster, maybe
-        print("Top terms per cluster:")
-        order_centroids = km.cluster_centers_.argsort()[:, ::-1]
-        terms = vectorizer.get_feature_names()
-        for i in range(k_clusters):
-            top_ten_words = [terms[ind] for ind in order_centroids[i, :10]]
-            print("Cluster {}: {}".format(i, ' '.join(top_ten_words)))
-        print()
 
     min_inertia = sorted(ks_inertias.items(), key=lambda x: x[1])[0]
     logger.info("Minimum inertia achieved with k=%s (inertia: %s)", min_inertia[0], min_inertia[1])
 
+    max_silhouette = sorted(ks_sils.items(), key=lambda x: x[1], reverse=True)[0]
+    logger.info("Maximum silhouette score achieved with k=%s (silhouette score: %s)",
+                max_silhouette[0], max_silhouette[1])
 
     # TODO: Análisis de sentimiento
