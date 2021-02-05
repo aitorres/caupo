@@ -7,13 +7,14 @@ import logging
 import random
 from functools import partial
 from itertools import filterfalse
-
+import numpy as np
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk import download as nltk_download
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 from utils import Timer, get_text_from_all_tweets, remove_accents
 
@@ -77,7 +78,8 @@ with Timer("Main script runtime"):
     # Find clusters
     ks_inertias = {}
     ks_sils = {}
-    for k_clusters in range(2, 20):
+    MAX_K = 5
+    for k_clusters in range(2, MAX_K):
         with Timer(f"Finding clusters with k={k_clusters}"):
             km = KMeans(n_clusters=k_clusters)
             km_result = km.fit(vectors)
@@ -88,7 +90,47 @@ with Timer("Main script runtime"):
             logger.info("Silhouete score with k=%s: %s", k_clusters, sil_score)
             ks_sils[k_clusters] = sil_score
 
-        # TODO: Obtain top 10 terms through tf-idf on each cluster, maybe
+            # TODO: Obtain top 10 terms through tf-idf on each cluster, maybe
+            # TODO: Use `corpus` for showcasing, `final_corpus` for tfidf
+            #! BUG: Top terms not being calculated properly
+            logger.info("Rebuilding cluster with original phrases for k=%s", k_clusters)
+            clusters_from_corpus = {}
+            for i, phrase in enumerate(final_corpus):
+                label = km_labels[i]
+                if label not in clusters_from_corpus:
+                    clusters_from_corpus[label] = []
+                clusters_from_corpus[label].append(phrase)
+
+            for k, cluster in clusters_from_corpus.items():
+                SHOWCASE_AMOUNT = 15
+                print()
+                print(f"Cluster {k}")
+                print(f"First {SHOWCASE_AMOUNT} tweets:")
+                for phrase in cluster[:SHOWCASE_AMOUNT]:
+                    print(f"(*) {phrase}")
+                print()
+
+                # Getting tf-idf
+                tfidf = TfidfVectorizer()
+                tfidf_matrix = tfidf.fit_transform(cluster)
+                features_array = tfidf.get_feature_names()
+
+                # Transform the tf-idf results into (term id, tf-idf value) pairs
+                tfidf_coo = tfidf_matrix.tocoo()
+                tfidf_result = zip(tfidf_coo.col, tfidf_coo.data)
+
+                # Order and slice the results to keep the amount we need
+                sorted_filtered_result = sorted(
+                    tfidf_result,
+                    key=lambda x: (x[1], x[0]),
+                    reverse=True
+                )[:SHOWCASE_AMOUNT]
+
+                print()
+                print(f"Top {SHOWCASE_AMOUNT} terms for cluster with k={k}")
+                for i, tfidf_value in sorted_filtered_result:
+                    print(f"(*) {features_array[i]} (tfidf={tfidf_value})")
+                print()
 
     min_inertia = sorted(ks_inertias.items(), key=lambda x: x[1])[0]
     logger.info("Minimum inertia achieved with k=%s (inertia: %s)", min_inertia[0], min_inertia[1])
