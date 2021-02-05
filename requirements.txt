@@ -11,6 +11,7 @@ cycler==0.10.0
 docopt==0.6.2
 flatbuffers==1.12
 gast==0.3.3
+gensim==3.8.3
 google-auth==1.24.0
 google-auth-oauthlib==0.4.2
 google-pasta==0.2.0
@@ -50,6 +51,7 @@ rsa==4.7
 scikit-learn==0.24.1
 scipy==1.6.0
 six==1.15.0
+smart-open==4.1.2
 tensorboard==2.4.1
 tensorboard-plugin-wit==1.8.0
 tensorflow==2.4.1
