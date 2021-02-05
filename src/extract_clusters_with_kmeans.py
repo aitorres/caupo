@@ -8,7 +8,6 @@ import random
 from functools import partial
 from itertools import filterfalse
 
-import numpy as np
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk import download as nltk_download
 from nltk.corpus import stopwords
