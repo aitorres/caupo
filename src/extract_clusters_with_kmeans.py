@@ -7,14 +7,15 @@ import logging
 import random
 from functools import partial
 from itertools import filterfalse
+
 import numpy as np
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk import download as nltk_download
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import silhouette_score
 
 from utils import Timer, get_text_from_all_tweets, remove_accents
 
