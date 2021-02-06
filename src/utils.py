@@ -17,6 +17,7 @@ class Timer:
 
         self.start_time = time.time()
         self.end_time = None
+        self.duration = None
 
     def __enter__(self):
         return self.start_time
@@ -55,6 +56,8 @@ def get_text_from_all_tweets():
     )
 
 def remove_accents(phrase):
+    """Removes all accents (áéíóú) from a lowercase phrase"""
+
     accents_map = {
         'á': 'a',
         'é': 'e',
