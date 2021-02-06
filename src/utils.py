@@ -1,11 +1,11 @@
 import time
 import logging
 
-import pymongo
+from pymongo import MongoClient
 
 logger = logging.getLogger("caupo")
 
-client = pymongo.MongoClient()
+client = MongoClient('mongodb://127.0.0.1:27019')
 db = client.caupo
 
 class Timer:

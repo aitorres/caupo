@@ -12,7 +12,7 @@ from datetime import datetime
 import tweepy
 from pymongo import MongoClient
 
-mongo_client = MongoClient('mongodb://127.0.0.1')
+mongo_client = MongoClient('mongodb://127.0.0.1:27019')
 db = mongo_client.caupo
 
 #! IMPORTANT: Set the following environment vars
