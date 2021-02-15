@@ -60,7 +60,7 @@ def get_text_from_all_tweets():
 def remove_emoji(phrase):
     """Removes all emojis from a phrase"""
 
-    return emoji.get_emoji_regexp().sub(r'', phrase.decode('utf8'))
+    return emoji.get_emoji_regexp().sub(r'', phrase)
 
 def remove_accents(phrase):
     """Removes all accents (áéíóú) from a lowercase phrase"""

@@ -16,7 +16,7 @@ from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import silhouette_score
 
-from utils import Timer, get_text_from_all_tweets, remove_accents
+from utils import Timer, get_text_from_all_tweets, remove_accents, remove_emoji
 
 with Timer("Script preparation"):
     # Install nltk data, if needed
@@ -55,8 +55,11 @@ with Timer("Main script runtime"):
         logger.info("Removing accents")
         unaccented_corpus = map(remove_accents, lowercase_corpus)
 
+        logger.info("Removing emoji")
+        no_emoji_corpus = map(remove_emoji, unaccented_corpus)
+
         logger.info("Splitting each tweet into words")
-        splitted_corpus = map(word_tokenize, unaccented_corpus)
+        splitted_corpus = map(word_tokenize, no_emoji_corpus)
 
         logger.info("Removing punctuation")
         alphanumeric_corpus = map(partial(filter, lambda x: x.isalpha()), splitted_corpus)
