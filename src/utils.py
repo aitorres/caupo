@@ -1,6 +1,8 @@
 import time
 import logging
 
+import emoji
+
 from pymongo import MongoClient
 
 logger = logging.getLogger("caupo")
@@ -54,6 +56,11 @@ def get_text_from_all_tweets():
         {"user.screen_name": { "$nin": uninteresting_usernames }},
         {"full_text": 1}
     )
+
+def remove_emoji(phrase):
+    """Removes all emojis from a phrase"""
+
+    return emoji.get_emoji_regexp().sub(r'', phrase.decode('utf8'))
 
 def remove_accents(phrase):
     """Removes all accents (áéíóú) from a lowercase phrase"""
