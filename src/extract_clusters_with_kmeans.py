@@ -61,7 +61,7 @@ with Timer("Main script runtime"):
         logger.info("Splitting each tweet into words")
         splitted_corpus = map(word_tokenize, no_emoji_corpus)
 
-        logger.info("Removing punctuation")
+        logger.info("Removing punctuation and digits")
         alphanumeric_corpus = map(partial(filter, lambda x: x.isalpha()), splitted_corpus)
 
         logger.info("Removing stopwords")
@@ -69,7 +69,9 @@ with Timer("Main script runtime"):
         corpus_list = list(map(list, clean_corpus))
         final_corpus = list(map(" ".join, corpus_list))
 
-    logger.info("Clean tweet example: %s", random.choice(final_corpus))
+    sample_tweet_index = random.randrange(0, len(final_corpus))
+    logger.info("Original tweet example: %s", final_corpus[sample_tweet_index])
+    logger.info("Clean tweet example: %s", final_corpus[sample_tweet_index])
 
     # TODO: Use a better vectorizer
     # Vectorize
