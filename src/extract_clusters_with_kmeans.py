@@ -13,7 +13,8 @@ from nltk import download as nltk_download
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.cluster import KMeans
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import silhouette_score
 
 from utils import Timer, get_text_from_all_tweets, remove_accents, remove_emoji
@@ -73,7 +74,7 @@ with Timer("Main script runtime"):
     logger.info("Original tweet example: %s", corpus[sample_tweet_index])
     logger.info("Clean tweet example: %s", final_corpus[sample_tweet_index])
 
-    # TODO: Use a better vectorizer
+    # TODO: Use a better vectorizer, try different vectorizers
     # Vectorize
     with Timer("Vectorizing tweets"):
         model = Doc2Vec([TaggedDocument(doc.split(), [i]) for i, doc in enumerate(final_corpus)],
@@ -81,6 +82,7 @@ with Timer("Main script runtime"):
         vectors = [model.infer_vector(doc.split()) for doc in final_corpus]
 
     # Find clusters
+    # TODO: Try other clustering algorithms
     ks_inertias = {}
     ks_sils = {}
     MAX_K = 5
@@ -106,6 +108,9 @@ with Timer("Main script runtime"):
                     clusters_from_corpus[label] = []
                 clusters_from_corpus[label].append(phrase)
 
+            #? Topic modelling with LDA
+            # TODO: Test other modelling algorithms
+            #? src: https://scikit-learn.org/stable/auto_examples/applications/plot_topics_extraction_with_nmf_lda.html
             for k, cluster in clusters_from_corpus.items():
                 SHOWCASE_AMOUNT = 15
                 print()
@@ -115,27 +120,27 @@ with Timer("Main script runtime"):
                     print(f"(*) {phrase}")
                 print()
 
-                # Getting tf-idf
-                tfidf = TfidfVectorizer()
-                tfidf_matrix = tfidf.fit_transform(cluster)
-                features_array = tfidf.get_feature_names()
+                # Use tf (raw term count) features for LDA.
+                tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words=stop_words)
+                tf = tf_vectorizer.fit_transform(cluster)
 
-                # Transform the tf-idf results into (term id, tf-idf value) pairs
-                tfidf_coo = tfidf_matrix.tocoo()
-                tfidf_result = zip(tfidf_coo.col, tfidf_coo.data)
+                # Extract 10 clusters / topics
+                lda = LatentDirichletAllocation(n_components=10, max_iter=10, learning_method='online',
+                                                learning_offset=50.0)
+                lda.fit(tf)
 
-                # Order and slice the results to keep the amount we need
-                sorted_filtered_result = sorted(
-                    tfidf_result,
-                    key=lambda x: (x[1], x[0]),
-                    reverse=True
-                )[:SHOWCASE_AMOUNT]
-
+                # Obtain and print first N terms for each topic
+                feature_names = tf_vectorizer.get_feature_names()
+                N_TOP_WORDS = 10
+                topics = lda.components_
+                for i_topic, topic in enumerate(topics):
+                    top_features_ind = topic.argsort()[:-N_TOP_WORDS - 1:-1]
+                    top_features = [feature_names[i] for i in top_features_ind]
+                    weights = topic[top_features_ind]
+                    print(f"Topic { i_topic }: { top_features }")
+                    print(f"Weights {i_topic}: { weights }")
                 print()
-                print(f"Top {SHOWCASE_AMOUNT} terms for cluster with k={k}")
-                for i, tfidf_value in sorted_filtered_result:
-                    print(f"(*) {features_array[i]} (tfidf={tfidf_value})")
-                print()
+
 
     min_inertia = sorted(ks_inertias.items(), key=lambda x: x[1])[0]
     logger.info("Minimum inertia achieved with k=%s (inertia: %s)", min_inertia[0], min_inertia[1])
@@ -145,3 +150,6 @@ with Timer("Main script runtime"):
                 max_silhouette[0], max_silhouette[1])
 
     # TODO: Análisis de sentimiento para ver la polaridad en cada cluster (opinion mining)
+    # TODO: En cada topic, también ver polaridad
+
+    # TODO: Quitar cuentas bots / basuras de la red somehow
