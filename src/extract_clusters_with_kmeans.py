@@ -70,14 +70,14 @@ with Timer("Main script runtime"):
         final_corpus = list(map(" ".join, corpus_list))
 
     sample_tweet_index = random.randrange(0, len(final_corpus))
-    logger.info("Original tweet example: %s", final_corpus[sample_tweet_index])
+    logger.info("Original tweet example: %s", corpus[sample_tweet_index])
     logger.info("Clean tweet example: %s", final_corpus[sample_tweet_index])
 
     # TODO: Use a better vectorizer
     # Vectorize
     with Timer("Vectorizing tweets"):
         model = Doc2Vec([TaggedDocument(doc.split(), [i]) for i, doc in enumerate(final_corpus)],
-                        vector_size=100, window=3, min_count=1, workers=2)
+                        vector_size=200, window=3, min_count=2, workers=2)
         vectors = [model.infer_vector(doc.split()) for doc in final_corpus]
 
     # Find clusters
@@ -144,4 +144,4 @@ with Timer("Main script runtime"):
     logger.info("Maximum silhouette score achieved with k=%s (silhouette score: %s)",
                 max_silhouette[0], max_silhouette[1])
 
-    # TODO: Análisis de sentimiento
+    # TODO: Análisis de sentimiento para ver la polaridad en cada cluster (opinion mining)
