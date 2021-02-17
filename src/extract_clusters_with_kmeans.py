@@ -152,4 +152,5 @@ with Timer("Main script runtime"):
     # TODO: Análisis de sentimiento para ver la polaridad en cada cluster (opinion mining)
     # TODO: En cada topic, también ver polaridad
 
-    # TODO: Quitar cuentas bots / basuras de la red somehow
+    # TODO: Mejorar eliminación de cuentas basura
+    # TODO: Eliminar URLs y @s
