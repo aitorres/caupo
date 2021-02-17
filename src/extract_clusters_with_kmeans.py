@@ -13,8 +13,8 @@ from nltk import download as nltk_download
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.cluster import KMeans
-from sklearn.decomposition import LatentDirichletAllocation
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import NMF, LatentDirichletAllocation
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics import silhouette_score
 
 from utils import (Timer, get_text_from_all_tweets, remove_accents,
@@ -115,9 +115,7 @@ with Timer("Main script runtime"):
                     clusters_from_corpus[label] = []
                 clusters_from_corpus[label].append(phrase)
 
-            #? Topic modelling with LDA
-            # TODO: Test other modelling algorithms
-            #? src: https://scikit-learn.org/stable/auto_examples/applications/plot_topics_extraction_with_nmf_lda.html
+            # Rebuild each cluster and find topics
             for k, cluster in clusters_from_corpus.items():
                 SHOWCASE_AMOUNT = 15
                 print()
@@ -127,28 +125,54 @@ with Timer("Main script runtime"):
                     print(f"(*) {phrase}")
                 print()
 
+                #? Topic modelling (with LDA, NMF, PLSI)
+                #? src: https://scikit-learn.org/stable/auto_examples/applications/plot_topics_extraction_with_nmf_lda.html
+
+                # Extract 10 topics and get 10 top words from each one
+                N_TOPICS = 10
+                N_TOP_WORDS = 10
+                N_FEATURES = 1000
+
+                # Use tf-idf features for NMF.
+                tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=N_FEATURES, stop_words=stop_words)
+                tfidf = tfidf_vectorizer.fit_transform(cluster)
+
                 # Use tf (raw term count) features for LDA.
-                tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words=stop_words)
+                tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=N_FEATURES, stop_words=stop_words)
                 tf = tf_vectorizer.fit_transform(cluster)
 
-                # Extract 10 clusters / topics
-                N_TOPICS = 10
+                # LDA
                 lda = LatentDirichletAllocation(n_components=N_TOPICS, max_iter=20, learning_method='online',
                                                 learning_offset=50.0)
-                lda.fit(tf)
 
-                # Obtain and print first N terms for each topic
-                feature_names = tf_vectorizer.get_feature_names()
-                N_TOP_WORDS = 10
-                topics = lda.components_
-                for i_topic, topic in enumerate(topics):
-                    top_features_ind = topic.argsort()[:-N_TOP_WORDS - 1:-1]
-                    top_features = [feature_names[i] for i in top_features_ind]
-                    weights = topic[top_features_ind]
-                    print(f"Topic { i_topic }: { top_features }")
-                    print(f"Weights {i_topic}: { weights }")
-                print()
+                # NMF (Frobenius norm)
+                nmf_frobenius = NMF(n_components=N_TOPICS, max_iter=1000, alpha=0.1, l1_ratio=.5)
 
+                # NMF (generalized Kullback-Leibler divergence), equivalent to Probabilistic Latent Semantic Indexing
+                nmf_plsi = NMF(n_components=N_TOPICS, beta_loss='kullback-leibler', solver='mu', max_iter=1000,
+                               alpha=0.1, l1_ratio=0.5)
+
+                topic_models = {
+                    'LDA': lda,
+                    'NMF (Frobenius)': nmf_frobenius,
+                    'NMF (Kullback-Leibler) / PLSI': nmf_plsi,
+                }
+
+                for name, model in topic_models.items():
+                    print(f"Obtaining { N_TOPICS } topics with { name }:")
+                    # Fit model
+                    model.fit(tf)
+
+                    # Obtain and print first N terms for each topic
+                    feature_names = tf_vectorizer.get_feature_names()
+                    topics = model.components_
+                    for i_topic, topic in enumerate(topics):
+                        top_features_ind = topic.argsort()[:-N_TOP_WORDS - 1:-1]
+                        top_features = [feature_names[i] for i in top_features_ind]
+                        weights = topic[top_features_ind]
+                        print(f"Topic { i_topic }: { top_features }")
+                        print(f"Weights {i_topic}: { weights }")
+                    print()
 
     min_inertia = sorted(ks_inertias.items(), key=lambda x: x[1])[0]
     logger.info("Minimum inertia achieved with k=%s (inertia: %s)", min_inertia[0], min_inertia[1])
