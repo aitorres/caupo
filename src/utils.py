@@ -124,6 +124,18 @@ def remove_accents(phrase):
     return "".join(map(lambda x: x if x not in accents_map else accents_map[x], phrase))
 
 
+def remove_urls(phrase):
+    """Removes all URLs from a lowercase phrase"""
+
+    return " ".join([token for token in phrase.split() if not token.startswith("http")])
+
+
+def remove_mentions(phrase):
+    """Removes all Twitter mentions (@username) from a lowercase phrase"""
+
+    return " ".join([token for token in phrase.split() if not token.startswith("@")])
+
+
 def plot_top_words(model, feature_names, n_top_words, title):
     """
     Given a Topic Modelling model from skleanr (LDA, NMF), generates a plot

@@ -17,7 +17,8 @@ from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import silhouette_score
 
-from utils import Timer, get_text_from_all_tweets, remove_accents, remove_emoji
+from utils import (Timer, get_text_from_all_tweets, remove_accents,
+                   remove_emoji, remove_mentions, remove_urls)
 
 with Timer("Script preparation"):
     # Install nltk data, if needed
@@ -53,8 +54,14 @@ with Timer("Main script runtime"):
         logger.info("Lowering case")
         lowercase_corpus = map(lambda x: x.lower(), corpus)
 
+        logger.info("Removing URLs")
+        no_urls_corpus = map(remove_urls, lowercase_corpus)
+
+        logger.info("Removing mentions (@username)")
+        no_mentions_corpus = map(remove_mentions, no_urls_corpus)
+
         logger.info("Removing accents")
-        unaccented_corpus = map(remove_accents, lowercase_corpus)
+        unaccented_corpus = map(remove_accents, no_mentions_corpus)
 
         logger.info("Removing emoji")
         no_emoji_corpus = map(remove_emoji, unaccented_corpus)
@@ -154,4 +161,3 @@ with Timer("Main script runtime"):
     # TODO: En cada topic, también ver polaridad
 
     # TODO: Mejorar eliminación de cuentas basura
-    # TODO: Eliminar URLs y @s
