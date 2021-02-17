@@ -26,7 +26,7 @@ KM_DISTANCE = 10
 LOCATION_GEOCODE = f"10.4880,-66.8791,{KM_DISTANCE}km"
 
 #? This amount will prevent excessive requests that will lead nowhere
-MAX_DUPLICATE_REQUESTS = 50
+MAX_DUPLICATE_REQUESTS = 100
 
 # Setting the keys on tweepy
 auth = tweepy.OAuthHandler(TW_CONSUMER_KEY, TW_CONSUMER_SECRET)
