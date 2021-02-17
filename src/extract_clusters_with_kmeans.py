@@ -119,7 +119,7 @@ with Timer("Main script runtime"):
             for k, cluster in clusters_from_corpus.items():
                 SHOWCASE_AMOUNT = 15
                 print()
-                print(f"Cluster {k}")
+                print(f"Cluster {k} (size: {len(cluster)} tweets)")
                 print(f"First {SHOWCASE_AMOUNT} tweets:")
                 for phrase in cluster[:SHOWCASE_AMOUNT]:
                     print(f"(*) {phrase}")
@@ -185,3 +185,4 @@ with Timer("Main script runtime"):
     # TODO: En cada topic, también ver polaridad
 
     # TODO: Mejorar eliminación de cuentas basura
+    # TODO: Measure topic modelling coherence
