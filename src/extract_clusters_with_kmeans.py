@@ -125,7 +125,8 @@ with Timer("Main script runtime"):
                 tf = tf_vectorizer.fit_transform(cluster)
 
                 # Extract 10 clusters / topics
-                lda = LatentDirichletAllocation(n_components=10, max_iter=10, learning_method='online',
+                N_TOPICS = 10
+                lda = LatentDirichletAllocation(n_components=N_TOPICS, max_iter=20, learning_method='online',
                                                 learning_offset=50.0)
                 lda.fit(tf)
 
