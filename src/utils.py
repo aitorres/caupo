@@ -40,27 +40,75 @@ def get_all_tweets():
     return db.tweets.find()
 
 
-def get_text_from_all_tweets():
+def get_non_unique_tweets():
+    """
+    Queries and returns a cursor with all the tweets which content, taken as the `full_text`
+    of the document structure, is repeated verbatim in another tweet.
+    """
+
+    return db.tweets.aggregate(
+        [
+            {
+                "$group": {
+                    "_id": "$full_text",
+                    "count": {
+                        "$sum": 1
+                    }
+                }
+            },
+            {
+                "$match": {
+                    "count": {
+                        "$gt": 1
+                    }
+                }
+            }
+        ]
+    )
+
+
+def get_non_unique_content_from_tweets():
+    """Returns a list with the text of non-unique tweets."""
+
+    return [doc['_id'] for doc in get_non_unique_tweets()]
+
+
+def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_uninteresting_text=True):
     """
     Queries and returns a cursor with the text from all texts (filtering out any
     other attributes)
     """
 
-    uninteresting_usernames = [
-        "SismosVenezuela",
-        "DolarBeta",
-        "tiempo_caracas",
-    ]
+    if exclude_uninteresting_usernames:
+        uninteresting_usernames = [
+            "SismosVenezuela",
+            "DolarBeta",
+            "tiempo_caracas",
+        ]
+    else:
+        uninteresting_usernames = []
+
+    if exclude_uninteresting_text:
+        uninteresting_text = get_non_unique_content_from_tweets()
+    else:
+        uninteresting_text = []
 
     return db.tweets.find(
-        {"user.screen_name": { "$nin": uninteresting_usernames }},
-        {"full_text": 1}
+        {
+            "user.screen_name": { "$nin": uninteresting_usernames },
+            "full_text": { "$nin": uninteresting_text },
+        },
+        {
+            "full_text": 1
+        }
     )
+
 
 def remove_emoji(phrase):
     """Removes all emojis from a phrase"""
 
     return emoji.get_emoji_regexp().sub(r'', phrase)
+
 
 def remove_accents(phrase):
     """Removes all accents (áéíóú) from a lowercase phrase"""
