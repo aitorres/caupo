@@ -22,11 +22,11 @@ TW_ACCESS_TOKEN = os.environ.get('TW_ACCESS_TOKEN')
 TW_ACCESS_SECRET = os.environ.get('TW_ACCESS_SECRET')
 
 #? Sets the search within a certain km radius in Caracas
-KM_DISTANCE = 20
+KM_DISTANCE = 25
 LOCATION_GEOCODE = f"10.4880,-66.8791,{KM_DISTANCE}km"
 
 #? This amount will prevent excessive requests that will lead nowhere
-MAX_DUPLICATE_REQUESTS = 100
+MAX_DUPLICATE_REQUESTS = 150
 
 # Setting the keys on tweepy
 auth = tweepy.OAuthHandler(TW_CONSUMER_KEY, TW_CONSUMER_SECRET)
