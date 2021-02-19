@@ -8,6 +8,7 @@ Usage:  python.py fetch_tweets_by_search_term.py <mode> <search_term>
 import os
 import sys
 from datetime import datetime
+from time import sleep
 
 import tweepy
 from pymongo import MongoClient
@@ -133,6 +134,10 @@ def main():
                 if duplicate_count >= MAX_DUPLICATE_REQUESTS_PER_LOCATION:
                     print(f"At least {MAX_DUPLICATE_REQUESTS_PER_LOCATION} found in a row. Terminating query for {city}.")
                     break
+
+        sleep_time = 10
+        print(f"Finished querying city {city}. Awaiting {sleep_time} seconds before continuing.")
+        sleep(sleep_time)
 
 # Runs the main program
 if __name__ == "__main__":
