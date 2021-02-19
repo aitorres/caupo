@@ -136,6 +136,11 @@ def remove_mentions(phrase):
     return " ".join([token for token in phrase.split() if not token.startswith("@")])
 
 
+def remove_hashtags(phrase):
+    """Removes all Twitter hashtags (#username) from a lowercase phrase"""
+
+    return " ".join([token for token in phrase.split() if not token.startswith("#")])
+
 def plot_top_words(model, feature_names, n_top_words, title):
     """
     Given a Topic Modelling model from skleanr (LDA, NMF), generates a plot

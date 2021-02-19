@@ -18,7 +18,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics import silhouette_score
 
 from utils import (Timer, get_text_from_all_tweets, remove_accents,
-                   remove_emoji, remove_mentions, remove_urls)
+                   remove_emoji, remove_hashtags, remove_mentions, remove_urls)
 
 with Timer("Script preparation"):
     # Install nltk data, if needed
@@ -60,8 +60,11 @@ with Timer("Main script runtime"):
         logger.info("Removing mentions (@username)")
         no_mentions_corpus = map(remove_mentions, no_urls_corpus)
 
+        logger.info("Removing hashtags (#hashtag )")
+        no_hashtags_corpus = map(remove_hashtags, no_mentions_corpus)
+
         logger.info("Removing accents")
-        unaccented_corpus = map(remove_accents, no_mentions_corpus)
+        unaccented_corpus = map(remove_accents, no_hashtags_corpus)
 
         logger.info("Removing emoji")
         no_emoji_corpus = map(remove_emoji, unaccented_corpus)
