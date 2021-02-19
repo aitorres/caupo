@@ -2,7 +2,7 @@
 Small test script to fetch a couple of tweets using tweepy
 around a given search term.
 
-Usage:  python.py fetch_tweets_by_search_term.py <mode> <search_mode> <search_term>
+Usage:  python.py fetch_tweets_by_search_term.py <mode> <search_term>
 """
 
 import os
@@ -43,34 +43,20 @@ auth.set_access_token(TW_ACCESS_TOKEN, TW_ACCESS_SECRET)
 api = tweepy.API(auth, wait_on_rate_limit_notify=True, wait_on_rate_limit=True,
                  retry_count=3, retry_delay=5, retry_errors=set([401, 403, 404, 500, 503]))
 
-def get_search_cursor(search_mode, search_term, location_geocode):
+
+def get_search_cursor(search_term, location_geocode):
     """
     Returns an iterator of recently published tweets
     for a given search term near Caracas, Venezuela.
     """
 
-    if search_mode == "search":
-        return tweepy.Cursor(
-            api.search,
-            q=f"{search_term} -filter:retweets lang:es -filter:links",
-            geocode=location_geocode,
-            tweet_mode="extended"
-        ).items()
+    return tweepy.Cursor(
+        api.search,
+        q=f"{search_term} -filter:retweets lang:es -filter:links",
+        geocode=location_geocode,
+        tweet_mode="extended"
+    ).items()
 
-    if search_mode == "search_full_archive":
-        return tweepy.Cursor(
-            api.search_full_archive,
-            environment_name='dev',
-            fromDate="201901010000",
-            query=f"{search_term} lang:es -has:links"
-        ).items()
-
-    if search_mode == "search_30_day":
-        return tweepy.Cursor(
-            api.search_30_day,
-            environment_name='dev',
-            query=f"{search_term} lang:es -has:links"
-        ).items()
 
 def main():
     """
@@ -83,20 +69,15 @@ def main():
 
     # Print help and exit if there are no arguments
     if not args:
-        print("Usage:\tpython.py fetch_tweets_by_search_term.py <mode> <search_mode> <search_term>")
+        print("Usage:\tpython.py fetch_tweets_by_search_term.py <mode> <search_term>")
         print("Modes: print|store")
         return sys.exit(1)
 
     mode = args[0].lower()
-    search_mode = args[1].lower()
-    search_term = args[2]
+    search_term = args[1]
 
     if mode not in ["print", "store"]:
         print("Unknown mode")
-        sys.exit(1)
-
-    if search_mode not in ["search", "search_30_day", "search_full_archive"]:
-        print("Unknown search mode")
         sys.exit(1)
 
     # Iterates over each location
@@ -105,7 +86,7 @@ def main():
 
         # Gets tweets using the API
         try:
-            tweets = get_search_cursor(search_mode, search_term, geocode)
+            tweets = get_search_cursor(search_term, geocode)
         except tweepy.error.TweepError as error:
             print("Twitter API usage raised an error. %s" % error)
             print("Are the environment variables properly set and valid?")
@@ -116,13 +97,7 @@ def main():
             print(f"Recent tweets near {city} ({KM_DISTANCE}km radius) for `{search_term}`:")
 
             for tweet in tweets:
-                try:
-                    tweet_text = tweet.full_text
-                except:
-                    if tweet.truncated:
-                        tweet_text = tweet.extended_tweet['full_text']
-                    else:
-                        tweet_text = tweet.text
+                tweet_text = tweet.full_text
                 print("Tweet by @{0} on {1}\n{2}\n".format(
                     tweet.user.screen_name,
                     tweet.created_at,
@@ -131,40 +106,24 @@ def main():
 
             print("Done!")
         elif mode == "store":
-            if search_mode == "search":
-                collection = db.tweets
-                remove_rts = False
-            elif search_mode == "search_30_day":
-                collection = db.tweets_30_day
-                remove_rts = True
-            else:
-                collection = db.tweets_full_archive
-                remove_rts = True
-
             duplicate_count = 0
             for tweet in tweets:
                 tweet_id = tweet.id
 
-                try:
-                    tweet_text = tweet.full_text
-                except:
-                    if tweet.truncated:
-                        tweet_text = tweet.extended_tweet['full_text']
-                    else:
-                        tweet_text = tweet.text
+                tweet_text = tweet.full_text
 
-                if remove_rts and tweet_text.startswith("RT @"):
+                if tweet_text.startswith("RT @"):
                     print(f"Skipping RT {tweet.id}")
                     continue
 
-                existing_document = collection.find_one({"id": tweet_id})
+                existing_document = db.tweets.find_one({"id": tweet_id})
 
                 if existing_document is None:
                     tweet_json = tweet._json
                     tweet_json['created_at'] = str(tweet.created_at)
                     tweet_json['stored_at'] = str(datetime.now())
                     tweet_json['city_tag'] = str(city)
-                    collection.insert_one(tweet_json)
+                    db.tweets.insert_one(tweet_json)
                     duplicate_count = 0
                     print(f"Successfully stored tweet {tweet.id}: {tweet_text}")
                 else:
