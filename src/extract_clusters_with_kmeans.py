@@ -110,11 +110,14 @@ with Timer("Main script runtime"):
 
             logger.info("Rebuilding cluster with original phrases for k=%s", k_clusters)
             clusters_from_corpus = {}
+            clusters_from_original_corpus = {}
             for i, phrase in enumerate(final_corpus):
                 label = km_labels[i]
                 if label not in clusters_from_corpus:
                     clusters_from_corpus[label] = []
+                    clusters_from_original_corpus[label] = []
                 clusters_from_corpus[label].append(phrase)
+                clusters_from_original_corpus[label].append(corpus[i])
 
             # Rebuild each cluster and find topics
             for k, cluster in clusters_from_corpus.items():
@@ -122,7 +125,7 @@ with Timer("Main script runtime"):
                 print()
                 print(f"Cluster {k} (size: {len(cluster)} tweets)")
                 print(f"First {SHOWCASE_AMOUNT} tweets:")
-                for phrase in cluster[:SHOWCASE_AMOUNT]:
+                for phrase in clusters_from_original_corpus[k][:SHOWCASE_AMOUNT]:
                     print(f"(*) {phrase}")
                 print()
 
