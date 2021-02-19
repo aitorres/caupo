@@ -25,8 +25,8 @@ with Timer("Script preparation"):
     nltk_download('stopwords')
     nltk_download('punkt')
 
-    # Load up stopwords
-    stop_words = set(stopwords.words('spanish'))
+    # Load up stopwords (and manually adding laughter)
+    stop_words = set(stopwords.words('spanish')).union({"ja" * i for i in range(1, 7)})
 
     # Instantiate logger
     logger = logging.getLogger("caupo")
@@ -132,7 +132,8 @@ with Timer("Main script runtime"):
                 N_FEATURES = 1000
 
                 # Use tf-idf features for NMF.
-                tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=N_FEATURES, stop_words=stop_words)
+                tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=N_FEATURES,
+                                                   stop_words=stop_words)
                 tfidf = tfidf_vectorizer.fit_transform(cluster)
 
                 # Use tf (raw term count) features for LDA.
