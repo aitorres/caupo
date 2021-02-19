@@ -82,17 +82,18 @@ with Timer("Main script runtime"):
     logger.info("Clean tweet example: %s", final_corpus[sample_tweet_index])
 
     # TODO: Use a better vectorizer, try different vectorizers
-    # Vectorize
+    # Vectorize: Doc2Vec, CountVectorizer, SentenceBert, FastText, un embedding de politica ya prehecho
     with Timer("Vectorizing tweets"):
         model = Doc2Vec([TaggedDocument(doc.split(), [i]) for i, doc in enumerate(final_corpus)],
                         vector_size=200, window=3, min_count=2, workers=2)
         vectors = [model.infer_vector(doc.split()) for doc in final_corpus]
 
     # Find clusters
+    # Kmeans, un kmeans puyao, affinity propagation, dbscan
     # TODO: Try other clustering algorithms
     ks_inertias = {}
     ks_sils = {}
-    MAX_K = 5
+    MAX_K = 3
     for k_clusters in range(2, MAX_K):
         with Timer(f"Finding clusters with k={k_clusters}"):
             km = KMeans(n_clusters=k_clusters)
@@ -104,9 +105,6 @@ with Timer("Main script runtime"):
             logger.info("Silhouete score with k=%s: %s", k_clusters, sil_score)
             ks_sils[k_clusters] = sil_score
 
-            # TODO: Obtain top 10 terms through tf-idf on each cluster, maybe
-            # TODO: Use `corpus` for showcasing, `final_corpus` for tfidf
-            #! BUG: Top terms not being calculated properly
             logger.info("Rebuilding cluster with original phrases for k=%s", k_clusters)
             clusters_from_corpus = {}
             for i, phrase in enumerate(final_corpus):
