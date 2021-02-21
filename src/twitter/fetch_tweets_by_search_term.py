@@ -23,7 +23,7 @@ TW_ACCESS_TOKEN = os.environ.get('TW_ACCESS_TOKEN')
 TW_ACCESS_SECRET = os.environ.get('TW_ACCESS_SECRET')
 
 #? This amount will prevent excessive requests that will lead nowhere
-MAX_DUPLICATE_REQUESTS_PER_LOCATION = 50
+MAX_DUPLICATE_REQUESTS_PER_LOCATION = 15
 
 #? Sets the search within a certain km radius in Caracas
 KM_DISTANCE = 20
@@ -135,7 +135,7 @@ def main():
                     print(f"At least {MAX_DUPLICATE_REQUESTS_PER_LOCATION} found in a row. Terminating query for {city}.")
                     break
 
-        sleep_time = 10
+        sleep_time = 4
         print(f"Finished querying city {city}. Awaiting {sleep_time} seconds before continuing.")
         sleep(sleep_time)
 
