@@ -94,7 +94,7 @@ with Timer("Main script runtime"):
         d2v_vectors = [d2v_model.infer_vector(doc.split()) for doc in final_corpus]
 
     with Timer("Vectorizing tweets with BERT (multilingual model, xlm-r-100langs-bert-base-nli-mean-tokens)"):
-        bert_model = SentenceTransformer('xlm-r-100langs-bert-base-nli-mean-tokens')
+        bert_model = SentenceTransformer('xlm-r-100langs-bert-base-nli-mean-tokens', device="cpu")
         bert_vectors = bert_model.encode(final_corpus)
 
     embedding_vectors = {
