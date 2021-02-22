@@ -101,14 +101,17 @@ with Timer("Main script runtime"):
                     with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as csv_file:
                         csv_file.write(f"|{city_mode_name}|{embedder_name}|{embedder_time}|{max_l2_norm}|{min_l2_norm}|{avg_l2_norm}|\n")
 
-                with Timer(f"Generating scatterplot for vector representations with embedder `{embedder_name}`"):
-                    data_sample = random.sample(list(vectors), 1000)
-                    fit = UMAP()
-                    scatterplot_data = fit.fit_transform(data_sample)
-                    plt.scatter(scatterplot_data[:,0], scatterplot_data[:,1])
-                    plt.title(f'2-Dim Representation of `{embedder_name}` ({city_mode_name})');
-                    plt.savefig(f"{OUTPUT_FOLDER}/{embedder_name}-{city_mode_name}-scatter.png")
-                    plt.close()
+                try:
+                    with Timer(f"Generating scatterplot for vector representations with embedder `{embedder_name}`"):
+                        data_sample = random.sample(list(vectors), 1000)
+                        fit = UMAP()
+                        scatterplot_data = fit.fit_transform(data_sample)
+                        plt.scatter(scatterplot_data[:,0], scatterplot_data[:,1])
+                        plt.title(f'2-Dim Representation of `{embedder_name}` ({city_mode_name})');
+                        plt.savefig(f"{OUTPUT_FOLDER}/{embedder_name}-{city_mode_name}-scatter.png")
+                        plt.close()
+                except ValueError:
+                    logger.error(f"Value Error trying to generate scatterplot for vector reps with embedder `{embedder_name}`")
 
             city_embedder_time_dict[city_mode_name] = embedder_time_dict
 
