@@ -45,8 +45,7 @@ with Timer("Script preparation"):
 with Timer("Main script runtime"):
     # Get all tweets
     with Timer("Getting tweets' text from database"):
-        tweets = get_text_from_all_tweets()
-        corpus = [t["full_text"] for t in tweets]
+        corpus = get_text_from_all_tweets()
 
     logger.info("Amount of tweets: %s", len(corpus))
 

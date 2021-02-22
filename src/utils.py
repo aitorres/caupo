@@ -101,13 +101,12 @@ def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_unint
     if city is not None:
         query["city_tag"] = city
 
-    return db.tweets.find(
+    tweets = db.tweets.find(
         query,
-        {
-            "full_text": 1
-        }
+        { "full_text": 1 }
     )
 
+    return [t["full_text"] for t in tweets]
 
 def remove_emoji(phrase):
     """Removes all emojis from a phrase"""
