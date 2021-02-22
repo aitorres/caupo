@@ -93,8 +93,9 @@ with Timer("Main script runtime"):
                         vector_size=200, window=3, min_count=2, workers=2)
         d2v_vectors = [d2v_model.infer_vector(doc.split()) for doc in final_corpus]
 
-    with Timer("Vectorizing tweets with BERT (multilingual model, xlm-r-100langs-bert-base-nli-mean-tokens)"):
-        bert_model = SentenceTransformer('xlm-r-100langs-bert-base-nli-mean-tokens', device="cpu")
+    BERT_MODEL_NAME = 'xlm-r-100langs-bert-base-nli-mean-tokens'
+    with Timer(f"Vectorizing tweets with BERT (multilingual model, {BERT_MODEL_NAME})"):
+        bert_model = SentenceTransformer(BERT_MODEL_NAME, device="cpu")
         bert_vectors = bert_model.encode(final_corpus)
 
     embedding_vectors = {
@@ -152,12 +153,11 @@ with Timer("Main script runtime"):
                     N_FEATURES = 1000
 
                     # Use tf-idf features for NMF.
-                    tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=N_FEATURES,
-                                                    stop_words=stop_words)
+                    tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=N_FEATURES)
                     tfidf = tfidf_vectorizer.fit_transform(cluster)
 
                     # Use tf (raw term count) features for LDA.
-                    tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=N_FEATURES, stop_words=stop_words)
+                    tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=N_FEATURES)
                     tf = tf_vectorizer.fit_transform(cluster)
 
                     # LDA
