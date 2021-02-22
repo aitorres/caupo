@@ -73,7 +73,7 @@ def get_non_unique_content_from_tweets():
     return [doc['_id'] for doc in get_non_unique_tweets()]
 
 
-def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_uninteresting_text=True):
+def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_uninteresting_text=True, city=None):
     """
     Queries and returns a cursor with the text from all texts (filtering out any
     other attributes)
@@ -93,11 +93,16 @@ def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_unint
     else:
         uninteresting_text = []
 
+    query = {
+        "user.screen_name": { "$nin": uninteresting_usernames },
+        "full_text": { "$nin": uninteresting_text },
+    }
+
+    if city is not None:
+        query["city_tag"] = city
+
     return db.tweets.find(
-        {
-            "user.screen_name": { "$nin": uninteresting_usernames },
-            "full_text": { "$nin": uninteresting_text },
-        },
+        query,
         {
             "full_text": 1
         }
