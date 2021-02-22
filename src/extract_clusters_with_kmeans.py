@@ -5,42 +5,30 @@ from the stored data.
 
 import logging
 import random
-from functools import partial
-from itertools import filterfalse
+
 
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-from nltk import download as nltk_download
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
 from sklearn.decomposition import NMF, LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics import silhouette_score
 
-from utils import (Timer, get_text_from_all_tweets, remove_accents,
-                   remove_emoji, remove_hashtags, remove_mentions, remove_urls)
+from preprocessing import preprocess_corpus
+from utils import get_text_from_all_tweets, Timer
 
-with Timer("Script preparation"):
-    # Install nltk data, if needed
-    nltk_download('stopwords')
-    nltk_download('punkt')
+# Instantiate logger
+logger = logging.getLogger("caupo")
+logger.setLevel(logging.DEBUG)
 
-    # Load up stopwords (and manually adding laughter)
-    stop_words = set(stopwords.words('spanish')).union({"ja" * i for i in range(1, 7)})
+# Create formatter
+formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
 
-    # Instantiate logger
-    logger = logging.getLogger("caupo")
-    logger.setLevel(logging.DEBUG)
-
-    # Create formatter
-    formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
-
-    # Add console (standard output) handler to the logger
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.DEBUG)
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+# Add console (standard output) handler to the logger
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 with Timer("Main script runtime"):
     # Get all tweets
@@ -51,51 +39,24 @@ with Timer("Main script runtime"):
 
     # Normalize tweets
     with Timer("Normalizing tweets' text"):
-        logger.info("Lowering case")
-        lowercase_corpus = map(lambda x: x.lower(), corpus)
+        preprocessed_corpus = preprocess_corpus(corpus)
 
-        logger.info("Removing URLs")
-        no_urls_corpus = map(remove_urls, lowercase_corpus)
-
-        logger.info("Removing mentions (@username)")
-        no_mentions_corpus = map(remove_mentions, no_urls_corpus)
-
-        logger.info("Removing hashtags (#hashtag )")
-        no_hashtags_corpus = map(remove_hashtags, no_mentions_corpus)
-
-        logger.info("Removing accents")
-        unaccented_corpus = map(remove_accents, no_hashtags_corpus)
-
-        logger.info("Removing emoji")
-        no_emoji_corpus = map(remove_emoji, unaccented_corpus)
-
-        logger.info("Splitting each tweet into words")
-        splitted_corpus = map(word_tokenize, no_emoji_corpus)
-
-        logger.info("Removing punctuation and digits")
-        alphanumeric_corpus = map(partial(filter, lambda x: x.isalpha()), splitted_corpus)
-
-        logger.info("Removing stopwords")
-        clean_corpus = map(partial(filterfalse, lambda x: x in stop_words), alphanumeric_corpus)
-        corpus_list = list(map(list, clean_corpus))
-        final_corpus = list(map(" ".join, corpus_list))
-
-    sample_tweet_index = random.randrange(0, len(final_corpus))
+    sample_tweet_index = random.randrange(0, len(preprocessed_corpus))
     logger.info("Original tweet example: %s", corpus[sample_tweet_index])
-    logger.info("Clean tweet example: %s", final_corpus[sample_tweet_index])
+    logger.info("Clean tweet example: %s", preprocessed_corpus[sample_tweet_index])
 
     # TODO: Use a better vectorizer, try different vectorizers
     # TODO: Use prebuild doc2vec
     # Vectorize: Doc2Vec, CountVectorizer, SentenceBert, FastText, un embedding de politica ya prehecho
     with Timer("Vectorizing tweets with Doc2Vec"):
-        d2v_model = Doc2Vec([TaggedDocument(doc.split(), [i]) for i, doc in enumerate(final_corpus)],
+        d2v_model = Doc2Vec([TaggedDocument(doc.split(), [i]) for i, doc in enumerate(preprocessed_corpus)],
                         vector_size=200, window=3, min_count=2, workers=2)
-        d2v_vectors = [d2v_model.infer_vector(doc.split()) for doc in final_corpus]
+        d2v_vectors = [d2v_model.infer_vector(doc.split()) for doc in preprocessed_corpus]
 
     BERT_MODEL_NAME = 'xlm-r-100langs-bert-base-nli-mean-tokens'
     with Timer(f"Vectorizing tweets with BERT (multilingual model, {BERT_MODEL_NAME})"):
         bert_model = SentenceTransformer(BERT_MODEL_NAME, device="cpu")
-        bert_vectors = bert_model.encode(final_corpus)
+        bert_vectors = bert_model.encode(preprocessed_corpus)
 
     embedding_vectors = {
         "Trained Doc2Vec": d2v_vectors,
@@ -125,7 +86,7 @@ with Timer("Main script runtime"):
                 logger.info("Rebuilding cluster with original phrases for k=%s", k_clusters)
                 clusters_from_corpus = {}
                 clusters_from_original_corpus = {}
-                for i, phrase in enumerate(final_corpus):
+                for i, phrase in enumerate(preprocessed_corpus):
                     label = km_labels[i]
                     if label not in clusters_from_corpus:
                         clusters_from_corpus[label] = []

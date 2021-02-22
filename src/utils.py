@@ -1,7 +1,6 @@
 import logging
 import time
 
-import emoji
 import matplotlib.pyplot as plt
 from pymongo import MongoClient
 
@@ -108,42 +107,6 @@ def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_unint
 
     return [t["full_text"] for t in tweets]
 
-def remove_emoji(phrase):
-    """Removes all emojis from a phrase"""
-
-    return emoji.get_emoji_regexp().sub(r'', phrase)
-
-
-def remove_accents(phrase):
-    """Removes all accents (áéíóú) from a lowercase phrase"""
-
-    accents_map = {
-        'á': 'a',
-        'é': 'e',
-        'í': 'i',
-        'ó': 'o',
-        'ú': 'u',
-    }
-
-    return "".join(map(lambda x: x if x not in accents_map else accents_map[x], phrase))
-
-
-def remove_urls(phrase):
-    """Removes all URLs from a lowercase phrase"""
-
-    return " ".join([token for token in phrase.split() if not token.startswith("http")])
-
-
-def remove_mentions(phrase):
-    """Removes all Twitter mentions (@username) from a lowercase phrase"""
-
-    return " ".join([token for token in phrase.split() if not token.startswith("@")])
-
-
-def remove_hashtags(phrase):
-    """Removes all Twitter hashtags (#username) from a lowercase phrase"""
-
-    return " ".join([token for token in phrase.split() if not token.startswith("#")])
 
 def plot_top_words(model, feature_names, n_top_words, title):
     """
