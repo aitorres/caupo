@@ -34,29 +34,32 @@ with Timer("Main script runtime"):
     # Get all tweets
     with Timer("Getting tweets' text from database"):
         corpus = get_text_from_all_tweets()
-
     logger.info("Amount of tweets: %s", len(corpus))
 
     # Normalize tweets
     with Timer("Normalizing tweets' text"):
         preprocessed_corpus = preprocess_corpus(corpus)
 
-    sample_tweet_index = random.randrange(0, len(preprocessed_corpus))
-    logger.info("Original tweet example: %s", corpus[sample_tweet_index])
-    logger.info("Clean tweet example: %s", preprocessed_corpus[sample_tweet_index])
+    # Get rid of duplicate processed tweets (this should take care of duplicate, spammy tweets)
+    with Timer("Removing duplicate tweets (bot protection)"):
+        clean_corpus = list(set(preprocessed_corpus))
+    logger.info("Amount of clean tweets: %s", len(corpus))
+
+    sample_tweet = random.choice(clean_corpus)
+    logger.info("Clean tweet example: %s", sample_tweet)
 
     # TODO: Use a better vectorizer, try different vectorizers
     # TODO: Use prebuild doc2vec
     # Vectorize: Doc2Vec, CountVectorizer, SentenceBert, FastText, un embedding de politica ya prehecho
     with Timer("Vectorizing tweets with Doc2Vec"):
-        d2v_model = Doc2Vec([TaggedDocument(doc.split(), [i]) for i, doc in enumerate(preprocessed_corpus)],
+        d2v_model = Doc2Vec([TaggedDocument(doc.split(), [i]) for i, doc in enumerate(clean_corpus)],
                         vector_size=200, window=3, min_count=2, workers=2)
-        d2v_vectors = [d2v_model.infer_vector(doc.split()) for doc in preprocessed_corpus]
+        d2v_vectors = [d2v_model.infer_vector(doc.split()) for doc in clean_corpus]
 
     BERT_MODEL_NAME = 'xlm-r-100langs-bert-base-nli-mean-tokens'
     with Timer(f"Vectorizing tweets with BERT (multilingual model, {BERT_MODEL_NAME})"):
         bert_model = SentenceTransformer(BERT_MODEL_NAME, device="cpu")
-        bert_vectors = bert_model.encode(preprocessed_corpus)
+        bert_vectors = bert_model.encode(clean_corpus)
 
     embedding_vectors = {
         "Trained Doc2Vec": d2v_vectors,
@@ -86,7 +89,7 @@ with Timer("Main script runtime"):
                 logger.info("Rebuilding cluster with original phrases for k=%s", k_clusters)
                 clusters_from_corpus = {}
                 clusters_from_original_corpus = {}
-                for i, phrase in enumerate(preprocessed_corpus):
+                for i, phrase in enumerate(clean_corpus):
                     label = km_labels[i]
                     if label not in clusters_from_corpus:
                         clusters_from_corpus[label] = []
@@ -163,5 +166,4 @@ with Timer("Main script runtime"):
     # TODO: Análisis de sentimiento para ver la polaridad en cada cluster (opinion mining)
     # TODO: En cada topic, también ver polaridad
 
-    # TODO: Mejorar eliminación de cuentas basura
     # TODO: Measure topic modelling coherence

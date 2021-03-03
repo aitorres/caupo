@@ -69,11 +69,16 @@ with Timer("Main script runtime"):
             with Timer("Normalizing tweets' text"):
                 preprocessed_corpus = preprocess_corpus(corpus)
 
+            # Get rid of duplicate processed tweets (this should take care of duplicate, spammy tweets)
+            with Timer("Removing duplicate tweets (bot protection)"):
+                clean_corpus = list(set(preprocessed_corpus))
+            logger.info("Amount of clean tweets: %s", len(corpus))
+
             embedder_time_dict = {}
             for embedder_name, embedder_function in embedders:
                 with Timer(f"Getting vectors with embedder `{embedder_name}`"):
                     t0 = time.time()
-                    vectors = embedder_function(preprocessed_corpus)
+                    vectors = embedder_function(clean_corpus)
                     t1 = time.time()
 
                 with Timer(f"Calculating measures for embedder `{embedder_name}`"):
