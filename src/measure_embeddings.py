@@ -45,6 +45,12 @@ timestamp = now.strftime("%Y-%m-%d-%H-%M-%S")
 OUTPUT_FOLDER = f"outputs/measure_embeddings/{ timestamp }"
 os.makedirs(OUTPUT_FOLDER)
 
+# Add headers to MD file
+with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
+    md_file.write(f"# Results ( {timestamp} )\n\n")
+    md_file.write("|City Mode|Embedder|Max 2-Norm|Min 2-Norm|Avg 2-Norm|\n")
+    md_file.write("|-|-|-|-|\n")
+
 with Timer("Main script runtime"):
     city_modes = {
         'Caracas': 'Caracas',
@@ -100,8 +106,8 @@ with Timer("Main script runtime"):
                         csv_file.write(f"{city_mode_name},{embedder_name},{embedder_time},{max_l2_norm},{min_l2_norm},{avg_l2_norm}\n")
 
                     # Markdown Table
-                    with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as csv_file:
-                        csv_file.write(f"|{city_mode_name}|{embedder_name}|{embedder_time}|{max_l2_norm}|{min_l2_norm}|{avg_l2_norm}|\n")
+                    with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
+                        md_file.write(f"|{city_mode_name}|{embedder_name}|{embedder_time}|{max_l2_norm}|{min_l2_norm}|{avg_l2_norm}|\n")
 
                 try:
                     with Timer(f"Generating scatterplot for vector representations with embedder `{embedder_name}`"):
@@ -109,11 +115,11 @@ with Timer("Main script runtime"):
                         fit = UMAP()
                         scatterplot_data = fit.fit_transform(data_sample)
                         plt.scatter(scatterplot_data[:,0], scatterplot_data[:,1])
-                        plt.title(f'2-Dim Representation of `{embedder_name}` ({city_mode_name})');
+                        plt.title(f'2-Dim Representation of `{embedder_name}` ({city_mode_name})')
                         plt.savefig(f"{OUTPUT_FOLDER}/{embedder_name}-{city_mode_name}-scatter.png")
                         plt.close()
                 except ValueError:
-                    logger.error(f"Value Error trying to generate scatterplot for vector reps with embedder `{embedder_name}`")
+                    logger.error("Value Error trying to generate scatterplot for vector reps with embedder `%s`", embedder_name)
 
             city_embedder_time_dict[city_mode_name] = embedder_time_dict
 

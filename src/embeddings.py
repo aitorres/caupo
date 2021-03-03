@@ -110,7 +110,7 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
         'FastText (CBOW)': partial(fasttext_embedder, model_type="cbow"),
         'FastText (Skipgram)': partial(fasttext_embedder, model_type="skipgram"),
         'GPT2 Small Spanish': partial( # ref: https://huggingface.co/datificate/gpt2-small-spanish
-            bert_embedder, model_name="datificate/gpt2-small-spanish"), # TODO: Verify
+            bert_embedder, model_name="datificate/gpt2-small-spanish"),
         'BERT: paraphrase-xlm-r-multilingual-v1': partial(
             bert_embedder, model_name='paraphrase-xlm-r-multilingual-v1'),
         'BERT: distiluse-base-multilingual-cased-v2': partial(
@@ -125,7 +125,7 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
 
     reduced_embedders = {}
     for name, embedder in regular_embedders.items():
-        reduced_embedders[f"{name} (reduced to {DIMENSIONS_TO_REDUCE} dimensions)"] = partial(
+        reduced_embedders[f"{name} (reduced, {DIMENSIONS_TO_REDUCE} dimensions)"] = partial(
             reduce_dimensionality, embedder=embedder, dimensions=DIMENSIONS_TO_REDUCE)
 
     embedders = {**regular_embedders, **reduced_embedders}
