@@ -116,7 +116,8 @@ with Timer("Main script runtime"):
 
                 try:
                     with Timer(f"Generating scatterplot for vector representations with embedder `{embedder_name}`"):
-                        data_sample = random.sample(list(vectors), 1000)
+                        SAMPLE_SIZE = 1000
+                        data_sample = vectors[:SAMPLE_SIZE]
                         fit = UMAP()
                         scatterplot_data = fit.fit_transform(data_sample)
                         plt.scatter(scatterplot_data[:,0], scatterplot_data[:,1])
