@@ -49,7 +49,7 @@ os.makedirs(OUTPUT_FOLDER)
 with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
     md_file.write(f"# Results ( {timestamp} )\n\n")
     md_file.write("|City Mode|Embedder|Max 2-Norm|Min 2-Norm|Avg 2-Norm|\n")
-    md_file.write("|-|-|-|-|\n")
+    md_file.write("|---|---|---|---|---|\n")
 
 with Timer("Main script runtime"):
     city_modes = {
