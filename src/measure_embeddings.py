@@ -9,6 +9,7 @@ import os
 import random
 from datetime import datetime
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from umap import UMAP
@@ -17,6 +18,7 @@ from embeddings import get_embedder_functions
 from preprocessing import preprocess_corpus
 from utils import get_text_from_all_tweets, Timer
 
+mpl.use('Agg')
 
 # Instantiate logger
 logger = logging.getLogger("caupo")
