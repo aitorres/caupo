@@ -48,8 +48,8 @@ os.makedirs(OUTPUT_FOLDER)
 # Add headers to MD file
 with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
     md_file.write(f"# Results ( {timestamp} )\n\n")
-    md_file.write("|City Mode|Embedder|Max 2-Norm|Min 2-Norm|Avg 2-Norm|\n")
-    md_file.write("|---|---|---|---|---|\n")
+    md_file.write("|City Mode|Embedder|Time (s)|Max 2-Norm|Min 2-Norm|Avg 2-Norm|\n")
+    md_file.write("|---|---|---|---|---|---|\n")
 
 with Timer("Main script runtime"):
     city_modes = {
@@ -72,7 +72,7 @@ with Timer("Main script runtime"):
             # Get rid of duplicate processed tweets (this should take care of duplicate, spammy tweets)
             with Timer("Removing duplicate tweets (bot protection)"):
                 clean_corpus = list(set(preprocessed_corpus))
-            logger.info("Amount of clean tweets: %s", len(corpus))
+            logger.info("Amount of clean tweets: %s", len(clean_corpus))
 
             embedder_time_dict = {}
             for embedder_name, embedder_function in embedders:

@@ -43,7 +43,7 @@ with Timer("Main script runtime"):
     # Get rid of duplicate processed tweets (this should take care of duplicate, spammy tweets)
     with Timer("Removing duplicate tweets (bot protection)"):
         clean_corpus = list(set(preprocessed_corpus))
-    logger.info("Amount of clean tweets: %s", len(corpus))
+    logger.info("Amount of clean tweets: %s", len(clean_corpus))
 
     sample_tweet = random.choice(clean_corpus)
     logger.info("Clean tweet example: %s", sample_tweet)
