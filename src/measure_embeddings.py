@@ -134,7 +134,7 @@ with Timer("Main script runtime"):
         labels = [name for name, _ in embedders]
         caracas_times = [t for _, t in city_embedder_time_dict['Caracas'].items()]
         all_cities_times = [t for _, t in city_embedder_time_dict['All cities'].items()]
-        x = np.arange(labels)
+        x = np.arange(len(labels))
 
         WIDTH = 0.35
         fig, ax = plt.subplots()
