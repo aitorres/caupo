@@ -89,10 +89,11 @@ with Timer("Main script runtime"):
                 with Timer(f"Finding clusters with k=`{k_clusters}` and embedder `{embedder_name}`"):
                     t0 = time.time()
                     km = KMeans(n_clusters=k_clusters)
-                    model_time = time.time()
+                    t1 = time.time()
                     km_result = km.fit(vectors)
 
                 with Timer(f"Getting metrics with k=`{k_clusters}` and embedder `{embedder_name}`"):
+                    model_time = t1 - t0
                     km_labels = km_result.labels_
                     inertia = km.inertia_
                     sil_score = silhouette_score(vectors, km_labels, metric='euclidean')
