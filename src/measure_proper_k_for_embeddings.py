@@ -81,7 +81,7 @@ with Timer("Main script runtime"):
                 md_file.write(f"|---------|--------|----------------------|------------------|----------|-------|\n")
 
             MAX_K = 8
-            ALL_KS = list(range(2, MAX_K))
+            ALL_KS = list(range(2, MAX_K + 1))
             logger.info("Setting max K =`%s`", MAX_K)
             k_time_dict = {}
             k_silhouette_dict = {}
