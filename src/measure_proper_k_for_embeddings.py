@@ -78,7 +78,7 @@ with Timer("Main script runtime"):
             os.makedirs(OUTPUT_FOLDER)
             with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
                 md_file.write(f"|City mode|Embedder|Number of Clusters (K)|Time of Clustering|Silhouette|Inertia|\n")
-                md_file.wirte(f"|---------|--------|----------------------|------------------|----------|-------|\n")
+                md_file.write(f"|---------|--------|----------------------|------------------|----------|-------|\n")
 
             MAX_K = 8
             logger.info("Setting max K =`%s`", MAX_K)
