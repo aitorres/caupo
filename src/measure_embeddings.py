@@ -136,7 +136,7 @@ with Timer("Main script runtime"):
         all_cities_times = [t for _, t in city_embedder_time_dict['All cities'].items()]
         x = np.arange(len(labels))
 
-        WIDTH = 0.35
+        WIDTH = 0.25
         fig, ax = plt.subplots()
         rects1 = ax.bar(x - WIDTH/2, caracas_times, WIDTH, label='Caracas')
         rects2 = ax.bar(x + WIDTH/2, all_cities_times, WIDTH, label='All cities')
