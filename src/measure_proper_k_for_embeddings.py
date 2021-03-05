@@ -118,7 +118,7 @@ with Timer("Main script runtime"):
                     # Cluster length
                     with open(f"{OUTPUT_FOLDER}/cluster_length_comparisons.csv", "a") as csv_file:
                         for j in range(0, k_clusters):
-                            length_j = km_labels.count(j)
+                            length_j = list(km_labels).count(j)
                             csv_file.write(f"{city_mode_name},{embedder_name},{k_clusters},{j},{length_j}\n")
 
                     # Full file
