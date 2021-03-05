@@ -34,19 +34,18 @@ handler.setLevel(logging.DEBUG)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-# Add file handler to the logger
-file_handler = logging.FileHandler('measure_proper_k_for_embeddings.log')
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-
 # Creating folder for output
 now = datetime.now()
 timestamp = now.strftime("%Y-%m-%d-%H-%M-%S")
 BASE_OUTPUT_FOLDER = f"outputs/measure_proper_k_for_embeddings/{ timestamp }"
 os.makedirs(BASE_OUTPUT_FOLDER)
 
-# TODO: Headers to MD file
+# Add file handler to the logger
+file_handler = logging.FileHandler(f'{BASE_OUTPUT_FOLDER}/measure_proper_k_for_embeddings.log')
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
 
 with Timer("Main script runtime"):
     city_modes = {
