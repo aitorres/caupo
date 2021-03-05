@@ -81,11 +81,12 @@ with Timer("Main script runtime"):
                 md_file.write(f"|---------|--------|----------------------|------------------|----------|-------|\n")
 
             MAX_K = 8
+            ALL_KS = list(range(2, MAX_K))
             logger.info("Setting max K =`%s`", MAX_K)
             k_time_dict = {}
             k_silhouette_dict = {}
             k_inertia_dict = {}
-            for k_clusters in range(2, MAX_K):
+            for k_clusters in ALL_KS:
                 with Timer(f"Finding clusters with k=`{k_clusters}` and embedder `{embedder_name}`"):
                     t0 = time.time()
                     km = KMeans(n_clusters=k_clusters)
@@ -140,7 +141,7 @@ with Timer("Main script runtime"):
 
             # Plotting time for each K
             with Timer(f"Generating bar chart for time with embedder `{embedder_name}` ({city_mode_name})"):
-                Xs = list(range(MAX_K))
+                Xs = ALL_KS
                 Ys = [k_time_dict[i] for i in Xs]
                 plt.bar(Xs, Ys)
                 plt.xticks(Xs, [f"K={k}" for k in Xs])
@@ -152,7 +153,7 @@ with Timer("Main script runtime"):
 
             # Plotting inertia scatterplot with trend line
             with Timer(f"Generating scatterplot for inertias with embedder `{embedder_name}` ({city_mode_name})"):
-                Xs = list(range(MAX_K))
+                Xs = ALL_KS
                 Ys = [k_inertia_dict[i] for i in Xs]
                 plt.plot(Xs, Ys, '-o')
                 plt.xlabel("Size of clusters (K)")
@@ -163,7 +164,7 @@ with Timer("Main script runtime"):
 
             # Plotting silhouette scatterplot with trend line
             with Timer(f"Generating scatterplot for silhouette with embedder `{embedder_name}` ({city_mode_name})"):
-                Xs = list(range(MAX_K))
+                Xs = ALL_KS
                 Ys = [k_silhouette_dict[i] for i in Xs]
                 plt.plot(Xs, Ys, '-o')
                 plt.xlabel("Size of clusters (K)")
