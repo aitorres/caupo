@@ -6,14 +6,13 @@ K values for different available word embeddings
 import time
 import logging
 import os
-import random
 from datetime import datetime
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+from sklearn.decomposition import PCA
 
 from embeddings import get_embedder_functions
 from preprocessing import preprocess_corpus
@@ -132,9 +131,9 @@ with Timer("Main script runtime"):
                         md_file.write(f"|{city_mode_name}|{embedder_name}|{k_clusters}|{model_time}|{sil_score}|{inertia}|\n")
 
                 with Timer(f"Generating scatterplot for clusters  k=`{k_clusters}` and embedder `{embedder_name}`"):
-                    Xs = [vector[0] for vector in vectors]
-                    Ys = [vector[1] for vector in vectors]
-                    plt.scatter(Xs, Ys, c=km_labels)
+                    fit = PCA(n_components=2)
+                    scatterplot_data = fit.fit_transform(vectors)
+                    plt.scatter(scatterplot_data[:,0], scatterplot_data[:,1], c=km_labels, s=12)
                     plt.title(f'Clusters Representation (k={k_clusters}) for `{embedder_name}` ({city_mode_name})')
                     plt.savefig(f"{OUTPUT_FOLDER}/clusters_{k_clusters}.png")
                     plt.close()
