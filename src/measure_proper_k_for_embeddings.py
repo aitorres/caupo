@@ -73,6 +73,10 @@ with Timer("Main script runtime"):
             with Timer(f"Getting vectors with embedder `{embedder_name}`"):
                 vectors = embedder_function(clean_corpus)
 
+            with Timer(f"Getting reduced vectors (2D) for scatterplot"):
+                pca_fit = PCA(n_components=2)
+                scatterplot_data = pca_fit.fit_transform(vectors)
+
             OUTPUT_FOLDER = f"{BASE_OUTPUT_FOLDER}/{city_mode_name}/{embedder_name}"
             os.makedirs(OUTPUT_FOLDER)
             with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
@@ -131,8 +135,6 @@ with Timer("Main script runtime"):
                         md_file.write(f"|{city_mode_name}|{embedder_name}|{k_clusters}|{model_time}|{sil_score}|{inertia}|\n")
 
                 with Timer(f"Generating scatterplot for clusters  k=`{k_clusters}` and embedder `{embedder_name}`"):
-                    fit = PCA(n_components=2)
-                    scatterplot_data = fit.fit_transform(vectors)
                     plt.scatter(scatterplot_data[:,0], scatterplot_data[:,1], c=km_labels, s=12)
                     plt.title(f'Clusters Representation (k={k_clusters}) for `{embedder_name}` ({city_mode_name})')
                     plt.savefig(f"{OUTPUT_FOLDER}/clusters_{k_clusters}.png")
