@@ -70,10 +70,10 @@ with Timer("Main script runtime"):
 
 
         for embedder_name, embedder_function in embedders:
-            with Timer(f"Getting vectors with embedder `{embedder_name}`"):
+            with Timer(f"Getting vectors with embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                 vectors = embedder_function(clean_corpus)
 
-            with Timer(f"Getting reduced vectors (2D) for scatterplot"):
+            with Timer(f"Getting reduced vectors (2D) for scatterplot with embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                 pca_fit = PCA(n_components=2)
                 scatterplot_data = pca_fit.fit_transform(vectors)
 
@@ -90,13 +90,13 @@ with Timer("Main script runtime"):
             k_silhouette_dict = {}
             k_inertia_dict = {}
             for k_clusters in ALL_KS:
-                with Timer(f"Finding clusters with k=`{k_clusters}` and embedder `{embedder_name}`"):
+                with Timer(f"Finding clusters with k=`{k_clusters}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     t0 = time.time()
                     km = KMeans(n_clusters=k_clusters)
                     t1 = time.time()
                     km_result = km.fit(vectors)
 
-                with Timer(f"Getting metrics with k=`{k_clusters}` and embedder `{embedder_name}`"):
+                with Timer(f"Getting metrics with k=`{k_clusters}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     model_time = t1 - t0
                     km_labels = km_result.labels_
                     inertia = km.inertia_
@@ -104,7 +104,7 @@ with Timer("Main script runtime"):
                     logger.info("Inertia with k=%s: %s", k_clusters, km.inertia_)
                     logger.info("Silhouete score with k=%s: %s", k_clusters, sil_score)
 
-                with Timer(f"Storing results with k=`{k_clusters}` and embedder `{embedder_name}`"):
+                with Timer(f"Storing results with k=`{k_clusters}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     # Time
                     with open(f"{OUTPUT_FOLDER}/time_comparisons.csv", "a") as csv_file:
                         csv_file.write(f"{city_mode_name},{embedder_name},{k_clusters},{model_time}\n")
@@ -134,8 +134,8 @@ with Timer("Main script runtime"):
                     with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
                         md_file.write(f"|{city_mode_name}|{embedder_name}|{k_clusters}|{model_time}|{sil_score}|{inertia}|\n")
 
-                with Timer(f"Generating scatterplot for clusters  k=`{k_clusters}` and embedder `{embedder_name}`"):
-                    plt.scatter(scatterplot_data[:,0], scatterplot_data[:,1], c=km_labels, s=12)
+                with Timer(f"Generating scatterplot for clusters  k=`{k_clusters}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
+                    plt.scatter(scatterplot_data[:,0], scatterplot_data[:,1], c=km_labels, s=8)
                     plt.title(f'Clusters Representation (k={k_clusters}) for `{embedder_name}` ({city_mode_name})')
                     plt.savefig(f"{OUTPUT_FOLDER}/clusters_{k_clusters}.png")
                     plt.close()
