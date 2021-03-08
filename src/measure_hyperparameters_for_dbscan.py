@@ -15,9 +15,9 @@ from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score
 
-from embeddings import get_embedder_functions
+from embeddings import get_embedder_functions, get_optimal_eps_for_embedder
 from preprocessing import preprocess_corpus
-from utils import get_city_modes, get_optimal_eps_for_embedder, get_text_from_all_tweets, plot_clusters, Timer
+from utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
 
 mpl.use('Agg')
 
