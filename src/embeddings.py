@@ -12,6 +12,25 @@ from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+
+def scale_vectors(vectors: List[float], scale: bool = True) -> List[float]:
+    """
+    Given a list of vector representations, returns an equivalent list of
+    vector representations that have been scaled and standarized (i.e. minus mean
+    and divided by std).
+    """
+
+    # In case we don't _really_ want to scale
+    if not scale:
+        return vectors
+
+    scaler = StandardScaler()
+    scaled_vectors = scaler.fit_transform(vectors)
+
+    return scaled_vectors
+
 
 def doc2vec_embedder(corpus: List[str]) -> List[float]:
     """
@@ -25,7 +44,7 @@ def doc2vec_embedder(corpus: List[str]) -> List[float]:
     model = Doc2Vec(tagged_documents, vector_size=100, window=5, min_count=3, workers=2)
     vectors = [model.infer_vector(doc.split()) for doc in corpus]
 
-    return vectors
+    return scale_vectors(vectors)
 
 
 def bow_embedder(corpus: List[str]) -> List[float]:
@@ -39,7 +58,7 @@ def bow_embedder(corpus: List[str]) -> List[float]:
     model = CountVectorizer(min_df=3, max_df=0.9)
     vectors = model.fit_transform(corpus).toarray()
 
-    return vectors
+    return scale_vectors(vectors)
 
 
 def fasttext_embedder(corpus: List[str], model_type: str = 'cbow') -> List[float]:
@@ -65,7 +84,7 @@ def fasttext_embedder(corpus: List[str], model_type: str = 'cbow') -> List[float
     # Get vectors
     vectors = [model.get_sentence_vector(doc) for doc in corpus]
 
-    return vectors
+    return scale_vectors(vectors)
 
 
 def bert_embedder(corpus: List[str], model_name: str = "paraphrase-xlm-r-multilingual-v1",
@@ -81,7 +100,7 @@ def bert_embedder(corpus: List[str], model_name: str = "paraphrase-xlm-r-multili
     model = SentenceTransformer(model_name , device=device)
     vectors = model.encode(corpus)
 
-    return vectors
+    return scale_vectors(vectors)
 
 
 def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
