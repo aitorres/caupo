@@ -84,19 +84,6 @@ def bert_embedder(corpus: List[str], model_name: str = "paraphrase-xlm-r-multili
     return vectors
 
 
-def reduce_dimensionality(corpus: List[str], embedder: Callable[[List[str]], List[float]], dimensions: int = 10):
-    """
-    Given an embedder and a list of (final) dimensions, returns another indirect embedder
-    that always returns at most the requested dimensions using PCA for dimensionality reduction.
-    """
-
-    original_vectors = embedder(corpus)
-    pca_fit = PCA(n_components=dimensions)
-    vectors = pca_fit.fit_transform(original_vectors)
-
-    return vectors
-
-
 def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
     """
     Returns a list of the available embedders.
@@ -104,7 +91,7 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
     # TODO: Add GloVe if possible
     """
 
-    regular_embedders = {
+    embedders = {
         'Bag of Words': bow_embedder,
         'Doc2Vec': doc2vec_embedder,
         'FastText (CBOW)': partial(fasttext_embedder, model_type="cbow"),
@@ -119,17 +106,7 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
             bert_embedder, model_name='distiluse-base-multilingual-cased-v2'),
     }
 
-    DIMENSIONS_TO_REDUCE = 10
-
-    reduced_embedders = {}
-    for name, embedder in regular_embedders.items():
-        reduced_embedders[f"{name} (reduced to dim=`{DIMENSIONS_TO_REDUCE}`)"] = partial(
-            reduce_dimensionality, embedder=embedder, dimensions=DIMENSIONS_TO_REDUCE)
-
-    embedders = {**regular_embedders, **reduced_embedders}
-
-    #? INFO: We're ignoring reduced embedders for now
-    return regular_embedders
+    return embedders
 
 
 def get_optimal_eps_for_embedder(distance: str, name: str) -> float:
