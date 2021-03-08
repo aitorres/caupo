@@ -10,7 +10,6 @@ import os
 import logging
 from datetime import datetime
 
-
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -77,17 +76,21 @@ with Timer("Main script runtime"):
                     vectors = embedder_function(clean_corpus)
                     t1 = time.time()
 
-                with Timer(f"Getting nearest neighbors with embedder `{embedder_name}`"):
-                    neigh = NearestNeighbors(n_neighbors=2)
-                    neighbors_data = neigh.fit(vectors)
-                    distances, _ = neighbors_data.kneighbors(vectors)
+                DISTANCE_METRICS = ["euclidean", "cosine"]
 
-                with Timer(f"Sorting and plotting neighbors with embedder `{embedder_name}`"):
-                    distances = np.sort(distances, axis=0)
-                    distances = distances[:,1]
-                    plt.plot(distances)
-                    plt.title("Distance to nearest neighbor, sorted")
-                    plt.xlabel("Elements (sorted by closest - longest distance)")
-                    plt.ylabel("Shortest distance")
-                    plt.savefig(f"{OUTPUT_FOLDER}/neighbors_{embedder_name}.png")
-                    plt.close()
+                for distance_metric in DISTANCE_METRICS:
+
+                    with Timer(f"Getting nearest neighbors using distance `{distance_metric}` with embedder `{embedder_name}`"):
+                        neigh = NearestNeighbors(n_neighbors=2)
+                        neighbors_data = neigh.fit(vectors)
+                        distances, _ = neighbors_data.kneighbors(vectors)
+
+                    with Timer(f"Sorting and plotting neighbors using distance `{distance_metric}` with embedder `{embedder_name}`"):
+                        distances = np.sort(distances, axis=0)
+                        distances = distances[:,1]
+                        plt.plot(distances)
+                        plt.title(f"Distance to nearest neighbor ({embedder_name})")
+                        plt.xlabel("Elements (sorted by closest - longest distance)")
+                        plt.ylabel(f"Shortest distance (`{distance_metric}`)")
+                        plt.savefig(f"{OUTPUT_FOLDER}/neighbors_{embedder_name}_{distance_metric}.png")
+                        plt.close()
