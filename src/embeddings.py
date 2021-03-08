@@ -41,7 +41,7 @@ def doc2vec_embedder(corpus: List[str]) -> List[float]:
     """
 
     tagged_documents = [TaggedDocument(doc.split(), [i]) for i, doc in enumerate(corpus)]
-    model = Doc2Vec(tagged_documents, vector_size=100, window=5, min_count=3, workers=2)
+    model = Doc2Vec(tagged_documents, vector_size=400, window=3, min_count=3, workers=4)
     vectors = [model.infer_vector(doc.split()) for doc in corpus]
 
     return scale_vectors(vectors)
@@ -66,7 +66,6 @@ def fasttext_embedder(corpus: List[str], model_type: str = 'cbow') -> List[float
     Given a corpus of texts and optionally a model type, returns an embedding
     (representation of such texts) using Fast Text as the embedder.
 
-    TODO: Probably has a bug while reading input
     ref: https://radimrehurek.com/gensim/models/fasttext.html
     """
 
