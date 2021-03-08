@@ -8,7 +8,8 @@ In order to reproduce the workflow of experiments in the project, you can follow
 
 1. `measure_embeddings.py`
 2. `measure_proper_k_for_embeddings.py`
-3. `measure_hyperparameters_for_dbscan.py`
+3. `measure_possible_eps_values_for_embeddings.py`
+4. `measure_hyperparameters_for_dbscan.py`
 
 You can run the following script which has been added to the repository in order to easen up each measurement run with some extra considerations, such as turning off Twitter fetching while tests run
 
