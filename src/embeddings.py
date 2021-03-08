@@ -125,13 +125,12 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
 
     reduced_embedders = {}
     for name, embedder in regular_embedders.items():
-        reduced_embedders[f"{name} (reduced, {DIMENSIONS_TO_REDUCE} dimensions)"] = partial(
+        reduced_embedders[f"{name} (reduced to dim=`{DIMENSIONS_TO_REDUCE}`)"] = partial(
             reduce_dimensionality, embedder=embedder, dimensions=DIMENSIONS_TO_REDUCE)
 
-    #? INFO: Reduced embedders are taking way too much RAM, deactivated for now
     embedders = {**regular_embedders, **reduced_embedders}
 
-    return regular_embedders
+    return embedders
 
 
 def main() -> None:
