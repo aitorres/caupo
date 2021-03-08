@@ -16,7 +16,7 @@ from sklearn.decomposition import PCA
 
 from embeddings import get_embedder_functions
 from preprocessing import preprocess_corpus
-from utils import get_text_from_all_tweets, Timer
+from utils import get_text_from_all_tweets, plot_clusters, Timer
 
 mpl.use('Agg')
 
@@ -75,7 +75,7 @@ with Timer("Main script runtime"):
 
             with Timer(f"Getting reduced vectors (2D) for scatterplot with embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                 pca_fit = PCA(n_components=2)
-                scatterplot_data = pca_fit.fit_transform(vectors)
+                scatterplot_vectors = pca_fit.fit_transform(vectors)
 
             OUTPUT_FOLDER = f"{BASE_OUTPUT_FOLDER}/{city_mode_name}/{embedder_name}"
             os.makedirs(OUTPUT_FOLDER)
@@ -135,10 +135,10 @@ with Timer("Main script runtime"):
                         md_file.write(f"|{city_mode_name}|{embedder_name}|{k_clusters}|{model_time}|{sil_score}|{inertia}|\n")
 
                 with Timer(f"Generating scatterplot for clusters  k=`{k_clusters}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                    plt.scatter(scatterplot_data[:,0], scatterplot_data[:,1], c=km_labels, s=8)
-                    plt.title(f'Clusters Representation (k={k_clusters}) for `{embedder_name}` ({city_mode_name})')
-                    plt.savefig(f"{OUTPUT_FOLDER}/clusters_{k_clusters}.png")
-                    plt.close()
+                    plot_clusters(scatterplot_vectors,
+                                  filename=f"{OUTPUT_FOLDER}/clusters_{k_clusters}.png",
+                                  title=f'Clusters Representation (k={k_clusters}) for `{embedder_name}` ({city_mode_name})',
+                                  labels=km_labels)
 
             # Plotting time for each K
             with Timer(f"Generating bar chart for time with embedder `{embedder_name}` ({city_mode_name})"):
