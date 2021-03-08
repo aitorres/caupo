@@ -13,7 +13,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
 
 from embeddings import get_embedder_functions, get_optimal_eps_for_embedder
 from preprocessing import preprocess_corpus
@@ -77,14 +77,16 @@ with Timer("Main script runtime"):
             OUTPUT_FOLDER = f"{BASE_OUTPUT_FOLDER}/{city_mode_name}/{embedder_name}"
             os.makedirs(OUTPUT_FOLDER)
             with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
-                md_file.write(f"|City mode|Embedder|Distance metric|`eps`|Time of Clustering|Silhouette|\n")
-                md_file.write(f"|---------|--------|----------------------|------------------|----------|-------|\n")
+                md_file.write(f"|City mode|Embedder|Distance metric|`eps`|Time of Clustering|Silhouette score|Davies-Bouldin score|Calinski and Harabasz score|\n")
+                md_file.write(f"|---------|--------|----------------------|------------------|----------|-------|---|---|\n")
 
             DISTANCE_METRICS = ["euclidean", "cosine"]
             MIN_SAMPLES = 1000
 
             distance_eps_time_dict = {}
             distance_eps_silhouette_dict = {}
+            distance_eps_dav_boul_dict = {}
+            distance_eps_cal_har_dict = {}
             for distance_metric in DISTANCE_METRICS:
                 logger.info("Starting evaluation of distance metric `%s`", distance_metric)
 
@@ -102,6 +104,8 @@ with Timer("Main script runtime"):
                     model_time = t1 - t0
                     dbscan_labels = dbscan_result.labels_
                     sil_score = silhouette_score(vectors, dbscan_labels, metric=distance_metric)
+                    dav_boul_score = davies_bouldin_score(vectors, dbscan_labels)
+                    cal_har_score = calinski_harabasz_score(vectors, dbscan_labels)
                     logger.info("Silhouete score with eps=`%s`, distance metric `%s`: %s", eps, distance_metric, sil_score)
 
                 with Timer(f"Storing results with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
@@ -115,6 +119,16 @@ with Timer("Main script runtime"):
                         csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{sil_score}\n")
                     distance_eps_silhouette_dict[f"{distance_metric} - {eps}"] = sil_score
 
+                    # Davies-Bouldin score
+                    with open(f"{OUTPUT_FOLDER}/dav_boul_score_comparisons.csv", "a") as csv_file:
+                        csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{dav_boul_score}\n")
+                    distance_eps_dav_boul_score_dict[f"{distance_metric} - {eps}"] = dav_boul_score
+
+                    # Calinski and Harabasz score
+                    with open(f"{OUTPUT_FOLDER}/cal_har_score_comparisons.csv", "a") as csv_file:
+                        csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{cal_har_score}\n")
+                    distance_eps_cal_har_score_dict[f"{distance_metric} - {eps}"] = cal_har_score
+
                     # Cluster length
                     with open(f"{OUTPUT_FOLDER}/cluster_length_comparisons.csv", "a") as csv_file:
                         for j in range(-1, len(set(dbscan_labels))):
@@ -124,11 +138,11 @@ with Timer("Main script runtime"):
 
                     # Full file
                     with open(f"{OUTPUT_FOLDER}/full_data.csv", "a") as csv_file:
-                        csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{model_time},{sil_score}\n")
+                        csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{model_time},{sil_score},{dav_boul_score},{cal_har_score}\n")
 
                     # Markdown Table
                     with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
-                        md_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{model_time},{sil_score}\n")
+                        md_file.write(f"|{city_mode_name}|{embedder_name}|{distance_metric}|{eps}|{model_time}|{sil_score}|{dav_boul_score}|{cal_har_score}|\n")
 
                 with Timer(f"Generating scatterplot for clusters with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     plot_clusters(scatterplot_vectors,
@@ -158,4 +172,28 @@ with Timer("Main script runtime"):
                 plt.ylabel("Silhouette")
                 plt.title(f"Silhouette per DBSCAN config with embedder `{embedder_name}` ({city_mode_name})")
                 plt.savefig(f"{OUTPUT_FOLDER}/silhouette.png")
+                plt.close()
+
+            # Plotting Calinski and Harabasz bar chart
+            with Timer(f"Generating bar chart for Calinski and Harabasz with embedder `{embedder_name}` ({city_mode_name})"):
+                Xs = len(distance_eps_cal_har_dict.keys())
+                Ys = list(distance_eps_cal_har_dict.values())
+                plt.bar(Xs, Ys)
+                plt.xticks(Xs, list(distance_eps_cal_har_dict.keys()))
+                plt.xlabel("Eps and Distance Metric")
+                plt.ylabel("Calinksi and Harabasz score")
+                plt.title(f"CaH score per DBSCAN config with embedder `{embedder_name}` ({city_mode_name})")
+                plt.savefig(f"{OUTPUT_FOLDER}/cal_har.png")
+                plt.close()
+
+            # Plotting Davies-Bouldin score bar chart
+            with Timer(f"Generating bar chart for Davies-Bouldin score with embedder `{embedder_name}` ({city_mode_name})"):
+                Xs = len(distance_eps_dav_boul_dict.keys())
+                Ys = list(distance_eps_dav_boul_dict.values())
+                plt.bar(Xs, Ys)
+                plt.xticks(Xs, list(distance_eps_dav_boul_dict.keys()))
+                plt.xlabel("Eps and Distance Metric")
+                plt.ylabel("Davies-Bouldin score")
+                plt.title(f"D-B score per DBSCAN config with embedder `{embedder_name}` ({city_mode_name})")
+                plt.savefig(f"{OUTPUT_FOLDER}/dav_boul.png")
                 plt.close()

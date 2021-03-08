@@ -12,7 +12,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
 
 from embeddings import get_embedder_functions
 from preprocessing import preprocess_corpus
@@ -77,14 +77,16 @@ with Timer("Main script runtime"):
             OUTPUT_FOLDER = f"{BASE_OUTPUT_FOLDER}/{city_mode_name}/{embedder_name}"
             os.makedirs(OUTPUT_FOLDER)
             with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
-                md_file.write(f"|City mode|Embedder|Number of Clusters (K)|Time of Clustering|Silhouette|Inertia|\n")
-                md_file.write(f"|---------|--------|----------------------|------------------|----------|-------|\n")
+                md_file.write("|City mode|Embedder|Number of Clusters (K)|Time of Clustering|Silhouette|Calinski-Harabasz|Davies-Bouldin|Inertia|\n")
+                md_file.write("|---------|--------|----------------------|------------------|----------|-----------------|--------------|-------|\n")
 
             MAX_K = 6
             ALL_KS = list(range(2, MAX_K + 1))
             logger.info("Setting max K =`%s`", MAX_K)
             k_time_dict = {}
             k_silhouette_dict = {}
+            k_cal_har_dict = {}
+            k_dav_boul_dict = {}
             k_inertia_dict = {}
             for k_clusters in ALL_KS:
                 with Timer(f"Finding clusters with k=`{k_clusters}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
@@ -98,6 +100,8 @@ with Timer("Main script runtime"):
                     km_labels = km_result.labels_
                     inertia = km.inertia_
                     sil_score = silhouette_score(vectors, km_labels, metric='euclidean')
+                    cal_har_score = calinski_harabasz_score(vectors, km_labels)
+                    dav_boul_score = davies_bouldin_score(vectors, km_labels)
                     logger.info("Inertia with k=%s: %s", k_clusters, km.inertia_)
                     logger.info("Silhouete score with k=%s: %s", k_clusters, sil_score)
 
@@ -112,6 +116,16 @@ with Timer("Main script runtime"):
                         csv_file.write(f"{city_mode_name},{embedder_name},{k_clusters},{sil_score}\n")
                     k_silhouette_dict[k_clusters] = sil_score
 
+                    # Calinski and Harabasz
+                    with open(f"{OUTPUT_FOLDER}/cal_har_comparisons.csv", "a") as csv_file:
+                        csv_file.write(f"{city_mode_name},{embedder_name},{k_clusters},{cal_har_score}\n")
+                    k_cal_har_dict[k_clusters] = cal_har_score
+
+                    # Davies-Bouldin score
+                    with open(f"{OUTPUT_FOLDER}/dav_boul_comparisons.csv", "a") as csv_file:
+                        csv_file.write(f"{city_mode_name},{embedder_name},{k_clusters},{dav_boul_score}\n")
+                    k_dav_boul_dict[k_clusters] = dav_boul_score
+
                     # Inertia
                     with open(f"{OUTPUT_FOLDER}/inertia_comparisons.csv", "a") as csv_file:
                         csv_file.write(f"{city_mode_name},{embedder_name},{k_clusters},{inertia}\n")
@@ -125,11 +139,11 @@ with Timer("Main script runtime"):
 
                     # Full file
                     with open(f"{OUTPUT_FOLDER}/full_data.csv", "a") as csv_file:
-                        csv_file.write(f"{city_mode_name},{embedder_name},{k_clusters},{model_time},{sil_score},{inertia}\n")
+                        csv_file.write(f"{city_mode_name},{embedder_name},{k_clusters},{model_time},{sil_score},{cal_har_score},{dav_boul_score},{inertia}\n")
 
                     # Markdown Table
                     with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
-                        md_file.write(f"|{city_mode_name}|{embedder_name}|{k_clusters}|{model_time}|{sil_score}|{inertia}|\n")
+                        md_file.write(f"|{city_mode_name}|{embedder_name}|{k_clusters}|{model_time}|{sil_score}|{cal_har_score}|{dav_boul_score}|{inertia}|\n")
 
                 with Timer(f"Generating scatterplot for clusters  k=`{k_clusters}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     plot_clusters(scatterplot_vectors,
@@ -169,4 +183,26 @@ with Timer("Main script runtime"):
                 plt.ylabel("Silhouette")
                 plt.title(f"Silhouette per K with embedder `{embedder_name}` ({city_mode_name})")
                 plt.savefig(f"{OUTPUT_FOLDER}/silhouette.png")
+                plt.close()
+
+            # Plotting Calinski and Harabasz scatterplot with trend line
+            with Timer(f"Generating scatterplot for Calinski and Harabasz with embedder `{embedder_name}` ({city_mode_name})"):
+                Xs = ALL_KS
+                Ys = [k_cal_har_dict[i] for i in Xs]
+                plt.plot(Xs, Ys, '-o')
+                plt.xlabel("Size of clusters (K)")
+                plt.ylabel("Calinski and Harabasz")
+                plt.title(f"CaH per K with embedder `{embedder_name}` ({city_mode_name})")
+                plt.savefig(f"{OUTPUT_FOLDER}/cal_har.png")
+                plt.close()
+
+            # Plotting Davies-Bouldin score scatterplot with trend line
+            with Timer(f"Generating scatterplot for Davies-Bouldin score with embedder `{embedder_name}` ({city_mode_name})"):
+                Xs = ALL_KS
+                Ys = [k_dav_boul_dict[i] for i in Xs]
+                plt.plot(Xs, Ys, '-o')
+                plt.xlabel("Size of clusters (K)")
+                plt.ylabel("Davies-Bouldin score")
+                plt.title(f"D-B per K with embedder `{embedder_name}` ({city_mode_name})")
+                plt.savefig(f"{OUTPUT_FOLDER}/dav_boul.png")
                 plt.close()
