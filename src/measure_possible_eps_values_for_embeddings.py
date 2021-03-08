@@ -81,7 +81,7 @@ with Timer("Main script runtime"):
                 for distance_metric in DISTANCE_METRICS:
 
                     with Timer(f"Getting nearest neighbors using distance `{distance_metric}` with embedder `{embedder_name}`"):
-                        neigh = NearestNeighbors(n_neighbors=2)
+                        neigh = NearestNeighbors(n_neighbors=2, metric=distance_metric)
                         neighbors_data = neigh.fit(vectors)
                         distances, _ = neighbors_data.kneighbors(vectors)
 
