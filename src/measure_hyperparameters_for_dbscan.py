@@ -17,7 +17,7 @@ from sklearn.metrics import silhouette_score
 
 from embeddings import get_embedder_functions
 from preprocessing import preprocess_corpus
-from utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
+from utils import get_city_modes, get_optimal_eps_for_embedder, get_text_from_all_tweets, plot_clusters, Timer
 
 mpl.use('Agg')
 
@@ -81,60 +81,60 @@ with Timer("Main script runtime"):
                 md_file.write(f"|---------|--------|----------------------|------------------|----------|-------|\n")
 
             DISTANCE_METRICS = ["euclidean", "cosine"]
-            EPS_VALUES = [0.3, 0.5, 0.7]
             MIN_SAMPLES = 1000
 
             distance_eps_time_dict = {}
             distance_eps_silhouette_dict = {}
             for distance_metric in DISTANCE_METRICS:
                 logger.info("Starting evaluation of distance metric `%s`", distance_metric)
-                for eps in EPS_VALUES:
-                    logger.info("Starting evaluation with eps=`%s`", eps)
 
-                    with Timer(f"Finding clusters with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                        dbscan = DBSCAN(
-                            eps=eps, min_samples=MIN_SAMPLES, metric=distance_metric)
-                        t0 = time.time()
-                        dbscan_result = dbscan.fit(vectors)
-                        t1 = time.time()
+                eps = get_optimal_eps_for_embedder(distance_metric, embedder_name)
+                logger.info("Starting evaluation with eps=`%s`", eps)
 
-                    with Timer(f"Getting metrics with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                        model_time = t1 - t0
-                        dbscan_labels = dbscan_result.labels_
-                        sil_score = silhouette_score(vectors, dbscan_labels, metric=distance_metric)
-                        logger.info("Silhouete score with eps=`%s`, distance metric `%s`: %s", eps, distance_metric, sil_score)
+                with Timer(f"Finding clusters with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
+                    dbscan = DBSCAN(
+                        eps=eps, min_samples=MIN_SAMPLES, metric=distance_metric)
+                    t0 = time.time()
+                    dbscan_result = dbscan.fit(vectors)
+                    t1 = time.time()
 
-                    with Timer(f"Storing results with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                        # Time
-                        with open(f"{OUTPUT_FOLDER}/time_comparisons.csv", "a") as csv_file:
-                            csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{model_time}\n")
-                        distance_eps_time_dict[f"{distance_metric} - {eps}"] = model_time
+                with Timer(f"Getting metrics with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
+                    model_time = t1 - t0
+                    dbscan_labels = dbscan_result.labels_
+                    sil_score = silhouette_score(vectors, dbscan_labels, metric=distance_metric)
+                    logger.info("Silhouete score with eps=`%s`, distance metric `%s`: %s", eps, distance_metric, sil_score)
 
-                        # Silhouette
-                        with open(f"{OUTPUT_FOLDER}/silhouette_comparisons.csv", "a") as csv_file:
-                            csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{sil_score}\n")
-                        distance_eps_silhouette_dict[f"{distance_metric} - {eps}"] = sil_score
+                with Timer(f"Storing results with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
+                    # Time
+                    with open(f"{OUTPUT_FOLDER}/time_comparisons.csv", "a") as csv_file:
+                        csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{model_time}\n")
+                    distance_eps_time_dict[f"{distance_metric} - {eps}"] = model_time
 
-                        # Cluster length
-                        with open(f"{OUTPUT_FOLDER}/cluster_length_comparisons.csv", "a") as csv_file:
-                            for j in range(-1, len(set(dbscan_labels))):
-                                length_j = list(dbscan_labels).count(j)
-                                if length_j > 0:
-                                    csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{j},{length_j}\n")
+                    # Silhouette
+                    with open(f"{OUTPUT_FOLDER}/silhouette_comparisons.csv", "a") as csv_file:
+                        csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{sil_score}\n")
+                    distance_eps_silhouette_dict[f"{distance_metric} - {eps}"] = sil_score
 
-                        # Full file
-                        with open(f"{OUTPUT_FOLDER}/full_data.csv", "a") as csv_file:
-                            csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{model_time},{sil_score}\n")
+                    # Cluster length
+                    with open(f"{OUTPUT_FOLDER}/cluster_length_comparisons.csv", "a") as csv_file:
+                        for j in range(-1, len(set(dbscan_labels))):
+                            length_j = list(dbscan_labels).count(j)
+                            if length_j > 0:
+                                csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{j},{length_j}\n")
 
-                        # Markdown Table
-                        with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
-                            md_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{model_time},{sil_score}\n")
+                    # Full file
+                    with open(f"{OUTPUT_FOLDER}/full_data.csv", "a") as csv_file:
+                        csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{model_time},{sil_score}\n")
 
-                    with Timer(f"Generating scatterplot for clusters with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                        plot_clusters(scatterplot_vectors,
-                                  filename=f"{OUTPUT_FOLDER}/clusters_{distance_metric}_{eps}.png",
-                                  title=f'Clusters Representation (eps={eps}, {distance_metric}) for {embedder_name}` ({city_mode_name})',
-                                  labels=dbscan_labels)
+                    # Markdown Table
+                    with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
+                        md_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{model_time},{sil_score}\n")
+
+                with Timer(f"Generating scatterplot for clusters with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
+                    plot_clusters(scatterplot_vectors,
+                                filename=f"{OUTPUT_FOLDER}/clusters_{distance_metric}_{eps}.png",
+                                title=f'Clusters Representation (eps={eps}, {distance_metric}) for {embedder_name}` ({city_mode_name})',
+                                labels=dbscan_labels)
 
             # Plotting time bar chart
             with Timer(f"Generating bar chart for time with embedder `{embedder_name}` ({city_mode_name})"):
