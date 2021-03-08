@@ -11,7 +11,7 @@ import fasttext
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer
-from umap import UMAP
+from sklearn.decomposition import PCA
 
 def doc2vec_embedder(corpus: List[str]) -> List[float]:
     """
@@ -87,12 +87,12 @@ def bert_embedder(corpus: List[str], model_name: str = "paraphrase-xlm-r-multili
 def reduce_dimensionality(corpus: List[str], embedder: Callable[[List[str]], List[float]], dimensions: int = 10):
     """
     Given an embedder and a list of (final) dimensions, returns another indirect embedder
-    that always returns at most the requested dimensions using UMAP for dimensionality
-    reduction (if needed).
+    that always returns at most the requested dimensions using PCA for dimensionality reduction.
     """
 
     original_vectors = embedder(corpus)
-    vectors = UMAP(n_neighbors=10, n_components=dimensions, metric='cosine').fit_transform(original_vectors)
+    pca_fit = PCA(n_components=dimensions)
+    vectors = pca_fit.fit_transform(original_vectors)
 
     return vectors
 
