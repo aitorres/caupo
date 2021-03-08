@@ -16,7 +16,7 @@ from sklearn.decomposition import PCA
 
 from embeddings import get_embedder_functions
 from preprocessing import preprocess_corpus
-from utils import get_text_from_all_tweets, plot_clusters, Timer
+from utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
 
 mpl.use('Agg')
 
@@ -47,13 +47,10 @@ logger.addHandler(file_handler)
 
 
 with Timer("Main script runtime"):
-    city_modes = {
-        'Caracas': 'Caracas',
-        'All cities': None,
-    }
+    city_modes = get_city_modes().items()
     embedders = get_embedder_functions().items()
 
-    for city_mode_name, city_mode_tag in city_modes.items():
+    for city_mode_name, city_mode_tag in city_modes:
         with Timer(f"Starting evaluation for city mode `{city_mode_name}`"):
             with Timer("Getting tweets' text from database"):
                 corpus = get_text_from_all_tweets(city=city_mode_tag)

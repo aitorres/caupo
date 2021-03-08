@@ -34,6 +34,17 @@ class Timer:
         logger.debug("Done in %.2f seconds.", self.duration)
 
 
+def get_city_modes():
+    """Returns a dictionary with options for city modes to use in standarized measurements"""
+
+    #? INFO: Elements are of the form (key, value) === (title, parameter)
+    CITY_MODES = {
+        'Caracas': 'Caracas',
+        #'All Cities': None,
+    }
+
+    return CITY_MODES
+
 def get_all_tweets():
     """
     Queries and returns a cursor with all tweets stored in the database.
