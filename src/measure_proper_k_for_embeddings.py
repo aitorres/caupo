@@ -11,8 +11,8 @@ from datetime import datetime
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
 
 from embeddings import get_embedder_functions
 from preprocessing import preprocess_corpus
@@ -88,10 +88,10 @@ with Timer("Main script runtime"):
             k_inertia_dict = {}
             for k_clusters in ALL_KS:
                 with Timer(f"Finding clusters with k=`{k_clusters}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                    t0 = time.time()
                     km = KMeans(n_clusters=k_clusters)
-                    t1 = time.time()
+                    t0 = time.time()
                     km_result = km.fit(vectors)
+                    t1 = time.time()
 
                 with Timer(f"Getting metrics with k=`{k_clusters}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     model_time = t1 - t0
