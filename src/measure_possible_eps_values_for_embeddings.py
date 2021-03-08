@@ -86,5 +86,8 @@ with Timer("Main script runtime"):
                     distances = np.sort(distances, axis=0)
                     distances = distances[:,1]
                     plt.plot(distances)
+                    plt.title("Distance to nearest neighbor, sorted")
+                    plt.xlabel("Elements (sorted by closest - longest distance)")
+                    plt.ylabel("Shortest distance")
                     plt.savefig(f"{OUTPUT_FOLDER}/neighbors_{embedder_name}.png")
                     plt.close()
