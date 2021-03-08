@@ -56,7 +56,7 @@ with Timer("Main script runtime"):
                         vector_size=200, window=3, min_count=2, workers=2)
         d2v_vectors = [d2v_model.infer_vector(doc.split()) for doc in clean_corpus]
 
-    BERT_MODEL_NAME = 'xlm-r-100langs-bert-base-nli-mean-tokens'
+    BERT_MODEL_NAME = 'paraphrase-xlm-r-multilingual-v1'
     with Timer(f"Vectorizing tweets with BERT (multilingual model, {BERT_MODEL_NAME})"):
         bert_model = SentenceTransformer(BERT_MODEL_NAME, device="cpu")
         bert_vectors = bert_model.encode(clean_corpus)
