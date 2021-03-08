@@ -77,7 +77,7 @@ with Timer("Main script runtime"):
                     vectors = embedder_function(clean_corpus)
                     t1 = time.time()
 
-                with Timer(f"Getting nearets neighbors with embedder `{embedder_name}`"):
+                with Timer(f"Getting nearest neighbors with embedder `{embedder_name}`"):
                     neigh = NearestNeighbors(n_neighbors=2)
                     neighbors_data = neigh.fit(vectors)
                     distances, _ = neighbors_data.kneighbors(vectors)
