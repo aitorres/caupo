@@ -1,8 +1,11 @@
 import logging
 import time
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from pymongo import MongoClient
+
+mpl.use('Agg')
 
 logger = logging.getLogger("caupo")
 
@@ -106,6 +109,29 @@ def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_unint
     )
 
     return [t["full_text"] for t in tweets]
+
+
+def plot_clusters(vectors, filename, title, labels=None):
+    """
+    Given a numpy array with (2D-assumed) vectors, a filename, and a series of labels, stores
+    a scatterplot and stores it as a PNG image in the received filename.
+
+    src: https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.scatter.html
+    src: https://matplotlib.org/stable/tutorials/colors/colors.html
+    """
+
+    # If no labels are passed, assume all belong to the same cluster (and are colored likewise)
+    if labels is None:
+        labels = [0] * len(vectors)
+
+    COLOR_PALETTE = ["#00394B", "#005B6E", "#04668C", "#3C6CA7", "#726EB7",
+                     "#A86BBA", "#DA66AC", "#FF6792", "#FF89AC", "#FFACBF"]
+    colors = [COLOR_PALETTE[i] for i in labels]
+
+    plt.scatter(vectors[:,0], vectors[:,1], c=colors, s=6)
+    plt.title(title)
+    plt.savefig(filename)
+    plt.close()
 
 
 def plot_top_words(model, feature_names, n_top_words, title):
