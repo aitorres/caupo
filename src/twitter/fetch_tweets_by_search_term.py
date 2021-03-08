@@ -15,6 +15,7 @@ from pymongo import MongoClient
 
 mongo_client = MongoClient('mongodb://127.0.0.1:27019')
 db = mongo_client.caupo
+lock_db = mongo_client.caupo_settings
 
 #! IMPORTANT: Set the following environment vars
 TW_CONSUMER_KEY = os.environ.get('TW_CONSUMER_KEY')
@@ -64,6 +65,11 @@ def main():
     Main program. Reads the search term from standard input, then
     prints a list with those terms.
     """
+
+    ## Check if database is locked
+    if lock_db.locking.find_one({"locked": True}):
+        print("The database is currently locked and I cannot proceed.")
+        return sys.exit(2)
 
     # Extract standard input arguments
     args = sys.argv[1:]
