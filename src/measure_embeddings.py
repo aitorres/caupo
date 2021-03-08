@@ -12,11 +12,11 @@ from datetime import datetime
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from umap import UMAP
+from sklearn.decomposition import PCA
 
 from embeddings import get_embedder_functions
 from preprocessing import preprocess_corpus
-from utils import get_text_from_all_tweets, Timer
+from utils import get_text_from_all_tweets, plot_clusters, Timer
 
 mpl.use('Agg')
 
@@ -115,18 +115,12 @@ with Timer("Main script runtime"):
                     with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
                         md_file.write(f"|{city_mode_name}|{embedder_name}|{embedder_time}|{max_l2_norm}|{min_l2_norm}|{avg_l2_norm}|\n")
 
-                try:
-                    with Timer(f"Generating scatterplot for vector representations with embedder `{embedder_name}`"):
-                        SAMPLE_SIZE = 1000
-                        data_sample = vectors[:SAMPLE_SIZE]
-                        fit = UMAP()
-                        scatterplot_data = fit.fit_transform(data_sample)
-                        plt.scatter(scatterplot_data[:,0], scatterplot_data[:,1])
-                        plt.title(f'2-Dim Representation of `{embedder_name}` ({city_mode_name})')
-                        plt.savefig(f"{OUTPUT_FOLDER}/{embedder_name}-{city_mode_name}-scatter.png")
-                        plt.close()
-                except ValueError:
-                    logger.error("Value Error trying to generate scatterplot for vector reps with embedder `%s`", embedder_name)
+                with Timer(f"Generating scatterplot for vector representations with embedder `{embedder_name}`"):
+                    pca_fit = PCA(n_components=2)
+                    scatterplot_vectors = pca_fit.fit_transform(vectors)
+                    plot_clusters(scatterplot_vectors,
+                                filename=f"{OUTPUT_FOLDER}/{embedder_name}-{city_mode_name}-scatter.png",
+                                title=f'2-Dim Representation of `{embedder_name}` ({city_mode_name})')
 
             city_embedder_time_dict[city_mode_name] = embedder_time_dict
 
