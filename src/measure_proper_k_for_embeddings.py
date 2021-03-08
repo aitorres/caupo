@@ -173,4 +173,3 @@ with Timer("Main script runtime"):
                 plt.title(f"Silhouette per K with embedder `{embedder_name}` ({city_mode_name})")
                 plt.savefig(f"{OUTPUT_FOLDER}/silhouette.png")
                 plt.close()
-

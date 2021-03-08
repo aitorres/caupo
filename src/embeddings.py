@@ -119,6 +119,10 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
             bert_embedder, model_name='stsb-xlm-r-multilingual'),
         'BERT: xlm-r-100langs-bert-base-nli-mean-tokens': partial(
             bert_embedder, model_name='xlm-r-100langs-bert-base-nli-mean-tokens'),
+        'BERT: Geotrend/bert-base-es-cased': partial(
+            bert_embedder, model_name='Geotrend/bert-base-es-cased'),
+        'BERT: TinyBERT-spanish-uncased-finetuned-ner': partial(
+            bert_embedder, model_name='mrm8488/TinyBERT-spanish-uncased-finetuned-ner'),
     }
 
     DIMENSIONS_TO_REDUCE = 10
