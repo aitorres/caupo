@@ -111,18 +111,12 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
         'FastText (Skipgram)': partial(fasttext_embedder, model_type="skipgram"),
         'GPT2 Small Spanish': partial( # ref: https://huggingface.co/datificate/gpt2-small-spanish
             bert_embedder, model_name="datificate/gpt2-small-spanish"),
+        'BERT: TinyBERT-spanish-uncased-finetuned-ner': partial(
+            bert_embedder, model_name='mrm8488/TinyBERT-spanish-uncased-finetuned-ner'),
         'BERT: paraphrase-xlm-r-multilingual-v1': partial(
             bert_embedder, model_name='paraphrase-xlm-r-multilingual-v1'),
         'BERT: distiluse-base-multilingual-cased-v2': partial(
             bert_embedder, model_name='distiluse-base-multilingual-cased-v2'),
-        'BERT: stsb-xlm-r-multilingual': partial(
-            bert_embedder, model_name='stsb-xlm-r-multilingual'),
-        'BERT: xlm-r-100langs-bert-base-nli-mean-tokens': partial(
-            bert_embedder, model_name='xlm-r-100langs-bert-base-nli-mean-tokens'),
-        'BERT: Geotrend/bert-base-es-cased': partial(
-            bert_embedder, model_name='Geotrend/bert-base-es-cased'),
-        'BERT: TinyBERT-spanish-uncased-finetuned-ner': partial(
-            bert_embedder, model_name='mrm8488/TinyBERT-spanish-uncased-finetuned-ner'),
     }
 
     DIMENSIONS_TO_REDUCE = 10
@@ -134,7 +128,8 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
 
     embedders = {**regular_embedders, **reduced_embedders}
 
-    return embedders
+    #? INFO: We're ignoring reduced embedders for now
+    return regular_embedders
 
 
 def main() -> None:
