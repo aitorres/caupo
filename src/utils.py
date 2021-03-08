@@ -136,7 +136,8 @@ def plot_clusters(vectors, filename, title, labels=None):
         labels = [0] * len(vectors)
 
     COLOR_PALETTE = ["#00394B", "#005B6E", "#04668C", "#3C6CA7", "#726EB7",
-                     "#A86BBA", "#DA66AC", "#FF6792", "#FF89AC", "#FFACBF"]
+                     "#A86BBA", "#DA66AC", "#FF6792", "#FF89AC", "#FFACBF",
+                     "#A6A6A6"] # gray would be used for a "-1" label
     colors = [COLOR_PALETTE[i] for i in labels]
 
     plt.scatter(vectors[:,0], vectors[:,1], c=colors, s=6)
