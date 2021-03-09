@@ -149,6 +149,8 @@ with Timer("Main script runtime"):
                     with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
                         md_file.write(f"|{city_mode_name}|{embedder_name}|{distance_metric}|{eps}|{model_time}|{sil_score}|{dav_boul_score}|{cal_har_score}|\n")
 
+                logger.info(f"DBSCAN generated {dbscan_labels} clusters")
+
                 with Timer(f"Generating scatterplot for clusters with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     plot_clusters(scatterplot_vectors,
                                 filename=f"{OUTPUT_FOLDER}/clusters_{distance_metric}_{eps}.png",
