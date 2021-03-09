@@ -79,8 +79,8 @@ with Timer("Main script runtime"):
                 md_file.write("|City mode|Embedder|Time of Clustering|Silhouette score|Davies-Bouldin score|Calinski and Harabasz score|\n")
                 md_file.write("|---------|--------|------------------|----------------|--------------------|---------------------------|\n")
 
-            MIN_CLUSTER_SIZE = 30
-            MIN_SAMPLES = 15
+            MIN_CLUSTER_SIZE = 10
+            MIN_SAMPLES = 5
 
             with Timer(f"Finding clusters with embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                 hdbscan = HDBSCAN(min_cluster_size=MIN_CLUSTER_SIZE, min_samples=MIN_SAMPLES)
