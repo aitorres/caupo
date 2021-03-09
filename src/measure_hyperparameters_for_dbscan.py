@@ -103,10 +103,15 @@ with Timer("Main script runtime"):
                 with Timer(f"Getting metrics with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     model_time = t1 - t0
                     dbscan_labels = dbscan_result.labels_
+                    logger.debug("Calculating silhouette score")
                     sil_score = silhouette_score(vectors, dbscan_labels, metric=distance_metric)
+                    logger.debug("Calculating Davies-Boulding score")
                     dav_boul_score = davies_bouldin_score(vectors, dbscan_labels)
+                    logger.debug("Calculating Calinski & Harabasz score")
                     cal_har_score = calinski_harabasz_score(vectors, dbscan_labels)
                     logger.info("Silhouete score with eps=`%s`, distance metric `%s`: %s", eps, distance_metric, sil_score)
+                    logger.info("Davies-Boulding score with eps=`%s`, distance metric `%s`: %s", eps, distance_metric, dav_boul_score)
+                    logger.info("Calinski & Harabasz score with eps=`%s`, distance metric `%s`: %s", eps, distance_metric, cal_har_score)
 
                 with Timer(f"Storing results with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     # Time
