@@ -116,22 +116,22 @@ with Timer("Main script runtime"):
                     # Time
                     with open(f"{OUTPUT_FOLDER}/time_comparisons.csv", "a") as csv_file:
                         csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{model_time}\n")
-                    distance_time_dict[f"{distance_metric} - {eps}"] = model_time
+                    distance_time_dict[f"{distance_metric}"] = model_time
 
                     # Silhouette
                     with open(f"{OUTPUT_FOLDER}/silhouette_comparisons.csv", "a") as csv_file:
                         csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{sil_score}\n")
-                    distance_silhouette_dict[f"{distance_metric} - {eps}"] = sil_score
+                    distance_silhouette_dict[f"{distance_metric}"] = sil_score
 
                     # Davies-Bouldin score
                     with open(f"{OUTPUT_FOLDER}/dav_boul_score_comparisons.csv", "a") as csv_file:
                         csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{dav_boul_score}\n")
-                    distance_dav_boul_dict[f"{distance_metric} - {eps}"] = dav_boul_score
+                    distance_dav_boul_dict[f"{distance_metric}"] = dav_boul_score
 
                     # Calinski and Harabasz score
                     with open(f"{OUTPUT_FOLDER}/cal_har_score_comparisons.csv", "a") as csv_file:
                         csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{cal_har_score}\n")
-                    distance_cal_har_dict[f"{distance_metric} - {eps}"] = cal_har_score
+                    distance_cal_har_dict[f"{distance_metric}"] = cal_har_score
 
                     # Cluster length
                     with open(f"{OUTPUT_FOLDER}/cluster_length_comparisons.csv", "a") as csv_file:
