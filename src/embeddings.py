@@ -135,24 +135,24 @@ def get_optimal_eps_for_embedder(distance: str, name: str) -> float:
 
     OPTIMAL_EPS = {
         'euclidean': {
-            'Bag of Words': 5,
-            'Doc2Vec': 0.07,
-            'FastText (CBOW)': 0.1,
-            'FastText (Skipgram)': 0.25,
-            'GPT2 Small Spanish': 17,
-            'BERT: TinyBERT-spanish-uncased-finetuned-ner': 3,
-            'BERT: paraphrase-xlm-r-multilingual-v1': 4.25,
-            'BERT: distiluse-base-multilingual-cased-v2': 0.45,
+            'Bag of Words': 175,
+            'Doc2Vec': 12,
+            'FastText (CBOW)': 5,
+            'FastText (Skipgram)': 7,
+            'GPT2 Small Spanish': 21,
+            'BERT: TinyBERT-spanish-uncased-finetuned-ner': 15,
+            'BERT: paraphrase-xlm-r-multilingual-v1': 30,
+            'BERT: distiluse-base-multilingual-cased-v2': 25,
         },
         'cosine': {
-            'Bag of Words': 0.75,
+            'Bag of Words': 0.65,
             'Doc2Vec': 0.15,
-            'FastText (CBOW)': 0.01,
-            'FastText (Skipgram)': 0.1,
-            'GPT2 Small Spanish': 0.25,
-            'BERT: TinyBERT-spanish-uncased-finetuned-ner': 0.01,
-            'BERT: paraphrase-xlm-r-multilingual-v1': 0.35,
-            'BERT: distiluse-base-multilingual-cased-v2': 0.7,
+            'FastText (CBOW)': 0.075,
+            'FastText (Skipgram)': 0.35,
+            'GPT2 Small Spanish': 0.55,
+            'BERT: TinyBERT-spanish-uncased-finetuned-ner': 0.325,
+            'BERT: paraphrase-xlm-r-multilingual-v1': 0.55,
+            'BERT: distiluse-base-multilingual-cased-v2': 0.55,
         }
     }
 

@@ -81,7 +81,7 @@ with Timer("Main script runtime"):
                 md_file.write(f"|---------|--------|----------------------|------------------|----------|-------|---|---|\n")
 
             DISTANCE_METRICS = ["euclidean", "cosine"]
-            MIN_SAMPLES = 1000
+            MIN_SAMPLES = 10
 
             distance_eps_time_dict = {}
             distance_eps_silhouette_dict = {}
