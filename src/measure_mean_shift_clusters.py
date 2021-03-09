@@ -90,7 +90,7 @@ with Timer("Main script runtime"):
                 logger.info("Starting evaluation with cluster_all=`%s`", cluster_all)
 
                 with Timer(f"Finding clusters with cluster_all=`{cluster_all}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                    mean_shift = MeanShift(cluster_all=cluster_all)
+                    mean_shift = MeanShift(cluster_all=cluster_all, n_jobs=-1)
                     t0 = time.time()
                     mean_shift_result = mean_shift.fit(vectors)
                     t1 = time.time()

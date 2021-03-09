@@ -90,7 +90,7 @@ with Timer("Main script runtime"):
                 logger.info("Starting evaluation of distance metric `%s`", distance_metric)
 
                 with Timer(f"Finding clusters with distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                    optics = OPTICS(min_samples=MIN_SAMPLES, metric=distance_metric)
+                    optics = OPTICS(min_samples=MIN_SAMPLES, metric=distance_metric, n_jobs=-1)
                     t0 = time.time()
                     optics_result = optics.fit(vectors)
                     t1 = time.time()

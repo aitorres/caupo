@@ -80,7 +80,7 @@ with Timer("Main script runtime"):
                 md_file.write("|---------|--------|------------------|----------------|--------------------|---------------------------|\n")
 
             with Timer(f"Finding clusters with embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                mean_shift = AffinityPropagation()
+                mean_shift = AffinityPropagation(n_jobs=-1)
                 t0 = time.time()
                 mean_shift_result = mean_shift.fit(vectors)
                 t1 = time.time()

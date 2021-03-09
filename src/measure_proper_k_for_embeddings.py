@@ -90,7 +90,7 @@ with Timer("Main script runtime"):
             k_inertia_dict = {}
             for k_clusters in ALL_KS:
                 with Timer(f"Finding clusters with k=`{k_clusters}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                    km = KMeans(n_clusters=k_clusters)
+                    km = KMeans(n_clusters=k_clusters, n_jobs=-1)
                     t0 = time.time()
                     km_result = km.fit(vectors)
                     t1 = time.time()

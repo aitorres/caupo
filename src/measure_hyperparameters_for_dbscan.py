@@ -94,8 +94,7 @@ with Timer("Main script runtime"):
                 logger.info("Starting evaluation with eps=`%s`", eps)
 
                 with Timer(f"Finding clusters with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                    dbscan = DBSCAN(
-                        eps=eps, min_samples=MIN_SAMPLES, metric=distance_metric)
+                    dbscan = DBSCAN(eps=eps, min_samples=MIN_SAMPLES, metric=distance_metric, n_jobs=-1)
                     t0 = time.time()
                     dbscan_result = dbscan.fit(vectors)
                     t1 = time.time()
