@@ -127,12 +127,12 @@ with Timer("Main script runtime"):
                     # Davies-Bouldin score
                     with open(f"{OUTPUT_FOLDER}/dav_boul_score_comparisons.csv", "a") as csv_file:
                         csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{dav_boul_score}\n")
-                    distance_eps_dav_boul_score_dict[f"{distance_metric} - {eps}"] = dav_boul_score
+                    distance_eps_dav_boul_dict[f"{distance_metric} - {eps}"] = dav_boul_score
 
                     # Calinski and Harabasz score
                     with open(f"{OUTPUT_FOLDER}/cal_har_score_comparisons.csv", "a") as csv_file:
                         csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{eps},{cal_har_score}\n")
-                    distance_eps_cal_har_score_dict[f"{distance_metric} - {eps}"] = cal_har_score
+                    distance_eps_cal_har_dict[f"{distance_metric} - {eps}"] = cal_har_score
 
                     # Cluster length
                     with open(f"{OUTPUT_FOLDER}/cluster_length_comparisons.csv", "a") as csv_file:
