@@ -13,6 +13,7 @@ In order to reproduce the workflow of experiments in the project, you can follow
 5. `measure_optics_clusters.py`
 6. `measure_hdbscan_clusters.py`
 7. `measure_mean_shift_clusters.py`
+7. `measure_affinity_propagation_clusters.py`
 
 You can run the following script which has been added to the repository in order to easen up each measurement run with some extra considerations, such as turning off Twitter fetching while tests run
 

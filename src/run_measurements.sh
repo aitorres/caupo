@@ -16,6 +16,7 @@ nohup nice -n -19 python -u measure_hyperparameters_for_dbscan.py
 nohup nice -n -19 python -u measure_optics_clusters.py
 nohup nice -n -19 python -u measure_hdbscan_clusters.py
 nohup nice -n -19 python -u measure_mean_shift_clusters.py
+nohup nice -n -19 python -u measure_affinity_propagation_clusters.py
 printf "*** Measurements finished on `date` ***\n\n"
 
 echo "*** Unlocking Twitter fetch script***"
