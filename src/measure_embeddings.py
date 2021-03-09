@@ -125,13 +125,11 @@ with Timer("Main script runtime"):
         # src: https://matplotlib.org/3.3.4/gallery/lines_bars_and_markers/barchart.html
         labels = [name for name, _ in embedders]
         caracas_times = [t for _, t in city_embedder_time_dict['Caracas'].items()]
-        all_cities_times = [t for _, t in city_embedder_time_dict['All cities'].items()]
         x = np.arange(len(labels))
 
-        WIDTH = 0.25
+        WIDTH = 0.30
         fig, ax = plt.subplots()
-        rects1 = ax.bar(x - WIDTH/2, caracas_times, WIDTH, label='Caracas')
-        rects2 = ax.bar(x + WIDTH/2, all_cities_times, WIDTH, label='All cities')
+        rects1 = ax.bar(x, caracas_times, WIDTH, label='Caracas')
 
         ax.set_ylabel('Time (s)')
         ax.set_title('Time by embedding and dataset')
@@ -150,7 +148,6 @@ with Timer("Main script runtime"):
                             ha='center', va='bottom')
 
         autolabel(rects1)
-        autolabel(rects2)
 
         fig.tight_layout()
         plt.savefig(f"{OUTPUT_FOLDER}/time_plot.png")
