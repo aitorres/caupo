@@ -90,26 +90,26 @@ with Timer("Main script runtime"):
                 logger.info("Starting evaluation of distance metric `%s`", distance_metric)
 
                 with Timer(f"Finding clusters with distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                    dbscan = OPTICS(min_samples=MIN_SAMPLES, metric=distance_metric)
+                    optics = OPTICS(min_samples=MIN_SAMPLES, metric=distance_metric)
                     t0 = time.time()
-                    dbscan_result = dbscan.fit(vectors)
+                    optics_result = optics.fit(vectors)
                     t1 = time.time()
 
                 with Timer(f"Getting metrics with distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     model_time = t1 - t0
-                    dbscan_labels = dbscan_result.labels_
-                    logger.info("DBSCAN generated `%s` cluster(s)", len({i for i in dbscan_labels if i != -1}))
+                    optics_labels = optics_result.labels_
+                    logger.info("OPTICS generated `%s` cluster(s)", len({i for i in optics_labels if i != -1}))
 
                     logger.debug("Calculating silhouette score")
-                    sil_score = silhouette_score(vectors, dbscan_labels, metric=distance_metric)
+                    sil_score = silhouette_score(vectors, optics_labels, metric=distance_metric)
                     logger.info("Silhouete score with distance metric `%s`: %s", distance_metric, sil_score)
 
                     logger.debug("Calculating Davies-Boulding score")
-                    dav_boul_score = davies_bouldin_score(vectors, dbscan_labels)
+                    dav_boul_score = davies_bouldin_score(vectors, optics_labels)
                     logger.info("Davies-Boulding score with distance metric `%s`: %s", distance_metric, dav_boul_score)
 
                     logger.debug("Calculating Calinski & Harabasz score")
-                    cal_har_score = calinski_harabasz_score(vectors, dbscan_labels)
+                    cal_har_score = calinski_harabasz_score(vectors, optics_labels)
                     logger.info("Calinski & Harabasz score with distance metric `%s`: %s", distance_metric, cal_har_score)
 
                 with Timer(f"Storing results with distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
@@ -135,8 +135,8 @@ with Timer("Main script runtime"):
 
                     # Cluster length
                     with open(f"{OUTPUT_FOLDER}/cluster_length_comparisons.csv", "a") as csv_file:
-                        for j in range(-1, len(set(dbscan_labels))):
-                            length_j = list(dbscan_labels).count(j)
+                        for j in range(-1, len(set(optics_labels))):
+                            length_j = list(optics_labels).count(j)
                             if length_j > 0:
                                 csv_file.write(f"{city_mode_name},{embedder_name},{distance_metric},{j},{length_j}\n")
 
@@ -153,7 +153,7 @@ with Timer("Main script runtime"):
                     plot_clusters(scatterplot_vectors,
                                 filename=f"{OUTPUT_FOLDER}/clusters_{distance_metric}.png",
                                 title=f'Clusters Representation ({distance_metric}) for {embedder_name}` ({city_mode_name})',
-                                labels=dbscan_labels)
+                                labels=optics_labels)
 
             # Plotting time bar chart
             with Timer(f"Generating bar chart for time with embedder `{embedder_name}` ({city_mode_name})"):
@@ -163,7 +163,7 @@ with Timer("Main script runtime"):
                 plt.xticks(Xs, list(distance_time_dict.keys()))
                 plt.xlabel("Distance Metric setting")
                 plt.ylabel("Time (s)")
-                plt.title(f"Time per DBSCAN config with embedder `{embedder_name}` ({city_mode_name})")
+                plt.title(f"Time per OPTICS config with embedder `{embedder_name}` ({city_mode_name})")
                 plt.savefig(f"{OUTPUT_FOLDER}/time.png")
                 plt.close()
 
@@ -175,7 +175,7 @@ with Timer("Main script runtime"):
                 plt.xticks(Xs, list(distance_silhouette_dict.keys()))
                 plt.xlabel("Distance Metric setting")
                 plt.ylabel("Silhouette")
-                plt.title(f"Silhouette per DBSCAN config with embedder `{embedder_name}` ({city_mode_name})")
+                plt.title(f"Silhouette per OPTICS config with embedder `{embedder_name}` ({city_mode_name})")
                 plt.savefig(f"{OUTPUT_FOLDER}/silhouette.png")
                 plt.close()
 
@@ -187,7 +187,7 @@ with Timer("Main script runtime"):
                 plt.xticks(Xs, list(distance_cal_har_dict.keys()))
                 plt.xlabel("Distance Metric setting")
                 plt.ylabel("Calinksi and Harabasz score")
-                plt.title(f"CaH score per DBSCAN config with embedder `{embedder_name}` ({city_mode_name})")
+                plt.title(f"CaH score per OPTICS config with embedder `{embedder_name}` ({city_mode_name})")
                 plt.savefig(f"{OUTPUT_FOLDER}/cal_har.png")
                 plt.close()
 
@@ -199,6 +199,6 @@ with Timer("Main script runtime"):
                 plt.xticks(Xs, list(distance_dav_boul_dict.keys()))
                 plt.xlabel("Distance Metric setting")
                 plt.ylabel("Davies-Bouldin score")
-                plt.title(f"D-B score per DBSCAN config with embedder `{embedder_name}` ({city_mode_name})")
+                plt.title(f"D-B score per OPTICS config with embedder `{embedder_name}` ({city_mode_name})")
                 plt.savefig(f"{OUTPUT_FOLDER}/dav_boul.png")
                 plt.close()
