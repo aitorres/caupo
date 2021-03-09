@@ -100,9 +100,11 @@ with Timer("Main script runtime"):
                     dbscan_result = dbscan.fit(vectors)
                     t1 = time.time()
 
+
                 with Timer(f"Getting metrics with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     model_time = t1 - t0
                     dbscan_labels = dbscan_result.labels_
+                    logger.info("DBSCAN generated `%s` cluster(s)", len({i for i in dbscan_labels if i != -1}))
                     logger.debug("Calculating silhouette score")
                     sil_score = silhouette_score(vectors, dbscan_labels, metric=distance_metric)
                     logger.debug("Calculating Davies-Boulding score")
@@ -149,8 +151,6 @@ with Timer("Main script runtime"):
                     with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:
                         md_file.write(f"|{city_mode_name}|{embedder_name}|{distance_metric}|{eps}|{model_time}|{sil_score}|{dav_boul_score}|{cal_har_score}|\n")
 
-                logger.info("DBSCAN generated `%s` cluster(s)", len({i for i in dbscan_labels if i != -1}))
-
                 with Timer(f"Generating scatterplot for clusters with eps=`{eps}`, distance metric `{distance_metric}` and embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                     plot_clusters(scatterplot_vectors,
                                 filename=f"{OUTPUT_FOLDER}/clusters_{distance_metric}_{eps}.png",
@@ -159,7 +159,7 @@ with Timer("Main script runtime"):
 
             # Plotting time bar chart
             with Timer(f"Generating bar chart for time with embedder `{embedder_name}` ({city_mode_name})"):
-                Xs = len(distance_eps_time_dict.keys())
+                Xs = range(len(distance_eps_time_dict.keys()))
                 Ys = list(distance_eps_time_dict.values())
                 plt.bar(Xs, Ys)
                 plt.xticks(Xs, list(distance_eps_time_dict.keys()))
@@ -171,7 +171,7 @@ with Timer("Main script runtime"):
 
             # Plotting silhouette bar chart
             with Timer(f"Generating bar chart for silhouette with embedder `{embedder_name}` ({city_mode_name})"):
-                Xs = len(distance_eps_silhouette_dict.keys())
+                Xs = range(len(distance_eps_silhouette_dict.keys()))
                 Ys = list(distance_eps_silhouette_dict.values())
                 plt.bar(Xs, Ys)
                 plt.xticks(Xs, list(distance_eps_silhouette_dict.keys()))
@@ -183,7 +183,7 @@ with Timer("Main script runtime"):
 
             # Plotting Calinski and Harabasz bar chart
             with Timer(f"Generating bar chart for Calinski and Harabasz with embedder `{embedder_name}` ({city_mode_name})"):
-                Xs = len(distance_eps_cal_har_dict.keys())
+                Xs = range(len(distance_eps_cal_har_dict.keys()))
                 Ys = list(distance_eps_cal_har_dict.values())
                 plt.bar(Xs, Ys)
                 plt.xticks(Xs, list(distance_eps_cal_har_dict.keys()))
@@ -195,7 +195,7 @@ with Timer("Main script runtime"):
 
             # Plotting Davies-Bouldin score bar chart
             with Timer(f"Generating bar chart for Davies-Bouldin score with embedder `{embedder_name}` ({city_mode_name})"):
-                Xs = len(distance_eps_dav_boul_dict.keys())
+                Xs = range(len(distance_eps_dav_boul_dict.keys()))
                 Ys = list(distance_eps_dav_boul_dict.values())
                 plt.bar(Xs, Ys)
                 plt.xticks(Xs, list(distance_eps_dav_boul_dict.keys()))
