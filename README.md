@@ -11,6 +11,7 @@ In order to reproduce the workflow of experiments in the project, you can follow
 3. `measure_possible_eps_values_for_embeddings.py`
 4. `measure_hyperparameters_for_dbscan.py`
 5. `measure_optics_clusters.py`
+5. `measure_hdbscan_clusters.py`
 
 You can run the following script which has been added to the repository in order to easen up each measurement run with some extra considerations, such as turning off Twitter fetching while tests run
 

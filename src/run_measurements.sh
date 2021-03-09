@@ -14,6 +14,7 @@ nohup nice -n -19 python -u measure_proper_k_for_embeddings.py
 nohup nice -n -19 python -u measure_possible_eps_values_for_embeddings.py
 nohup nice -n -19 python -u measure_hyperparameters_for_dbscan.py
 nohup nice -n -19 python -u measure_optics_clusters.py
+nohup nice -n -19 python -u measure_hdbscan_clusters.py
 printf "*** Measurements finished on `date` ***\n\n"
 
 echo "*** Unlocking Twitter fetch script***"
