@@ -41,7 +41,7 @@ def doc2vec_embedder(corpus: List[str]) -> List[float]:
     """
 
     tagged_documents = [TaggedDocument(doc.split(), [i]) for i, doc in enumerate(corpus)]
-    model = Doc2Vec(tagged_documents, vector_size=400, window=3, min_count=3, workers=4)
+    model = Doc2Vec(tagged_documents, vector_size=150, window=5, min_count=3, workers=8)
     vectors = [model.infer_vector(doc.split()) for doc in corpus]
 
     return scale_vectors(vectors)
