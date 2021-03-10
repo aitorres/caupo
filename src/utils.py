@@ -140,7 +140,7 @@ def plot_clusters(vectors, filename, title, labels=None):
                      "#A6A6A6"] # gray would be used for a "-1" label
     colors = [COLOR_PALETTE[i] for i in labels]
 
-    plt.scatter(vectors[:,0], vectors[:,1], c=colors, s=4)
+    plt.scatter(vectors[:,0], vectors[:,1], c=colors, s=2)
     plt.title(title)
     plt.savefig(filename)
     plt.close()
