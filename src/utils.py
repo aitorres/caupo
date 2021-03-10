@@ -1,5 +1,6 @@
 import logging
 import time
+import re
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -114,7 +115,7 @@ def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_unint
 
     if dates is not None:
         query["created_at"] = {
-            "$in": [f"/^{d}/" for d in dates]
+            "$in": [re.compile(f"^{d}") for d in dates]
         }
 
     if city is not None:
