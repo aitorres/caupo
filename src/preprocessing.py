@@ -8,13 +8,35 @@ from itertools import filterfalse
 from typing import List, Set
 
 import emoji
+import spacy
 from nltk import download as nltk_download
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.stem import SnowballStemmer
 
 # Install nltk data, if needed
 nltk_download('stopwords')
 nltk_download('punkt')
+
+nlp = spacy.load('es_core_news_md')
+stemmer = SnowballStemmer('spanish')
+
+
+def lemmatizer(text: str) -> str:
+    """
+    Given a phrase, returns the same phrase lemmatized
+    """
+
+    doc = nlp(text)
+    return ' '.join([word.lemma_ for word in doc])
+
+
+def stem(text: str) -> str:
+    """
+    Given a text, returns the same text stemmed
+    """
+
+    return " ".join([stemmer.stem(i) for i in word_tokenize(text)])
 
 
 def get_stopwords() -> Set[str]:
@@ -95,7 +117,7 @@ def preprocess_corpus(corpus: List[str]) -> List[str]:
     # Temporarily corpus for further preprocessing
     splitted_corpus = map(word_tokenize, no_linebreaks_corpus)
 
-    # Keep only alphanumeric strings # TODO: think better about this
+    # Keep only alphanumeric strings
     alphanumeric_corpus = map(partial(filter, lambda x: x.isalpha()), splitted_corpus)
 
     # Remove stopwords
@@ -103,8 +125,12 @@ def preprocess_corpus(corpus: List[str]) -> List[str]:
     clean_corpus = map(partial(filterfalse, lambda x: x in spanish_stopwords), alphanumeric_corpus)
 
     # Rejoin corpus
-    corpus_list = list(map(list, clean_corpus))
-    final_corpus = list(map(" ".join, corpus_list))
+    corpus_list = map(list, clean_corpus)
+    rejoined_corpus = map(" ".join, corpus_list)
+
+    # Lemmatize and/or stem
+    final_corpus = list(map(stem, rejoined_corpus))
+    #final_corpus = list(map(lemmatizer, rejoined_corpus))
 
     return final_corpus
 
