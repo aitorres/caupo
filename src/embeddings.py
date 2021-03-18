@@ -102,6 +102,25 @@ def bert_embedder(corpus: List[str], model_name: str = "paraphrase-xlm-r-multili
     return scale_vectors(vectors)
 
 
+def reduce_dimensionality(embedder: Callable[[List[str]], List[float]],
+                          dimensions: int = 50) -> Callable[[List[str]], List[float]]:
+    """
+    Given an embedder, returns a callable with reduced dimensionality using PCA
+    """
+
+    pca_model = PCA(n_components=dimensions)
+
+    def new_embedder(corpus: List[str]):
+        """Calculates vectors using an external embedder and PCA to reduce dimensionality"""
+
+        vectors = embedder(vectors)
+        reduced_vectors = pca_model.fit_transform(vectors)
+
+        return reduced_vectors
+
+    return new_embedder
+
+
 def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
     """
     Returns a list of the available embedders.
@@ -124,7 +143,11 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
             bert_embedder, model_name='distiluse-base-multilingual-cased-v2'),
     }
 
-    return embedders
+    reduced_embedders = {}
+    for name, embedder in embedders.items():
+        reduced_embedders[f"{name} (50-dim)"] = reduce_dimensionality(embedder)
+
+    return {*embedders, *reduced_embedders}
 
 
 def get_optimal_eps_for_embedder(distance: str, name: str) -> float:
