@@ -58,8 +58,8 @@ def remove_emoji(phrase):
     return emoji.get_emoji_regexp().sub(r'', phrase)
 
 
-def remove_accents(phrase):
-    """Removes all accents (áéíóú) from a lowercase phrase"""
+def map_strange_characters(phrase):
+    """Removes all accents (áéíóú) and linebreaks from a lowercase phrase"""
 
     accents_map = {
         'á': 'a',
@@ -67,36 +67,31 @@ def remove_accents(phrase):
         'í': 'i',
         'ó': 'o',
         'ú': 'u',
+        '\n': ' ',
     }
 
     return "".join(map(lambda x: x if x not in accents_map else accents_map[x], phrase))
 
 
-def remove_linebreaks(phrase):
-    """Removes all linebreaks from a phrase, replacing by whitespace"""
+def remove_urls_mentions_hashtags(phrase):
+    """Removes all URLs, mentions and hashtags from a lowercase phrase"""
 
-    return "".join(map(lambda x: " " if x == "\n" else x, phrase))
+    def should_remove(token):
+        """Determines whether a token should be removed"""
 
+        if token.startswith("http"):
+            return True
 
-def remove_urls(phrase):
-    """Removes all URLs from a lowercase phrase"""
+        if token.startswith("@"):
+            return True
 
-    return " ".join([token for token in phrase.split() if not token.startswith("http")])
+        if token.startswith("#"):
+            return True
 
-
-def remove_mentions(phrase):
-    """Removes all Twitter mentions (@username) from a lowercase phrase"""
-
-    return " ".join([token for token in phrase.split() if not token.startswith("@")])
-
-
-def remove_hashtags(phrase):
-    """Removes all Twitter hashtags (#username) from a lowercase phrase"""
-
-    return " ".join([token for token in phrase.split() if not token.startswith("#")])
+        return False
 
 
-def preprocess_corpus(corpus: List[str]) -> List[str]:
+def preprocess_corpus(corpus: List[str], lemmatize: bool = True) -> List[str]:
     """
     Given a corpus of phrases / text, applies a series of functions
     that will preprocess the text and return a list of each preprocessed
@@ -107,20 +102,18 @@ def preprocess_corpus(corpus: List[str]) -> List[str]:
     lowercase_corpus = map(lambda x: x.lower(), corpus)
 
     # Removing unnecessary elements (fit as needed)
-    no_urls_corpus = map(remove_urls, lowercase_corpus)
-    no_mentions_corpus = map(remove_mentions, no_urls_corpus)
-    no_hashtags_corpus = map(remove_hashtags, no_mentions_corpus)
-    unaccented_corpus = map(remove_accents, no_hashtags_corpus)
-    no_emoji_corpus = map(remove_emoji, unaccented_corpus)
-    no_linebreaks_corpus = map(remove_linebreaks, no_emoji_corpus)
+    no_strange_tokens_corpus = map(remove_urls_mentions_hashtags, lowercase_corpus)
+    character_mapped_corpus = map(map_strange_characters, no_strange_tokens_corpus)
+    no_emoji_corpus = map(remove_emoji, character_mapped_corpus)
 
     # Temporarily corpus for further preprocessing
-    splitted_corpus = map(word_tokenize, no_linebreaks_corpus)
+    splitted_corpus = map(word_tokenize, no_emoji_corpus)
 
     # Keep only alphanumeric strings
     alphanumeric_corpus = map(partial(filter, lambda x: x.isalpha()), splitted_corpus)
 
     # Remove stopwords
+    # TODO: Maybe this should be done earlier
     spanish_stopwords = get_stopwords()
     clean_corpus = map(partial(filterfalse, lambda x: x in spanish_stopwords), alphanumeric_corpus)
 
@@ -129,8 +122,10 @@ def preprocess_corpus(corpus: List[str]) -> List[str]:
     rejoined_corpus = map(" ".join, corpus_list)
 
     # Lemmatize and/or stem
-    final_corpus = list(map(stem, rejoined_corpus))
-    #final_corpus = list(map(lemmatizer, rejoined_corpus))
+    if lemmatize:
+        final_corpus = list(map(lemmatizer, rejoined_corpus))
+    else:
+        final_corpus = list(map(stem, rejoined_corpus))
 
     return final_corpus
 
