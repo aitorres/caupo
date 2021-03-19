@@ -74,4 +74,4 @@ with Timer("Main script runtime"):
                 for type, entities in types_entities.items():
                     logger.debug("Current type: %s", type)
                     wcloud = WordCloud(max_words=100).generate(" ".join(entities))
-                    wcloud.to_file(f"{BASE_OUTPUT_FOLDER}/entities_cloud_{type}.png")
+                    wcloud.to_file(f"{BASE_OUTPUT_FOLDER}/entities_cloud_{city_mode_name}_{type}.png")
