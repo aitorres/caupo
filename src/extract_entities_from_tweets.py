@@ -12,6 +12,7 @@ import es_core_news_md
 import matplotlib as mpl
 from wordcloud import WordCloud
 
+from preprocessing import get_stopwords
 from utils import get_city_modes, get_text_from_all_tweets, Timer
 
 
@@ -44,6 +45,7 @@ logger.addHandler(file_handler)
 with Timer("Main script runtime"):
     nlp = es_core_news_md.load()
     city_modes = get_city_modes().items()
+    stop_words = get_stopwords()
 
     for city_mode_name, city_mode_tag in city_modes:
         with Timer(f"Running script for city {city_mode_name}"):
@@ -73,5 +75,5 @@ with Timer("Main script runtime"):
             with Timer("Generating word cloud from texts for each type"):
                 for type, entities in types_entities.items():
                     logger.debug("Current type: %s", type)
-                    wcloud = WordCloud(max_words=100).generate(" ".join(entities))
+                    wcloud = WordCloud(max_words=100, stopwords=stop_words).generate(" ".join(entities))
                     wcloud.to_file(f"{BASE_OUTPUT_FOLDER}/entities_cloud_{city_mode_name}_{type}.png")
