@@ -75,5 +75,5 @@ with Timer("Main script runtime"):
             with Timer("Generating word cloud from texts for each type"):
                 for type, entities in types_entities.items():
                     logger.debug("Current type: %s", type)
-                    wcloud = WordCloud(max_words=100, stopwords=stop_words).generate(" ".join(entities))
+                    wcloud = WordCloud(width=800, height=400, max_words=150, stopwords=stop_words).generate(" ".join(entities))
                     wcloud.to_file(f"{BASE_OUTPUT_FOLDER}/entities_cloud_{city_mode_name}_{type}.png")
