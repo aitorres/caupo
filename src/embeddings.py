@@ -113,7 +113,7 @@ def reduce_dimensionality(embedder: Callable[[List[str]], List[float]],
     def new_embedder(corpus: List[str]):
         """Calculates vectors using an external embedder and PCA to reduce dimensionality"""
 
-        vectors = embedder(vectors)
+        vectors = embedder(corpus)
         reduced_vectors = pca_model.fit_transform(vectors)
 
         return reduced_vectors
