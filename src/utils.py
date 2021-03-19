@@ -41,7 +41,7 @@ def get_city_modes():
     #? INFO: Elements are of the form (key, value) === (title, parameter)
     CITY_MODES = {
         'Caracas': 'Caracas',
-        #'All Cities': None,
+        'All Cities': None,
     }
 
     return CITY_MODES
