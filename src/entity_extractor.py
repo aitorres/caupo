@@ -8,8 +8,10 @@ usage.
 """
 
 import argparse
+import logging
+import os
 from calendar import monthrange
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Set, Tuple
 
 import bson.regex
@@ -18,6 +20,31 @@ import pymongo
 import es_core_news_md
 from preprocessing import map_strange_characters
 from utils import get_non_unique_content_from_tweets, get_uninteresting_usernames
+
+# Instantiate logger
+logger = logging.getLogger("caupo")
+logger.setLevel(logging.DEBUG)
+
+# Create formatter
+formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
+
+# Add console (standard output) handler to the logger
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+# Creating folder for output
+now = datetime.now()
+timestamp = now.strftime("%Y-%m-%d-%H-%M-%S")
+BASE_OUTPUT_FOLDER = f"outputs/entity_extractor/{ timestamp }"
+os.makedirs(BASE_OUTPUT_FOLDER)
+
+# Add file handler to the logger
+file_handler = logging.FileHandler(f'{BASE_OUTPUT_FOLDER}/entity_extractor.log')
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 # Database settings
 client = pymongo.MongoClient('mongodb://127.0.0.1:27019')
@@ -211,14 +238,23 @@ class EntityTag:
         """Given a freshly initialized instance, fetches and extracts information and stores result in DB"""
 
         # Loading info
+        logger.debug("[%s] Loading tweets", self.tag)
         self.load_tweets()
+        logger.debug("[%s] Successfully loaded %s tweets", len(self.tweets))
 
         # Calculations
+        logger.debug("[%s] Extracting hashtags", self.tag)
         self.extract_hashtags()
+        logger.debug("[%s] Extracting entities", self.tag)
         self.extract_entities()
 
+        logger.debug("[%s] Successfully extracted %s hashtagstags and %s entities", self.tag,
+                     len(self.hashtags), len(self.all_entities))
+
         # Store
+        logger.debug("[%s] Storing information...", self.tag)
         self.store_in_db()
+        logger.debug("[%s] Information stored", self.tag)
 
 
 def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
@@ -295,6 +331,8 @@ def exclude_preexisting_tags(frequency: str, tags: List[Tuple[str, List[date]]])
 
         if not exists:
             filtered_tags.append(tag)
+        else:
+            logger.info("Excluding tag %s", tag[0])
 
     return filtered_tags
 
@@ -332,18 +370,25 @@ def main() -> None:
     frequency = args.frequency
     recalculate = args.recalculate
 
+    logger.debug("Main execution started")
+
     # Get tags for requested frequency
     tags = get_tags_by_frequency(frequency)
+    logger.info("Amount of tags: %s", len(tags))
 
     # Unless required to recalculate, drop tags that have already been stored
     if not recalculate:
         tags = exclude_preexisting_tags(frequency, tags)
+    else:
+        logger.info("Including all tags")
 
     # Initializing an entity tag instance for each tag
     entity_tags = [EntityTag(name, frequency, dates) for name, dates in tags]
 
     for entity_tag in entity_tags:
         entity_tag.fetch_and_store()
+
+    logger.debug("Main execution finished")
 
 
 # For running the main script
