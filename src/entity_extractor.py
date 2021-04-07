@@ -184,6 +184,7 @@ class EntityTag:
             {
                 "user.screen_name": { "$nin": get_uninteresting_usernames() },
                 "full_text": { "$nin": get_non_unique_content_from_tweets() },
+                "city_tag": "Caracas",
                 "created_at": {
                     "$in": [bson.regex.Regex(f"^{d}") for d in self.formatted_dates]
                 }
