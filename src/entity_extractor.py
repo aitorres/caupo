@@ -10,11 +10,12 @@ usage.
 import argparse
 from calendar import monthrange
 from datetime import date, timedelta
-from typing import List, Tuple
+from typing import Any, Dict, List, Set, Tuple
 
 import bson.regex
 import pymongo
 
+import es_core_news_md
 from preprocessing import map_strange_characters
 from utils import get_non_unique_content_from_tweets, get_uninteresting_usernames
 
@@ -48,21 +49,97 @@ class EntityTag:
         self.tweets = None
 
         # Hashtags to be extracted
-        self.hashtags = None
+        self.hashtags = []
 
         # Entities to be extracted
-        self.all_entities = None
-        self.organizations = None
-        self.locations = None
-        self.persons = None
-        self.misc = None
+        self.all_entities = []
+        self.organizations = []
+        self.locations = []
+        self.persons = []
+        self.misc = []
 
+    @property
+    def all_entities_set(self) -> Set[str]:
+        """Return a set with all entities currently stored"""
+
+        return set(self.all_entities)
+
+    @property
+    def organizations_set(self) -> Set[str]:
+        """Return a set with all organization entities currently stored"""
+
+        return set(self.organizations)
+
+    @property
+    def locations_set(self) -> Set[str]:
+        """Return a set with all location entities currently stored"""
+
+        return set(self.locations)
+
+    @property
+    def persons_set(self) -> Set[str]:
+        """Return a set with all person entities currently stored"""
+
+        return set(self.persons)
+
+    @property
+    def misc_set(self) -> Set[str]:
+        """Return a set with all misc entities currently stored"""
+
+        return set(self.misc)
+
+    @property
+    def hashtags_set(self) -> Set[str]:
+        """Return a set with all hashtags currently stored"""
+
+        return set(self.hashtags)
 
     @property
     def formatted_dates(self) -> List[str]:
         """Returns a list of the `dates` of this tag in YYYY-MM-DD format"""
 
         return [date.strftime("%Y-%m-%d") for date in self.dates]
+
+
+    def to_json(self) -> Dict[str, Any]:
+        """Returns a JSON-like representation of the object, ready for storage in MongoDB"""
+
+        json = {
+            "tag": self.tag,
+            "frequency": self.frequency,
+            "first_date": self.dates[0].strftime("%Y-%m-%d"),
+            "last_date":  self.dates[-1].strftime("%Y-%m-%d"),
+            "dates": self.formatted_dates,
+            "tweets": self.tweets,
+            "entities": {
+                "all": {
+                    "list": self.all_entities,
+                    "set": list(self.all_entities_set),
+                },
+                "organizations": {
+                    "list": self.organizations,
+                    "set": list(self.organizations_set),
+                },
+                "locations": {
+                    "list": self.locations,
+                    "set": list(self.locations_set),
+                },
+                "persons": {
+                    "list": self.persons,
+                    "set": list(self.persons_set),
+                },
+                "misc": {
+                    "list": self.misc,
+                    "set": list(self.misc_set),
+                },
+            },
+            "hashtags": {
+                "list": self.hashtags,
+                "set": list(self.hashtags_set),
+            },
+        }
+
+        return json
 
 
     def load_tweets(self) -> None:
@@ -79,17 +156,14 @@ class EntityTag:
             { "full_text": 1 }
         )
 
-        self.tweets = [t["full_text"] for t in tweets]
+        self.tweets = list({t["full_text"] for t in tweets})
 
 
     def extract_hashtags(self) -> None:
         """Stores a list of hashtags used in the tweets within the object's state"""
 
-        if not self.tweets:
-            self.hashtags = []
+        if self.hashtags:
             return
-
-        self.hashtags = set()
 
         for tweet in self.tweets:
             words = tweet.split()
@@ -97,7 +171,32 @@ class EntityTag:
             for hashtag in hashtags:
                 # Normalizing hashtag
                 hashtag = map_strange_characters(hashtag.lower())
-                self.hashtags.add(hashtag)
+                self.hashtags.append(hashtag)
+
+
+    def extract_entities(self) -> None:
+        """Extracts and stores several lists of categorized entities within the object's state"""
+
+        if self.all_entities:
+            return
+
+        nlp = es_core_news_md.load()
+        processed_tweets = [nlp(tweet) for tweet in self.tweets]
+        entities_per_tweet = [{(X.text, X.label_) for X in doc.ents} for doc in processed_tweets]
+        entities = set().union(*entities_per_tweet)
+
+        for entity, label in entities:
+            self.all_entities.append(entity)
+
+            if label == "PER":
+                self.persons.append(entity)
+            if label == "ORG":
+                self.organizations.append(entity)
+            if label == "LOC":
+                self.locations.append(entity)
+            if label == "MISC":
+                self.misc.append(entity)
+
 
 
 def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
