@@ -91,7 +91,7 @@ spacy-legacy==3.0.1
 srsly==2.4.0
 tensorboard==2.2.2
 tensorboard-plugin-wit==1.8.0
-tensorflow==2.4.0
+tensorflow==2.2.0
 tensorflow-estimator==2.2.0
 tensorflow-hub==0.11.0
 tensorflow-text==2.2.1
@@ -102,6 +102,7 @@ thinc==8.0.2
 threadpoolctl==2.1.0
 tokenizers==0.10.1
 toml==0.10.2
+top2vec==1.0.23
 torch==1.8.0
 tqdm==4.59.0
 traitlets==5.0.5
