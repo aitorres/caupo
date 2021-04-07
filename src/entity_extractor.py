@@ -240,7 +240,7 @@ class EntityTag:
         # Loading info
         logger.debug("[%s] Loading tweets", self.tag)
         self.load_tweets()
-        logger.debug("[%s] Successfully loaded %s tweets", len(self.tweets))
+        logger.debug("[%s] Successfully loaded %s tweets", self.tag, len(self.tweets))
 
         # Calculations
         logger.debug("[%s] Extracting hashtags", self.tag)
@@ -327,7 +327,7 @@ def exclude_preexisting_tags(frequency: str, tags: List[Tuple[str, List[date]]])
     filtered_tags = []
 
     for tag in tags:
-        exists = collection.find({"tag": tag[0]}).count() > 0
+        exists = collection.count_documents({"tag": tag[0]}) > 0
 
         if not exists:
             filtered_tags.append(tag)
