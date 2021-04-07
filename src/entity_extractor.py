@@ -197,7 +197,7 @@ def main() -> None:
 
     # Unless required to recalculate, drop tags that have already been stored
     if not recalculate:
-        tags = exclude_preexisting_tags(tags)
+        tags = exclude_preexisting_tags(frequency, tags)
 
     # Initializing an entity tag instance for each tag
     entity_tags = [EntityTag(name, frequency, dates) for name, dates in tags]
