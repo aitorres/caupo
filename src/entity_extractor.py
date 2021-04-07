@@ -246,23 +246,23 @@ class EntityTag:
         """Given a freshly initialized instance, fetches and extracts information and stores result in DB"""
 
         # Loading info
-        logger.debug("[%s] Loading tweets", self.tag)
+        logger.debug("[Tag %s] Loading tweets", self.tag)
         self.load_tweets()
-        logger.debug("[%s] Successfully loaded %s tweets", self.tag, len(self.tweets))
+        logger.debug("[Tag %s] Successfully loaded %s tweets", self.tag, len(self.tweets))
 
         # Calculations
-        logger.debug("[%s] Extracting hashtags", self.tag)
+        logger.debug("[Tag %s] Extracting hashtags", self.tag)
         self.extract_hashtags()
-        logger.debug("[%s] Extracting entities", self.tag)
+        logger.debug("[Tag %s] Extracting entities", self.tag)
         self.extract_entities()
 
-        logger.debug("[%s] Successfully extracted %s hashtagstags and %s entities", self.tag,
+        logger.debug("[Tag %s] Successfully extracted %s hashtagstags and %s entities", self.tag,
                      len(self.hashtags), len(self.all_entities))
 
         # Store
-        logger.debug("[%s] Storing information...", self.tag)
+        logger.debug("[Tag %s] Storing information...", self.tag)
         self.store_in_db()
-        logger.debug("[%s] Information stored", self.tag)
+        logger.debug("[Tag %s] Information stored", self.tag)
 
 
 def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
