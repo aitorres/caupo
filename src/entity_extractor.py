@@ -111,6 +111,24 @@ def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
     raise NotImplementedError(f"Value of `frequency` = `{frequency}` not supported in `get_tags_by_frequency`")
 
 
+def exclude_preexisting_tags(frequency: str, tags: List[Tuple[str, List[date]]]) -> List[Tuple[str, List[date]]]:
+    """
+    Given a frequency and a list of tags and dates, returns a new list containing only tags
+    that don't already exist on the database.
+    """
+
+    collection = get_collection_by_frequency(frequency)
+    filtered_tags = []
+
+    for tag in tags:
+        exists = len(collection.find({"tag": tag[0]})) > 0
+
+        if not exists:
+            filtered_tags.append(tag)
+
+    return filtered_tags
+
+
 def get_collection_by_frequency(frequency: str) -> pymongo.collection.Collection:
     """Given a frequency, returns the appropriate collection where information should be stored"""
 
@@ -142,6 +160,14 @@ def main() -> None:
     parser = get_args_parser()
     args = parser.parse_args()
     frequency = args.frequency
+    recalculate = args.recalculate
+
+    # Get tags for requested frequency
+    tags = get_tags_by_frequency(frequency)
+
+    # Unless required to recalculate, drop tags that have already been stored
+    if not recalculate:
+        tags = exclude_preexisting_tags(tags)
 
     raise NotImplementedError("Main script not implemented")
 
