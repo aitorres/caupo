@@ -74,7 +74,7 @@ def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
     if frequency == 'weekly':
         # Calculate distance in weeks
         most_recent_monday = today - timedelta(today.weekday())
-        weeks = (most_recent_monday - initial_day).days / 7
+        weeks = (most_recent_monday - initial_day).days // 7
 
         tags = []
         for week_number in range(weeks):
@@ -142,6 +142,7 @@ def main() -> None:
     frequency = args.frequency
 
     raise NotImplementedError("Main script not implemented")
+
 
 # For running the main script
 if __name__ == "__main__":
