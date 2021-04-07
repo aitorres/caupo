@@ -198,6 +198,28 @@ class EntityTag:
                 self.misc.append(entity)
 
 
+    def store_in_db(self) -> None:
+        """Stores information in database"""
+
+        collection = get_collection_by_frequency(self.frequency)
+        object = self.to_json()
+
+        collection.insert_one(object)
+
+
+    def fetch_and_store(self) -> None:
+        """Given a freshly initialized instance, fetches and extracts information and stores result in DB"""
+
+        # Loading info
+        self.load_tweets()
+
+        # Calculations
+        self.extract_hashtags()
+        self.extract_entities()
+
+        # Store
+        self.store_in_db()
+
 
 def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
     """
@@ -320,7 +342,8 @@ def main() -> None:
     # Initializing an entity tag instance for each tag
     entity_tags = [EntityTag(name, frequency, dates) for name, dates in tags]
 
-    raise NotImplementedError("Main script not implemented")
+    for entity_tag in entity_tags:
+        entity_tag.fetch_and_store()
 
 
 # For running the main script
