@@ -90,7 +90,7 @@ def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
 
     if frequency == 'monthly':
         initial_year, initial_month = initial_day.year, initial_day.month
-        today_year, today_month = today_day.year, today_day.month
+        today_year, today_month = today.year, today.month
 
         tags = []
         for year in range(initial_year, today_year + 1):

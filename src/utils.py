@@ -46,6 +46,7 @@ def get_city_modes():
 
     return CITY_MODES
 
+
 def get_all_tweets():
     """
     Queries and returns a cursor with all tweets stored in the database.
