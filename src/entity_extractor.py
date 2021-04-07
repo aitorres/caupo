@@ -15,6 +15,7 @@ from typing import List, Tuple
 import bson.regex
 import pymongo
 
+from preprocessing import map_strange_characters
 from utils import get_non_unique_content_from_tweets, get_uninteresting_usernames
 
 # Database settings
@@ -79,6 +80,24 @@ class EntityTag:
         )
 
         self.tweets = [t["full_text"] for t in tweets]
+
+
+    def extract_hashtags(self) -> None:
+        """Stores a list of hashtags used in the tweets within the object's state"""
+
+        if not self.tweets:
+            self.hashtags = []
+            return
+
+        self.hashtags = set()
+
+        for tweet in self.tweets:
+            words = tweet.split()
+            hashtags = [w for w in words if w.startswith("#")]
+            for hashtag in hashtags:
+                # Normalizing hashtag
+                hashtag = map_strange_characters(hashtag.lower())
+                self.hashtags.add(hashtag)
 
 
 def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
