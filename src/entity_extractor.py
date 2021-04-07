@@ -137,32 +137,40 @@ class EntityTag:
             "first_date": self.dates[0].strftime("%Y-%m-%d"),
             "last_date":  self.dates[-1].strftime("%Y-%m-%d"),
             "dates": self.formatted_dates,
+            "dates_amount": len(self.dates),
             "tweets": self.tweets,
+            "tweets_amount": len(self.tweets),
             "entities": {
                 "all": {
                     "list": self.all_entities,
                     "set": list(self.all_entities_set),
+                    "unique_amount": len(self.all_entities_set),
                 },
                 "organizations": {
                     "list": self.organizations,
                     "set": list(self.organizations_set),
+                    "unique_amount": len(self.organizations_set),
                 },
                 "locations": {
                     "list": self.locations,
                     "set": list(self.locations_set),
+                    "unique_amount": len(self.locations_set),
                 },
                 "persons": {
                     "list": self.persons,
                     "set": list(self.persons_set),
+                    "unique_amount": len(self.persons_set),
                 },
                 "misc": {
                     "list": self.misc,
                     "set": list(self.misc_set),
+                    "unique_amount": len(self.misc_set),
                 },
             },
             "hashtags": {
                 "list": self.hashtags,
                 "set": list(self.hashtags_set),
+                "unique_amount": len(self.hashtags_set),
             },
         }
 
