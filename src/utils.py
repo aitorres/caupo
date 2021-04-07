@@ -88,6 +88,16 @@ def get_non_unique_content_from_tweets():
     return [doc['_id'] for doc in get_non_unique_tweets()]
 
 
+def get_uninteresting_usernames():
+    """Returns a list with the user handles that are not interesting for queries"""
+
+    return [
+        "SismosVenezuela",
+        "DolarBeta",
+        "tiempo_caracas",
+    ]
+
+
 def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_uninteresting_text=True,
                              city=None, dates=None):
     """
@@ -96,11 +106,7 @@ def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_unint
     """
 
     if exclude_uninteresting_usernames:
-        uninteresting_usernames = [
-            "SismosVenezuela",
-            "DolarBeta",
-            "tiempo_caracas",
-        ]
+        uninteresting_usernames = get_uninteresting_usernames()
     else:
         uninteresting_usernames = []
 
