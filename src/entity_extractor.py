@@ -12,7 +12,10 @@ from calendar import monthrange
 from datetime import date, timedelta
 from typing import List, Tuple
 
+import bson.regex
 import pymongo
+
+from utils import get_non_unique_content_from_tweets, get_uninteresting_usernames
 
 # Database settings
 client = pymongo.MongoClient('mongodb://127.0.0.1:27019')
@@ -26,19 +29,22 @@ INITIAL_DAY_DICT = {
 }
 
 
-class EntityListWrapper:
+class EntityTag:
     """
     A wrapper class to hold a collection of extracted entities and metadata about said
     collection.
     """
 
-    def __init__(self, frequency: str, tweets: List[str]) -> None:
+    def __init__(self, tag: str, frequency: str, dates: List[date]) -> None:
         """Initializes the wrapper"""
 
         # Internal settings
-        self.frequency = frequency
         self.tag = tag
-        self.tweets = tweets
+        self.frequency = frequency
+        self.dates = dates
+
+        # Text to be collected
+        self.tweets = None
 
         # Hashtags to be extracted
         self.hashtags = None
@@ -49,6 +55,30 @@ class EntityListWrapper:
         self.locations = None
         self.persons = None
         self.misc = None
+
+
+    @property
+    def formatted_dates(self) -> List[str]:
+        """Returns a list of the `dates` of this tag in YYYY-MM-DD format"""
+
+        return [date.strftime("%Y-%m-%d") for date in self.dates]
+
+
+    def load_tweets(self) -> None:
+        """Loads and stores a copy of the tweets' text that are covered by this tag"""
+
+        tweets = db.tweets.find(
+            {
+                "user.screen_name": { "$nin": get_uninteresting_usernames() },
+                "full_text": { "$nin": get_non_unique_content_from_tweets() },
+                "created_at": {
+                    "$in": [bson.regex.Regex(f"^{d}") for d in self.formatted_dates]
+                }
+            },
+            { "full_text": 1 }
+        )
+
+        self.tweets = [t["full_text"] for t in tweets]
 
 
 def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
@@ -168,6 +198,9 @@ def main() -> None:
     # Unless required to recalculate, drop tags that have already been stored
     if not recalculate:
         tags = exclude_preexisting_tags(tags)
+
+    # Initializing an entity tag instance for each tag
+    entity_tags = [EntityTag(name, frequency, dates) for name, dates in tags]
 
     raise NotImplementedError("Main script not implemented")
 
