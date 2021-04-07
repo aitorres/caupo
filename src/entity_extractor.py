@@ -78,7 +78,7 @@ def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
 
         tags = []
         for week_number in range(weeks):
-            week_monday = today + timedelta(days=7 * week_number)
+            week_monday = initial_day + timedelta(days=7 * week_number)
 
             # Gets list of all days in this week, from monday to sunday
             days = [week_monday + timedelta(days=i) for i in range(7)]
