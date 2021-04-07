@@ -256,7 +256,7 @@ class EntityTag:
         logger.debug("[Tag %s] Extracting entities", self.tag)
         self.extract_entities()
 
-        logger.debug("[Tag %s] Successfully extracted %s hashtagstags and %s entities", self.tag,
+        logger.debug("[Tag %s] Successfully extracted %s hashtags and %s entities", self.tag,
                      len(self.hashtags), len(self.all_entities))
 
         # Store
