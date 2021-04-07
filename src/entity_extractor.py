@@ -151,7 +151,7 @@ def exclude_preexisting_tags(frequency: str, tags: List[Tuple[str, List[date]]])
     filtered_tags = []
 
     for tag in tags:
-        exists = len(collection.find({"tag": tag[0]})) > 0
+        exists = collection.find({"tag": tag[0]}).count() > 0
 
         if not exists:
             filtered_tags.append(tag)
@@ -163,7 +163,7 @@ def get_collection_by_frequency(frequency: str) -> pymongo.collection.Collection
     """Given a frequency, returns the appropriate collection where information should be stored"""
 
     collection_name = f"entities_{frequency}"
-    collection = getattr(client, collection_name)
+    collection = getattr(db, collection_name)
     return collection
 
 
