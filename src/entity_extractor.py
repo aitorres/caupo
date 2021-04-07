@@ -126,6 +126,8 @@ def get_args_parser() -> argparse.ArgumentParser:
     parser.add_argument('frequency', metavar='FREQ', type=str,
                         choices=['daily', 'weekly', 'monthly'],
                         help='Frequency for query (supported values: daily, weekly, monthly)')
+    parser.add_argument('--recalculate', action='store_true',
+                        help='Force recalculation of already stored values')
     return parser
 
 
