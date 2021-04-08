@@ -39,3 +39,13 @@ nohup nice -n -19 python -u measure_embeddings.y &
 ## Interesting links
 
 - MongoDB cheat sheet: https://gist.github.com/bradtraversy/f407d642bdc3b31681bc7e56d95485b6
+
+## Run the API
+
+To run the API (back-end), use this command:
+
+```bash
+gunicorn -w 2 --threads 2 --preload --bind 0.0.0.0:5000 backend.app:app
+```
+
+Adjust the port and other parameters of Gunicorn as needed.
