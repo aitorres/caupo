@@ -13,6 +13,8 @@ from typing import Any, Dict, Tuple
 from flask import Flask, request
 from flask_cors import CORS
 
+from backend.api import entities
+
 # Logger initialization
 logger = logging.getLogger()
 
@@ -71,6 +73,10 @@ at.
         "errorType": "InternalServerError",
         "httpStatus": 500,
         "message": str(error)}, 500
+
+
+# Blueprints for functional endpoints
+app.register_blueprint(entities.blueprint)
 
 
 # Runs the Flask application server
