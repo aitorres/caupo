@@ -108,3 +108,4 @@ venv.bak/
 src/outputs/
 *.log
 *.out
+*.sock
