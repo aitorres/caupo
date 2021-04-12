@@ -10,4 +10,4 @@ sudo service nginx restart
 
 # Front-end
 cd frontend
-npm build
+npm run build
