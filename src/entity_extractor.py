@@ -195,6 +195,23 @@ class EntityTag:
         self.tweets = list({t["full_text"] for t in tweets})
 
 
+    def clean_tweets(self) -> None:
+        """Cleans certain events from the text of the tweets"""
+
+        if self.tweets is None:
+            return
+
+        # Creating different patterns for laughter
+        pattern_seeds = ["ja", "JA", "js", "aj", "AJ", "JS"]
+        lagughter = set()
+        for pattern in pattern_seeds:
+            laughter = laughter.union({ pattern * i for i in range(2, 6) })
+
+        # Removing laughter in Spanish (jajaja)
+        for i, tweet in enumerate(self.tweets):
+            self.tweets[i] = " ".join(map(lambda x: "" if x in laughter else x, tweet.split()))
+
+
     def extract_hashtags(self) -> None:
         """Stores a list of hashtags used in the tweets within the object's state"""
 
@@ -249,6 +266,7 @@ class EntityTag:
         # Loading info
         logger.debug("[Tag %s] Loading tweets", self.tag)
         self.load_tweets()
+        self.clean_tweets()
         logger.debug("[Tag %s] Successfully loaded %s tweets", self.tag, len(self.tweets))
 
         # Calculations
