@@ -52,7 +52,7 @@ const EntitiesPage: FC = () => {
     }
 
     return (
-      <p>loaded</p>
+      <p>Loaded (waiting for wordcloud render)</p>
     );
   };
 
@@ -74,7 +74,7 @@ const EntitiesPage: FC = () => {
     }
 
     return (
-      <p>loaded</p>
+      <p>Loaded (waiting for wordcloud render)</p>
     );
   };
 
@@ -96,7 +96,7 @@ const EntitiesPage: FC = () => {
     }
 
     return (
-      <p>loaded</p>
+      <p>Loaded (waiting for wordcloud render)</p>
     );
   };
 
@@ -116,14 +116,12 @@ const EntitiesPage: FC = () => {
                 tamaño de cada palabra / entidad / hashtag corresponde a qué tanto es usado ese término en el conjunto
                 de tweets analizado.
               </p>
-              {/* Activate this whenever a wordcloud library is updated
               <h2>Análisis diario</h2>
               { getDailyWordCloud() }
               <h2>Análisis semanal</h2>
               { getWeeklyWordCloud() }
               <h2>Análisis mensual</h2>
               { getMonthlyWordCloud() }
-              */}
             </>
           </Box>
         </Col>
