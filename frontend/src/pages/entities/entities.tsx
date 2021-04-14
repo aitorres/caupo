@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { Row, Col } from 'react-grid-system';
 import Loader from 'react-loader-spinner';
 
-import { EntitiesService } from '../../services/entities';
+import { EntitiesResponse, EntitiesService } from '../../services/entities';
 
 import RootPage from '../root/root';
 import Box from '../../components/box/box';
@@ -10,9 +10,9 @@ import Box from '../../components/box/box';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 const EntitiesPage: FC = () => {
-  const [dailyEntities, setDailyEntities] = useState(null as unknown);
-  const [weeklyEntities, setWeeklyEntities] = useState(null as unknown);
-  const [monthlyEntities, setMonthlyEntities] = useState(null as unknown);
+  const [dailyEntities, setDailyEntities] = useState(null as unknown as EntitiesResponse);
+  const [weeklyEntities, setWeeklyEntities] = useState(null as unknown as EntitiesResponse);
+  const [monthlyEntities, setMonthlyEntities] = useState(null as unknown as EntitiesResponse);
 
   useEffect(() => {
     EntitiesService.getEntities('daily')
@@ -52,7 +52,10 @@ const EntitiesPage: FC = () => {
     }
 
     return (
-      <p>Loaded (waiting for wordcloud render)</p>
+      <p>
+        Loaded (waiting for wordcloud render):
+        {dailyEntities.data[0].entities.all.set}
+      </p>
     );
   };
 
@@ -74,7 +77,10 @@ const EntitiesPage: FC = () => {
     }
 
     return (
-      <p>Loaded (waiting for wordcloud render)</p>
+      <p>
+        Loaded (waiting for wordcloud render):
+        {weeklyEntities.data[0].entities.all.set}
+      </p>
     );
   };
 
@@ -96,7 +102,10 @@ const EntitiesPage: FC = () => {
     }
 
     return (
-      <p>Loaded (waiting for wordcloud render)</p>
+      <p>
+        Loaded (waiting for wordcloud render):
+        {monthlyEntities.data[0].entities.all.set}
+      </p>
     );
   };
 
