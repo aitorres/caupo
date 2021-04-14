@@ -23,7 +23,7 @@ const HomePage: FC = () => (
               <em>
                 &ldquo;¿Duerme usted, señor Presidente?&rdquo;,&nbsp;
               </em>
-              poema largo de Caupolicán Ovalles.
+              poema largo de Caupolicán Ovalles, poeta venezolano del siglo XX.
             </p>
           </>
         </Box>
