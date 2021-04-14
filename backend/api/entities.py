@@ -38,6 +38,16 @@ def get_entities(frequency: str, amount: int = 0) -> Tuple[Dict[str, Any], int]:
     stored within tags for that frequency
     """
 
+    if isinstance(amount, str):
+        if amount.isdigit():
+            amount = int(amount)
+        else:
+            logger.error("[get_entities] Tried to get entities with invalid amount `%s`", amount)
+            return {
+                'httpStatus': 400,
+                'message': f'You requested an invalid or unrecognized amount (`{amount}`)'
+            }, 400
+
     if frequency not in VALID_FREQUENCIES:
         logger.error("[get_entities] Tried to get entities with invalid frequency `%s`", frequency)
         return {
