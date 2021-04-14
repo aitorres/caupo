@@ -4,9 +4,7 @@ import { Row, Col } from 'react-grid-system';
 import RootPage from '../root/root';
 import Box from '../../components/box/box';
 
-import '../../assets/css/general.css';
-
-const Home: FC = () => (
+const HomePage: FC = () => (
   <RootPage title="Inicio">
     <Row>
       <Col md={12}>
@@ -34,4 +32,4 @@ const Home: FC = () => (
   </RootPage>
 );
 
-export default Home;
+export default HomePage;
