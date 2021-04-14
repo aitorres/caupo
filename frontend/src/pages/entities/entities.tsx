@@ -59,8 +59,7 @@ const EntitiesPage: FC = () => {
 
     return (
       <p>
-        Loaded (waiting for wordcloud render):
-        <img src={`data:image/png;base64,${dailyEntities}`} alt="Wordcloud" />
+        <img className="center" src={`data:image/png;base64,${dailyEntities}`} alt="Wordcloud" />
       </p>
     );
   };
@@ -84,8 +83,7 @@ const EntitiesPage: FC = () => {
 
     return (
       <p>
-        Loaded (waiting for wordcloud render):
-        <img src={`data:image/png;base64,${weeklyEntities}`} alt="Wordcloud" />
+        <img className="center" src={`data:image/png;base64,${weeklyEntities}`} alt="Wordcloud" />
       </p>
     );
   };
@@ -109,8 +107,7 @@ const EntitiesPage: FC = () => {
 
     return (
       <p>
-        Loaded (waiting for wordcloud render):
-        <img src={`data:image/png;base64,${monthlyEntities}`} alt="Wordcloud" />
+        <img className="center" src={`data:image/png;base64,${monthlyEntities}`} alt="Wordcloud" />
       </p>
     );
   };
