@@ -15,7 +15,7 @@ const EntitiesPage: FC = () => {
   const [monthlyEntities, setMonthlyEntities] = useState('');
 
   useEffect(() => {
-    if (dailyEntities === null) {
+    if (dailyEntities === '') {
       EntitiesService.getWordcloud('daily')
         .then((res) => {
           setDailyEntities(res.data.data);
@@ -23,7 +23,7 @@ const EntitiesPage: FC = () => {
         .catch(() => {});
     }
 
-    if (weeklyEntities === null) {
+    if (weeklyEntities === '') {
       EntitiesService.getWordcloud('weekly')
         .then((res) => {
           setWeeklyEntities(res.data.data);
@@ -31,7 +31,7 @@ const EntitiesPage: FC = () => {
         .catch(() => {});
     }
 
-    if (monthlyEntities === null) {
+    if (monthlyEntities === '') {
       EntitiesService.getWordcloud('monthly')
         .then((res) => {
           setMonthlyEntities(res.data.data);
@@ -41,7 +41,7 @@ const EntitiesPage: FC = () => {
   });
 
   const getDailyWordCloud: () => React.ReactElement = () => {
-    if (dailyEntities === null) {
+    if (dailyEntities === '') {
       return (
         <>
           <p>Loading daily entities...</p>
@@ -66,7 +66,7 @@ const EntitiesPage: FC = () => {
   };
 
   const getWeeklyWordCloud: () => React.ReactElement = () => {
-    if (weeklyEntities === null) {
+    if (weeklyEntities === '') {
       return (
         <>
           <p>Loading weekly entities...</p>
@@ -91,7 +91,7 @@ const EntitiesPage: FC = () => {
   };
 
   const getMonthlyWordCloud: () => React.ReactElement = () => {
-    if (monthlyEntities === null) {
+    if (monthlyEntities === '') {
       return (
         <>
           <p>Loading monthly entities...</p>
