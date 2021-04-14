@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { Row, Col } from 'react-grid-system';
 import Loader from 'react-loader-spinner';
 
-import { EntitiesResponse, EntitiesService } from '../../services/entities';
+import { EntitiesService } from '../../services/entities';
 
 import RootPage from '../root/root';
 import Box from '../../components/box/box';
@@ -10,31 +10,31 @@ import Box from '../../components/box/box';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 const EntitiesPage: FC = () => {
-  const [dailyEntities, setDailyEntities] = useState(null as unknown as EntitiesResponse);
-  const [weeklyEntities, setWeeklyEntities] = useState(null as unknown as EntitiesResponse);
-  const [monthlyEntities, setMonthlyEntities] = useState(null as unknown as EntitiesResponse);
+  const [dailyEntities, setDailyEntities] = useState('');
+  const [weeklyEntities, setWeeklyEntities] = useState('');
+  const [monthlyEntities, setMonthlyEntities] = useState('');
 
   useEffect(() => {
     if (dailyEntities === null) {
-      EntitiesService.getEntities('daily')
+      EntitiesService.getWordcloud('daily')
         .then((res) => {
-          setDailyEntities(res.data);
+          setDailyEntities(res.data.data);
         })
         .catch(() => {});
     }
 
     if (weeklyEntities === null) {
-      EntitiesService.getEntities('weekly')
+      EntitiesService.getWordcloud('weekly')
         .then((res) => {
-          setWeeklyEntities(res.data);
+          setWeeklyEntities(res.data.data);
         })
         .catch(() => {});
     }
 
     if (monthlyEntities === null) {
-      EntitiesService.getEntities('monthly')
+      EntitiesService.getWordcloud('monthly')
         .then((res) => {
-          setMonthlyEntities(res.data);
+          setMonthlyEntities(res.data.data);
         })
         .catch(() => {});
     }
@@ -60,7 +60,7 @@ const EntitiesPage: FC = () => {
     return (
       <p>
         Loaded (waiting for wordcloud render):
-        {dailyEntities.data[0].entities.all.set}
+        <img src={`data:image/png;base64,${dailyEntities}`} alt="Wordcloud" />
       </p>
     );
   };
@@ -85,7 +85,7 @@ const EntitiesPage: FC = () => {
     return (
       <p>
         Loaded (waiting for wordcloud render):
-        {weeklyEntities.data[0].entities.all.set}
+        <img src={`data:image/png;base64,${weeklyEntities}`} alt="Wordcloud" />
       </p>
     );
   };
@@ -110,7 +110,7 @@ const EntitiesPage: FC = () => {
     return (
       <p>
         Loaded (waiting for wordcloud render):
-        {monthlyEntities.data[0].entities.all.set}
+        <img src={`data:image/png;base64,${monthlyEntities}`} alt="Wordcloud" />
       </p>
     );
   };

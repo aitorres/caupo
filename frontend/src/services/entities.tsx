@@ -40,6 +40,11 @@ export interface EntitiesResponse {
   }[]
 }
 
+export interface WordcloudResponse {
+  httpStatus: number,
+  message: string,
+  data: string,
+}
 export class EntitiesService {
   static baseUrl = 'https://api.caupo.xyz/entities';
 
@@ -47,5 +52,11 @@ export class EntitiesService {
     const url = `${this.baseUrl}/get/${frequency}/1`;
 
     return HttpService.get(url) as AxiosPromise<EntitiesResponse>;
+  }
+
+  public static getWordcloud(frequency: EntitiesFrequency): AxiosPromise<WordcloudResponse> {
+    const url = `${this.baseUrl}/wordcloud/get/${frequency}`;
+
+    return HttpService.get(url) as AxiosPromise<WordcloudResponse>;
   }
 }
