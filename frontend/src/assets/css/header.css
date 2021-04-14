@@ -1,0 +1,13 @@
+header {
+    background-color: #1E2634;
+    height: 60px;
+    width: 90%;
+    margin: 0 auto;
+    border-radius: 0 0 15px 15px;
+}
+
+header .title {
+    text-align: center;
+    padding-top: 14px;
+    font-size: 26px;
+}

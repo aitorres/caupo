@@ -2,6 +2,8 @@ import { FC } from 'react';
 
 import PropTypes from 'prop-types';
 
+import '../../assets/css/header.css';
+
 interface HeaderProps {
   title: string
 }

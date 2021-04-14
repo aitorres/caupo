@@ -1,0 +1,13 @@
+#sidebar ul {
+    list-style: none;
+}
+
+#sidebar ul li {
+    border-bottom: 1px solid #2E3644;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+#sidebar ul li:last-child {
+    border-bottom: 0px;
+}

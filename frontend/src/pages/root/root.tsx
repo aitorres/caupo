@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { Container, Row, Col } from 'react-grid-system';
 
 import Header from '../../components/header/header';
+import Sidebar from '../../components/sidebar/sidebar';
 
+import '@fontsource/roboto';
 import '../../assets/css/general.css';
 
 interface RootPageProps {
@@ -13,20 +15,21 @@ interface RootPageProps {
 
 const RootPage: FC<RootPageProps> = ({ title, children }) => (
   <div className="page">
-    <header className="Header">
-      <Header title={title} />
-    </header>
+    <Header title={title} />
     <div className="content">
       <Container>
         <Row>
           <Col md={3}>
-            Sidebar
+            <Sidebar />
           </Col>
           <Col md={9}>
             { children }
           </Col>
         </Row>
       </Container>
+      <footer>
+        Ojo de barro y Water de Urgencia.
+      </footer>
     </div>
   </div>
 );
