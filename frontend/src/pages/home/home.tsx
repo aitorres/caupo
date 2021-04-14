@@ -1,25 +1,20 @@
 import { FC } from 'react';
+import { Row, Col } from 'react-grid-system';
+
+import RootPage from '../root/root';
 
 import '../../assets/css/general.css';
 
-const App: FC = () => (
-  <div className="App">
-    <header className="App-header">
-      <p>
-        Edit
-        <code>src/App.tsx</code>
-        and save to reload.
-      </p>
-      <a
-        className="App-link"
-        href="https://reactjs.org"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Learn React
-      </a>
-    </header>
-  </div>
+const Home: FC = () => (
+  <RootPage title="Home">
+    <Row className="center">
+      <Col md={6}>
+        <p>
+          Hola
+        </p>
+      </Col>
+    </Row>
+  </RootPage>
 );
 
-export default App;
+export default Home;
