@@ -31,7 +31,8 @@ VALID_FREQUENCIES = [
 
 # Endpoints
 @blueprint.route('/get/<frequency>', methods=['GET'])
-def get_entities(frequency: str) -> Tuple[Dict[str, Any], int]:
+@blueprint.route('/get/<frequency>/<amount>', methods=['GET'])
+def get_entities(frequency: str, amount: int = 0) -> Tuple[Dict[str, Any], int]:
     """
     Given a frequency, returns a list with the information of all entities
     stored within tags for that frequency
@@ -44,7 +45,7 @@ def get_entities(frequency: str) -> Tuple[Dict[str, Any], int]:
             'message': f'You requested an invalid or unrecognized frequency (`{frequency}`)'
         }, 400
 
-    entities = _fetch_entities(frequency)
+    entities = _fetch_entities(frequency, amount)
     return {
         'httpStatus': 200,
         'message': 'Entities collected successfully',
@@ -53,7 +54,7 @@ def get_entities(frequency: str) -> Tuple[Dict[str, Any], int]:
 
 
 # Auxiliary functions
-def _fetch_entities(frequency: str) -> List[Dict[str, Any]]:
+def _fetch_entities(frequency: str, amount: int = 0) -> List[Dict[str, Any]]:
     """
     Given a value for frequency, fetches and returns the information for
     entities of that type stored in the database
@@ -71,7 +72,11 @@ def _fetch_entities(frequency: str) -> List[Dict[str, Any]]:
         "tweets_amount": True,
         "entities": True,
         "hashtags": True,
-    })
+    }).sort([
+        ("tag", pymongo.DESCENDING),
+    ])
+    if amount > 0:
+        entities = entities.limit(amount)
     return list(entities)
 
 
