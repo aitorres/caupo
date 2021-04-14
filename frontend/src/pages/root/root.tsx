@@ -13,6 +13,20 @@ interface RootPageProps {
   children: React.ReactChild
 }
 
+const getCaupoQuote: () => string = () => {
+  const lines: string[] = [
+    'Ojo de barro y Water de Urgencia.',
+    'Si en vez de dormir bailara tango con sus ministros...',
+    'Claro que uno está cansado y quiere un poco de diversión',
+    'Cacique Ojo de Perla',
+    'Si adora la vaca, ¡duerme!',
+    'Si al becerro adora, ¡duerme!',
+    '¿Hasta cuándo duerme usted, señor Presidente?',
+  ];
+
+  return lines[Math.floor(Math.random() * lines.length)];
+};
+
 const RootPage: FC<RootPageProps> = ({ title, children }) => (
   <div className="page">
     <Header title={title} />
@@ -28,7 +42,7 @@ const RootPage: FC<RootPageProps> = ({ title, children }) => (
         </Row>
       </Container>
       <footer>
-        Ojo de barro y Water de Urgencia.
+        {getCaupoQuote()}
       </footer>
     </div>
   </div>

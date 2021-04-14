@@ -12,7 +12,21 @@ const Home: FC = () => (
       <Col md={12}>
         <Box>
           <>
-            Hola, este proyecto está en (perenne) construcción.
+            <p>
+              Hola, este proyecto está en (perenne) construcción.
+            </p>
+            <p>
+              CAUPO (Cluster Analysis of Unsupervised Political Opinions) es un proyecto de investigación realizado
+              realizado como parte de mi proyecto de grado para optar al título de Ingeniero en Computación en la
+              Universidad Simón Bolívar.
+            </p>
+            <p>
+              Las citas del pié de página son tomadas y (mal)formateadas de
+              <em>
+                &ldquo;¿Duerme usted, señor Presidente?&rdquo;,&nbsp;
+              </em>
+              poema largo de Caupolicán Ovalles.
+            </p>
           </>
         </Box>
       </Col>
