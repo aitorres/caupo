@@ -128,7 +128,7 @@ def _get_b64_wordcloud(entity) -> str:
     wc.to_image().save(buffer, 'png')
     b64 = base64.b64encode(buffer.getvalue())
 
-    return b64
+    return b64.decode('ascii')
 
 
 # TODO: Unify with similar function in main `src` of project
