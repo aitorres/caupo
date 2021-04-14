@@ -15,23 +15,29 @@ const EntitiesPage: FC = () => {
   const [monthlyEntities, setMonthlyEntities] = useState(null as unknown as EntitiesResponse);
 
   useEffect(() => {
-    EntitiesService.getEntities('daily')
-      .then((res) => {
-        setDailyEntities(res.data);
-      })
-      .catch(() => {});
+    if (dailyEntities === null) {
+      EntitiesService.getEntities('daily')
+        .then((res) => {
+          setDailyEntities(res.data);
+        })
+        .catch(() => {});
+    }
 
-    EntitiesService.getEntities('weekly')
-      .then((res) => {
-        setWeeklyEntities(res.data);
-      })
-      .catch(() => {});
+    if (weeklyEntities === null) {
+      EntitiesService.getEntities('weekly')
+        .then((res) => {
+          setWeeklyEntities(res.data);
+        })
+        .catch(() => {});
+    }
 
-    EntitiesService.getEntities('monthly')
-      .then((res) => {
-        setMonthlyEntities(res.data);
-      })
-      .catch(() => {});
+    if (monthlyEntities === null) {
+      EntitiesService.getEntities('monthly')
+        .then((res) => {
+          setMonthlyEntities(res.data);
+        })
+        .catch(() => {});
+    }
   });
 
   const getDailyWordCloud: () => React.ReactElement = () => {
