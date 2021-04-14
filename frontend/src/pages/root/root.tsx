@@ -41,10 +41,10 @@ const RootPage: FC<RootPageProps> = ({ title, children }) => (
           </Col>
         </Row>
       </Container>
-      <footer>
-        {getCaupoQuote()}
-      </footer>
     </div>
+    <footer>
+      {getCaupoQuote()}
+    </footer>
   </div>
 );
 RootPage.propTypes = {
