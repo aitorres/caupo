@@ -18,7 +18,7 @@ import bson.regex
 import pymongo
 
 import es_core_news_md
-from preprocessing import map_strange_characters
+from preprocessing import get_stopwords, map_strange_characters
 from utils import get_non_unique_content_from_tweets, get_uninteresting_usernames
 
 # Instantiate logger
@@ -202,14 +202,17 @@ class EntityTag:
             return
 
         # Creating different patterns for laughter
-        pattern_seeds = ["ja", "JA", "js", "aj", "AJ", "JS"]
-        lagughter = set()
+        pattern_seeds = ["ja", "JA", "js", "aj", "AJ", "JS", "je", "JE", "ji", "JI"]
+        laughter = set()
         for pattern in pattern_seeds:
             laughter = laughter.union({ pattern * i for i in range(2, 6) })
 
-        # Removing laughter in Spanish (jajaja)
+        stopwords = get_stopwords()
+        unwanted_words = set(stopwords).union(laughter)
+
+        # Removing laughter in Spanish (jajaja) and stopwords
         for i, tweet in enumerate(self.tweets):
-            self.tweets[i] = " ".join(map(lambda x: "" if x in laughter else x, tweet.split()))
+            self.tweets[i] = " ".join(map(lambda x: "" if x in unwanted_words else x, tweet.split()))
 
 
     def extract_hashtags(self) -> None:
