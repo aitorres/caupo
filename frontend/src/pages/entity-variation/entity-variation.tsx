@@ -65,22 +65,32 @@ const EntityVariationPage: FC = () => {
     const tagElement = dailyEntityVariationData.data.map((tagData) => (
       <>
         <h3>{ tagData.tag }</h3>
-        <h5>Nuevas entidades</h5>
-        <ul>
-          { tagData.persons.added.map((entity) => <li key={entity}>{entity}</li>) }
-        </ul>
-        <h5>Entidades eliminadas</h5>
-        <ul>
-          { tagData.persons.removed.map((entity) => <li key={entity}>{entity}</li>) }
-        </ul>
-        <h5>Nuevos hashtags</h5>
-        <ul>
-          { tagData.hashtags.added.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
-        </ul>
-        <h5>Hashtags eliminados</h5>
-        <ul>
-          { tagData.hashtags.removed.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
-        </ul>
+        <Row>
+          <Col md={3}>
+            <h5>Nuevas entidades</h5>
+            <ul>
+              { tagData.persons.added.map((entity) => <li key={entity}>{entity}</li>) }
+            </ul>
+          </Col>
+          <Col md={3}>
+            <h5>Entidades eliminadas</h5>
+            <ul>
+              { tagData.persons.removed.map((entity) => <li key={entity}>{entity}</li>) }
+            </ul>
+          </Col>
+          <Col md={3}>
+            <h5>Nuevos hashtags</h5>
+            <ul>
+              { tagData.hashtags.added.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
+            </ul>
+          </Col>
+          <Col md={3}>
+            <h5>Hashtags eliminados</h5>
+            <ul>
+              { tagData.hashtags.removed.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
+            </ul>
+          </Col>
+        </Row>
       </>
     ));
 
@@ -99,22 +109,32 @@ const EntityVariationPage: FC = () => {
     const tagElement = weeklyEntityVariationData.data.map((tagData) => (
       <>
         <h3>{ tagData.tag }</h3>
-        <h5>Nuevas entidades</h5>
-        <ul>
-          { tagData.persons.added.map((entity) => <li key={entity}>{entity}</li>) }
-        </ul>
-        <h5>Entidades eliminadas</h5>
-        <ul>
-          { tagData.persons.removed.map((entity) => <li key={entity}>{entity}</li>) }
-        </ul>
-        <h5>Nuevos hashtags</h5>
-        <ul>
-          { tagData.hashtags.added.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
-        </ul>
-        <h5>Hashtags eliminados</h5>
-        <ul>
-          { tagData.hashtags.removed.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
-        </ul>
+        <Row>
+          <Col md={3}>
+            <h5>Nuevas entidades</h5>
+            <ul>
+              { tagData.persons.added.map((entity) => <li key={entity}>{entity}</li>) }
+            </ul>
+          </Col>
+          <Col md={3}>
+            <h5>Entidades eliminadas</h5>
+            <ul>
+              { tagData.persons.removed.map((entity) => <li key={entity}>{entity}</li>) }
+            </ul>
+          </Col>
+          <Col md={3}>
+            <h5>Nuevos hashtags</h5>
+            <ul>
+              { tagData.hashtags.added.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
+            </ul>
+          </Col>
+          <Col md={3}>
+            <h5>Hashtags eliminados</h5>
+            <ul>
+              { tagData.hashtags.removed.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
+            </ul>
+          </Col>
+        </Row>
       </>
     ));
 
@@ -133,22 +153,32 @@ const EntityVariationPage: FC = () => {
     const tagElement = monthlyEntityVariationData.data.map((tagData) => (
       <>
         <h3>{ tagData.tag }</h3>
-        <h5>Nuevas entidades</h5>
-        <ul>
-          { tagData.persons.added.map((entity) => <li key={entity}>{entity}</li>) }
-        </ul>
-        <h5>Entidades eliminadas</h5>
-        <ul>
-          { tagData.persons.removed.map((entity) => <li key={entity}>{entity}</li>) }
-        </ul>
-        <h5>Nuevos hashtags</h5>
-        <ul>
-          { tagData.hashtags.added.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
-        </ul>
-        <h5>Hashtags eliminados</h5>
-        <ul>
-          { tagData.hashtags.removed.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
-        </ul>
+        <Row>
+          <Col md={3}>
+            <h5>Nuevas entidades</h5>
+            <ul>
+              { tagData.persons.added.map((entity) => <li key={entity}>{entity}</li>) }
+            </ul>
+          </Col>
+          <Col md={3}>
+            <h5>Entidades eliminadas</h5>
+            <ul>
+              { tagData.persons.removed.map((entity) => <li key={entity}>{entity}</li>) }
+            </ul>
+          </Col>
+          <Col md={3}>
+            <h5>Nuevos hashtags</h5>
+            <ul>
+              { tagData.hashtags.added.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
+            </ul>
+          </Col>
+          <Col md={3}>
+            <h5>Hashtags eliminados</h5>
+            <ul>
+              { tagData.hashtags.removed.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
+            </ul>
+          </Col>
+        </Row>
       </>
     ));
 
