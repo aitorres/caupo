@@ -40,19 +40,23 @@ const EntitiesPage: FC = () => {
     }
   });
 
+  const loader: React.ReactElement = (
+    <div className="center">
+      <Loader
+        type="Puff"
+        color="#00BFFF"
+        height={100}
+        width={100}
+      />
+    </div>
+  );
+
   const getDailyWordCloud: () => React.ReactElement = () => {
     if (dailyEntities === '') {
       return (
         <>
           <p>Loading daily entities...</p>
-          <div className="center">
-            <Loader
-              type="Puff"
-              color="#00BFFF"
-              height={100}
-              width={100}
-            />
-          </div>
+          { loader }
         </>
       );
     }
@@ -69,14 +73,7 @@ const EntitiesPage: FC = () => {
       return (
         <>
           <p>Loading weekly entities...</p>
-          <div className="center">
-            <Loader
-              type="Puff"
-              color="#00BFFF"
-              height={100}
-              width={100}
-            />
-          </div>
+          { loader }
         </>
       );
     }
@@ -93,14 +90,7 @@ const EntitiesPage: FC = () => {
       return (
         <>
           <p>Loading monthly entities...</p>
-          <div className="center">
-            <Loader
-              type="Puff"
-              color="#00BFFF"
-              height={100}
-              width={100}
-            />
-          </div>
+          { loader }
         </>
       );
     }
