@@ -8,7 +8,7 @@ Connected to the main Flask application through a Blueprint.
 import base64
 import logging
 from io import BytesIO
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Union
 
 import pymongo
 from flask import Blueprint
@@ -57,9 +57,55 @@ def get_wordcloud(frequency: str) -> Tuple[Dict[str, Any], int]:
         'data': image_data
     }, 200
 
+
+@blueprint.route('/variations/get/<frequency>/', methods=['GET'])
+@blueprint.route('/variations/get/<frequency>/<tag>/', methods=['GET'])
+def get_variation_data(frequency: str, tag: str = "") -> Tuple[Dict[str, Any], int]:
+    """
+    Given a frequency, obtains the informations of entity variations (added and removed entities)
+    for all tags and returns it. If a given tag is specified, returns only the information for
+    said tag
+    """
+
+    if frequency not in VALID_FREQUENCIES:
+        logger.error("[get_entities] Tried to get entities with invalid frequency `%s`", frequency)
+        return {
+            'httpStatus': 400,
+            'message': f'You requested an invalid or unrecognized frequency (`{frequency}`)'
+        }, 400
+
+    # Fetch entities from DB
+    entities = _fetch_entities(frequency)
+
+    # Preprocess entities
+    filtered_tags = []
+    for entity_tag in entities:
+        filtered_tag = {
+            'tag': entity_tag['tag'],
+            'frequency': frequency,
+            'tweets_amount': entity_tag['tweets_amount'],
+        }
+        for entity_type in ["all", "misc", "persons", "locations", "organizations"]:
+            filtered_tag[entity_type]["added"] = entity_tag["entities"][entity_type]["added"]
+            filtered_tag[entity_type]["removed"] = entity_tag["entities"][entity_type]["removed"]
+        filtered_tag["hashtags"]["added"] = entity_tag["hashtags"]["added"]
+        filtered_tag["hashtags"]["removed"] = entity_tag["hashtags"]["removed"]
+        filtered_tags.append(filtered_tag)
+
+    # If a specific tag was requested, keep just that one
+    if tag:
+        filtered_tags = [ft for ft in filtered_tags if ft['tag'] == tag]
+
+    return {
+        'httpStatus': 200,
+        'message': 'Entity variation data collected successfully',
+        'data': filtered_tags
+    }, 200
+
+
 @blueprint.route('/get/<frequency>', methods=['GET'])
 @blueprint.route('/get/<frequency>/<amount>', methods=['GET'])
-def get_entities(frequency: str, amount: int = 0) -> Tuple[Dict[str, Any], int]:
+def get_entities(frequency: str, amount: Union[str, int] = 0) -> Tuple[Dict[str, Any], int]:
     """
     Given a frequency, returns a list with the information of all entities
     stored within tags for that frequency
