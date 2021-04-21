@@ -53,23 +53,21 @@ export interface EntityVariationDataResponse {
     tag: string,
     frequency: string,
     tweets_amount: number,
-    entities: {
-      all: {
-        added: string[],
-        removed: string[],
-      },
-      organizations: {
-        added: string[],
-        removed: string[],
-      },
-      persons: {
-        added: string[],
-        removed: string[],
-      },
-      misc: {
-        added: string[],
-        removed: string[],
-      },
+    all: {
+      added: string[],
+      removed: string[],
+    },
+    organizations: {
+      added: string[],
+      removed: string[],
+    },
+    persons: {
+      added: string[],
+      removed: string[],
+    },
+    misc: {
+      added: string[],
+      removed: string[],
     },
     hashtags: {
       added: string[],
