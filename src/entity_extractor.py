@@ -85,6 +85,59 @@ class EntityTag:
         self.persons = []
         self.misc = []
 
+    @staticmethod
+    def calculate_related_attributes(frequency) -> None:
+        """
+        Given a frequency, this static method obtains all the already-stored tags
+        by that frequency ordered by tag, and then iteratively calculates variations
+        of entities in function of time, and updates each tag
+        """
+
+        logger.debug("Calculating related attributes for `%s` tags", frequency)
+
+        # Get all entities by frequency
+        collection = get_collection_by_frequency(self.frequency)
+        tags = list(collection.find({'frequency': frequency}).sort([
+            ("tag", pymongo.ASCENDING),
+        ]))
+        logger.debug("Working with %s tags", len(tags))
+
+        # Iterates over fetched tags
+        for i, tag in enumerate(tags):
+            # We can skip the first one since there's nothing to compare to
+            if i == 0:
+                logger.debug("[Tag %s] Skipping", tag["tag"])
+                continue
+
+            # Set new and old entities
+            previous_tag = tags[i - 1]
+            entity_types = [
+                "all",
+                "persons",
+                "locations",
+                "organizations",
+                "misc",
+            ]
+            for entity_type in entity_types:
+                tag["entities"][entity_type]["added"] = list(
+                    set(tag["entities"][entity_type]["set"]) - set(previous_tag["entities"][entity_type]["set"])
+                )
+                tag["entities"][entity_type]["removed"] = list(
+                     set(previous_tag["entities"][entity_type]["set"]) - set(tag["entities"][entity_type]["set"])
+                )
+
+            # Set new and old hashtags
+            tag["hashtags"]["added"] = list(set(tag["hashtags"]["set"]) - set(previous_tag["hashtags"]["set"]))
+            tag["hashtags"]["removed"] = list(set(previous_tag["hashtags"]["set"]) - set(tag["hashtags"]["set"]))
+
+            # Update tag on database
+            logger.debug("[Tag %s] Replacing with new version", tag["tag"])
+            collection.replace_one(
+                {'_id': tag['_id']},
+                {},
+                upsert=False
+            )
+
     @property
     def all_entities_set(self) -> Set[str]:
         """Return a set with all entities currently stored"""
@@ -415,8 +468,12 @@ def main() -> None:
     # Initializing an entity tag instance for each tag
     entity_tags = [EntityTag(name, frequency, dates) for name, dates in tags]
 
+    # Storing individual tags
     for entity_tag in entity_tags:
         entity_tag.fetch_and_store()
+
+    # Updating tags with variations
+    EntityTag.calculate_related_attributes(frequency)
 
     logger.debug("Main execution finished")
 
