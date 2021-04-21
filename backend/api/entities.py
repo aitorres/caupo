@@ -86,6 +86,7 @@ def get_variation_data(frequency: str, tag: str = "") -> Tuple[Dict[str, Any], i
             'tweets_amount': entity_tag['tweets_amount'],
         }
         for entity_type in ["all", "misc", "persons", "locations", "organizations"]:
+            filtered_tag[entity_type] = {}
             filtered_tag[entity_type]["added"] = entity_tag["entities"][entity_type]["added"]
             filtered_tag[entity_type]["removed"] = entity_tag["entities"][entity_type]["removed"]
         filtered_tag["hashtags"]["added"] = entity_tag["hashtags"]["added"]
