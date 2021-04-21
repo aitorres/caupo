@@ -96,7 +96,7 @@ class EntityTag:
         logger.debug("Calculating related attributes for `%s` tags", frequency)
 
         # Get all entities by frequency
-        collection = get_collection_by_frequency(self.frequency)
+        collection = get_collection_by_frequency(frequency)
         tags = list(collection.find({'frequency': frequency}).sort([
             ("tag", pymongo.ASCENDING),
         ]))
