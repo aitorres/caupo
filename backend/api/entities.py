@@ -175,7 +175,7 @@ def _get_b64_wordcloud(entity) -> str:
     a base64 encoded string representing said wordcloud
     """
 
-    wc = WordCloud(width=800, height=400, min_word_length=3, max_words=100).generate(" ".join(entity['entities']['persons']['list']))
+    wc = WordCloud(width=700, height=350, min_word_length=4, max_words=100).generate(" ".join(entity['entities']['persons']['list']))
     buffer = BytesIO()
     wc.to_image().save(buffer, 'png')
     b64 = base64.b64encode(buffer.getvalue())
