@@ -67,19 +67,19 @@ const EntityVariationPage: FC = () => {
         <h3>{ tagData.tag }</h3>
         <h5>Nuevas entidades</h5>
         <ul>
-          { tagData.entities.all.added.map((entity) => <li>{entity}</li>) }
+          { tagData.entities.all.added.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Entidades eliminadas</h5>
         <ul>
-          { tagData.entities.all.removed.map((entity) => <li>{entity}</li>) }
+          { tagData.entities.all.removed.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Nuevos hashtags</h5>
         <ul>
-          { tagData.hashtags.added.map((hashtag) => <li>{hashtag}</li>) }
+          { tagData.hashtags.added.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
         </ul>
         <h5>Hashtags eliminados</h5>
         <ul>
-          { tagData.hashtags.removed.map((hashtag) => <li>{hashtag}</li>) }
+          { tagData.hashtags.removed.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
         </ul>
       </>
     ));
@@ -101,19 +101,19 @@ const EntityVariationPage: FC = () => {
         <h3>{ tagData.tag }</h3>
         <h5>Nuevas entidades</h5>
         <ul>
-          { tagData.entities.all.added.map((entity) => <li>{entity}</li>) }
+          { tagData.entities.all.added.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Entidades eliminadas</h5>
         <ul>
-          { tagData.entities.all.removed.map((entity) => <li>{entity}</li>) }
+          { tagData.entities.all.removed.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Nuevos hashtags</h5>
         <ul>
-          { tagData.hashtags.added.map((hashtag) => <li>{hashtag}</li>) }
+          { tagData.hashtags.added.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
         </ul>
         <h5>Hashtags eliminados</h5>
         <ul>
-          { tagData.hashtags.removed.map((hashtag) => <li>{hashtag}</li>) }
+          { tagData.hashtags.removed.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
         </ul>
       </>
     ));
@@ -135,19 +135,19 @@ const EntityVariationPage: FC = () => {
         <h3>{ tagData.tag }</h3>
         <h5>Nuevas entidades</h5>
         <ul>
-          { tagData.entities.all.added.map((entity) => <li>{entity}</li>) }
+          { tagData.entities.all.added.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Entidades eliminadas</h5>
         <ul>
-          { tagData.entities.all.removed.map((entity) => <li>{entity}</li>) }
+          { tagData.entities.all.removed.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Nuevos hashtags</h5>
         <ul>
-          { tagData.hashtags.added.map((hashtag) => <li>{hashtag}</li>) }
+          { tagData.hashtags.added.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
         </ul>
         <h5>Hashtags eliminados</h5>
         <ul>
-          { tagData.hashtags.removed.map((hashtag) => <li>{hashtag}</li>) }
+          { tagData.hashtags.removed.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
         </ul>
       </>
     ));
