@@ -125,6 +125,8 @@ class EntityTag:
                 tag["entities"][entity_type]["removed"] = list(
                      set(previous_tag["entities"][entity_type]["set"]) - set(tag["entities"][entity_type]["set"])
                 )
+                logger.debug("[Tag %s] New entities of type %s: %s", tag["tag"], entity_type, tag["entities"][entity_type]["added"])
+                logger.debug("[Tag %s] Removed entities of type %s: %s", tag["tag"], entity_type, tag["entities"][entity_type]["removed"])
 
             # Set new and old hashtags
             tag["hashtags"]["added"] = list(set(tag["hashtags"]["set"]) - set(previous_tag["hashtags"]["set"]))
