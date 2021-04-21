@@ -67,11 +67,11 @@ const EntityVariationPage: FC = () => {
         <h3>{ tagData.tag }</h3>
         <h5>Nuevas entidades</h5>
         <ul>
-          { tagData.all.added.map((entity) => <li key={entity}>{entity}</li>) }
+          { tagData.persons.added.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Entidades eliminadas</h5>
         <ul>
-          { tagData.all.removed.map((entity) => <li key={entity}>{entity}</li>) }
+          { tagData.persons.removed.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Nuevos hashtags</h5>
         <ul>
@@ -101,11 +101,11 @@ const EntityVariationPage: FC = () => {
         <h3>{ tagData.tag }</h3>
         <h5>Nuevas entidades</h5>
         <ul>
-          { tagData.all.added.map((entity) => <li key={entity}>{entity}</li>) }
+          { tagData.persons.added.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Entidades eliminadas</h5>
         <ul>
-          { tagData.all.removed.map((entity) => <li key={entity}>{entity}</li>) }
+          { tagData.persons.removed.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Nuevos hashtags</h5>
         <ul>
@@ -135,11 +135,11 @@ const EntityVariationPage: FC = () => {
         <h3>{ tagData.tag }</h3>
         <h5>Nuevas entidades</h5>
         <ul>
-          { tagData.all.added.map((entity) => <li key={entity}>{entity}</li>) }
+          { tagData.persons.added.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Entidades eliminadas</h5>
         <ul>
-          { tagData.all.removed.map((entity) => <li key={entity}>{entity}</li>) }
+          { tagData.persons.removed.map((entity) => <li key={entity}>{entity}</li>) }
         </ul>
         <h5>Nuevos hashtags</h5>
         <ul>
