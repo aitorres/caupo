@@ -136,7 +136,7 @@ class EntityTag:
             logger.debug("[Tag %s] Replacing with new version", tag["tag"])
             collection.replace_one(
                 {'_id': tag['_id']},
-                {},
+                tag,
                 upsert=False
             )
 
