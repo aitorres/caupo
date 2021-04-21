@@ -45,6 +45,39 @@ export interface WordcloudResponse {
   message: string,
   data: string,
 }
+
+export interface EntityVariationDataResponse {
+  httpStatus: number,
+  message: string,
+  data: {
+    tag: string,
+    frequency: string,
+    tweets_amount: number,
+    entities: {
+      all: {
+        added: string[],
+        removed: string[],
+      },
+      organizations: {
+        added: string[],
+        removed: string[],
+      },
+      persons: {
+        added: string[],
+        removed: string[],
+      },
+      misc: {
+        added: string[],
+        removed: string[],
+      },
+    },
+    hashtags: {
+      added: string[],
+      removed: string[],
+    }
+  }[]
+}
+
 export class EntitiesService {
   static baseUrl = 'https://api.caupo.xyz/entities';
 
@@ -58,5 +91,11 @@ export class EntitiesService {
     const url = `${this.baseUrl}/wordcloud/get/${frequency}`;
 
     return HttpService.get(url) as AxiosPromise<WordcloudResponse>;
+  }
+
+  public static getEntityVariationData(frequency: EntitiesFrequency): AxiosPromise<EntityVariationDataResponse> {
+    const url = `${this.baseUrl}/variations/get/${frequency}`;
+
+    return HttpService.get(url) as AxiosPromise<EntityVariationDataResponse>;
   }
 }

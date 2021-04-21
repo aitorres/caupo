@@ -17,6 +17,9 @@ const Sidebar: FC = () => (
       <li>
         <Link to="/entities">Entidades</Link>
       </li>
+      <li>
+        <Link to="/entity-variation">Variación de Entidades</Link>
+      </li>
     </ul>
   </Box>
 );
