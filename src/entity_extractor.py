@@ -292,6 +292,8 @@ class EntityTag:
             for hashtag in hashtags:
                 # Normalizing hashtag
                 hashtag = map_strange_characters(hashtag.lower())
+                while not hashtag[-1].isalpha():
+                    hashtag = hashtag[:len(hashtag) - 1]
                 self.hashtags.append(hashtag)
 
 
