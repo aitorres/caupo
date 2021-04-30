@@ -245,14 +245,14 @@ class EntityTag:
 
         tweets = db.tweets.find(
             {
-                "user.screen_name": { "$nin": get_uninteresting_usernames() },
-                "full_text": { "$nin": get_non_unique_content_from_tweets() },
+                "user.screen_name": {"$nin": get_uninteresting_usernames()},
+                "full_text": {"$nin": get_non_unique_content_from_tweets()},
                 "city_tag": "Caracas",
                 "created_at": {
                     "$in": [bson.regex.Regex(f"^{d}") for d in self.formatted_dates]
                 }
             },
-            { "full_text": 1 }
+            {"full_text": 1}
         )
 
         self.tweets = list({t["full_text"] for t in tweets})
@@ -288,8 +288,12 @@ class EntityTag:
             for hashtag in hashtags:
                 # Normalizing hashtag
                 hashtag = map_strange_characters(hashtag.lower())
-                while not hashtag[-1].isalpha():
-                    hashtag = hashtag[:len(hashtag) - 1]
+                try:
+                    while not (hashtag[-1].isalpha() or hashtag[-1].isdigit()):
+                        hashtag = hashtag[:len(hashtag) - 1]
+                except IndexError:
+                    # We ran out of hashtag, let's skip it then!
+                    continue
                 self.hashtags.append(hashtag)
 
     def extract_entities(self) -> None:
@@ -301,7 +305,10 @@ class EntityTag:
         nlp = es_core_news_md.load()
         processed_tweets = [nlp(tweet) for tweet in self.tweets]
         # Excluding entities that start with @
-        entities_per_tweet = [{(X.text, X.label_) for X in doc.ents} for doc in processed_tweets if not X.text.startswith("@")]
+        entities_per_tweet = [
+            {(map_strange_characters(X.text), X.label_) for X in doc.ents if not X.text.startswith("@")}
+            for doc in processed_tweets
+        ]
         entities = set().union(*entities_per_tweet)
 
         for entity, label in entities:
