@@ -180,7 +180,6 @@ class EntityTag:
 
         return [date.strftime("%Y-%m-%d") for date in self.dates]
 
-
     def to_json(self) -> Dict[str, Any]:
         """Returns a JSON-like representation of the object, ready for storage in MongoDB"""
 
@@ -241,7 +240,6 @@ class EntityTag:
 
         return json
 
-
     def load_tweets(self) -> None:
         """Loads and stores a copy of the tweets' text that are covered by this tag"""
 
@@ -258,7 +256,6 @@ class EntityTag:
         )
 
         self.tweets = list({t["full_text"] for t in tweets})
-
 
     def clean_tweets(self) -> None:
         """Cleans certain events from the text of the tweets"""
@@ -279,7 +276,6 @@ class EntityTag:
         for i, tweet in enumerate(self.tweets):
             self.tweets[i] = " ".join(map(lambda x: "" if x in unwanted_words else x, tweet.split()))
 
-
     def extract_hashtags(self) -> None:
         """Stores a list of hashtags used in the tweets within the object's state"""
 
@@ -296,7 +292,6 @@ class EntityTag:
                     hashtag = hashtag[:len(hashtag) - 1]
                 self.hashtags.append(hashtag)
 
-
     def extract_entities(self) -> None:
         """Extracts and stores several lists of categorized entities within the object's state"""
 
@@ -305,7 +300,8 @@ class EntityTag:
 
         nlp = es_core_news_md.load()
         processed_tweets = [nlp(tweet) for tweet in self.tweets]
-        entities_per_tweet = [{(X.text, X.label_) for X in doc.ents} for doc in processed_tweets]
+        # Excluding entities that start with @
+        entities_per_tweet = [{(X.text, X.label_) for X in doc.ents} for doc in processed_tweets if not X.text.startswith("@")]
         entities = set().union(*entities_per_tweet)
 
         for entity, label in entities:
@@ -320,7 +316,6 @@ class EntityTag:
             if label == "MISC":
                 self.misc.append(entity)
 
-
     def store_in_db(self) -> None:
         """Stores information in database"""
 
@@ -328,7 +323,6 @@ class EntityTag:
         object = self.to_json()
 
         collection.insert_one(object)
-
 
     def fetch_and_store(self) -> None:
         """Given a freshly initialized instance, fetches and extracts information and stores result in DB"""
