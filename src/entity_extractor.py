@@ -264,10 +264,10 @@ class EntityTag:
             return
 
         # Creating different patterns for laughter
-        pattern_seeds = ["ja", "JA", "js", "aj", "AJ", "JS", "je", "JE", "ji", "JI"]
+        pattern_seeds = ["ja", "JA", "js", "aj", "AJ", "JS", "je", "JE", "ji", "JI", "Jajajaja", "Jajaja"]
         laughter = set()
         for pattern in pattern_seeds:
-            laughter = laughter.union({ pattern * i for i in range(2, 6) })
+            laughter = laughter.union({pattern * i for i in range(1, 6)})
 
         stopwords = get_stopwords()
         unwanted_words = set(stopwords).union(laughter)
