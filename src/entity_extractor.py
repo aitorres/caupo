@@ -304,9 +304,9 @@ class EntityTag:
 
         nlp = es_core_news_md.load()
         processed_tweets = [nlp(tweet) for tweet in self.tweets]
-        # Excluding entities that start with @
+        # Excluding mentions and/or hashtags from entities
         entities_per_tweet = [
-            {(map_strange_characters(X.text), X.label_) for X in doc.ents if not X.text.startswith("@")}
+            {(map_strange_characters(X.text), X.label_) for X in doc.ents if not (X.text.startswith("@") or X.text.startswith("#"))}
             for doc in processed_tweets
         ]
         entities = set().union(*entities_per_tweet)
