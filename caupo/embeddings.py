@@ -133,7 +133,7 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
         'Doc2Vec': doc2vec_embedder,
         'FastText (CBOW)': partial(fasttext_embedder, model_type="cbow"),
         'FastText (Skipgram)': partial(fasttext_embedder, model_type="skipgram"),
-        'GPT2 Small Spanish': partial( # ref: https://huggingface.co/datificate/gpt2-small-spanish
+        'GPT2 Small Spanish': partial(  # ref: https://huggingface.co/datificate/gpt2-small-spanish
             bert_embedder, model_name="datificate/gpt2-small-spanish"),
         'BERT: TinyBERT-spanish-uncased-finetuned-ner': partial(
             bert_embedder, model_name='mrm8488/TinyBERT-spanish-uncased-finetuned-ner'),
@@ -147,7 +147,7 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
     for name, embedder in embedders.items():
         reduced_embedders[f"{name} (50-dim)"] = reduce_dimensionality(embedder)
 
-    return {*embedders, *reduced_embedders}
+    return {**embedders, **reduced_embedders}
 
 
 def get_optimal_eps_for_embedder(distance: str, name: str) -> float:
