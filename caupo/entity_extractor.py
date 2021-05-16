@@ -15,11 +15,11 @@ from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Set, Tuple
 
 import bson.regex
+import es_core_news_md
 import pymongo
 
-import es_core_news_md
-from preprocessing import get_stopwords, map_strange_characters
-from utils import get_non_unique_content_from_tweets, get_uninteresting_usernames
+from caupo.preprocessing import get_stopwords, map_strange_characters
+from caupo.utils import get_non_unique_content_from_tweets, get_uninteresting_usernames
 
 # Instantiate logger
 logger = logging.getLogger("caupo")
@@ -52,9 +52,9 @@ db = client.caupo
 
 # Starting point for calculations (inclusive)
 INITIAL_DAY_DICT = {
-    'daily': date(year=2021, month=1, day=29), # First (full) day registered
-    'weekly': date(year=2021, month=2, day=1), # First monday registered
-    'monthly': date(year=2021, month=2, day=1), # First day of first month registered
+    'daily': date(year=2021, month=1, day=29),  # First (full) day registered
+    'weekly': date(year=2021, month=2, day=1),  # First monday registered
+    'monthly': date(year=2021, month=2, day=1),  # First day of first month registered
 }
 
 

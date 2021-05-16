@@ -14,8 +14,8 @@ from sklearn.decomposition import NMF, LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics import silhouette_score
 
-from preprocessing import preprocess_corpus
-from utils import get_text_from_all_tweets, Timer
+from caupo.preprocessing import preprocess_corpus
+from caupo.utils import get_text_from_all_tweets, Timer
 
 # Instantiate logger
 logger = logging.getLogger("caupo")

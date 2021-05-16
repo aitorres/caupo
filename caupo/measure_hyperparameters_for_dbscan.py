@@ -15,9 +15,9 @@ from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
 from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
 
-from embeddings import get_embedder_functions, get_optimal_eps_for_embedder
-from preprocessing import preprocess_corpus
-from utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
+from caupo.embeddings import get_embedder_functions, get_optimal_eps_for_embedder
+from caupo.preprocessing import preprocess_corpus
+from caupo.utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
 
 mpl.use('Agg')
 

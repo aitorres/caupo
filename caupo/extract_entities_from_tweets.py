@@ -12,8 +12,8 @@ import es_core_news_md
 import matplotlib as mpl
 from wordcloud import WordCloud
 
-from preprocessing import get_stopwords
-from utils import get_city_modes, get_text_from_all_tweets, Timer
+from caupo.preprocessing import get_stopwords
+from caupo.utils import get_city_modes, get_text_from_all_tweets, Timer
 
 
 # Instantiate logger

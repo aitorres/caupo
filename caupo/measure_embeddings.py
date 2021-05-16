@@ -14,9 +14,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.decomposition import PCA
 
-from embeddings import get_embedder_functions
-from preprocessing import preprocess_corpus
-from utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
+from caupo.embeddings import get_embedder_functions
+from caupo.preprocessing import preprocess_corpus
+from caupo.utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
 
 mpl.use('Agg')
 

@@ -1,6 +1,6 @@
 """
 Module that runs a series of tests to measure clustering of tweets
-with Affinity Propagation, using different available word embeddings
+with HDBSCAN, using different available word embeddings
 """
 
 import time
@@ -10,13 +10,13 @@ from datetime import datetime
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from sklearn.cluster import AffinityPropagation
+from hdbscan import HDBSCAN
 from sklearn.decomposition import PCA
 from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
 
-from embeddings import get_embedder_functions
-from preprocessing import preprocess_corpus
-from utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
+from caupo.embeddings import get_embedder_functions
+from caupo.preprocessing import preprocess_corpus
+from caupo.utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
 
 mpl.use('Agg')
 
@@ -36,11 +36,11 @@ logger.addHandler(handler)
 # Creating folder for output
 now = datetime.now()
 timestamp = now.strftime("%Y-%m-%d-%H-%M-%S")
-BASE_OUTPUT_FOLDER = f"outputs/measure_mean_shift_clustering/{ timestamp }"
+BASE_OUTPUT_FOLDER = f"outputs/measure_hdbcscan_clustering/{ timestamp }"
 os.makedirs(BASE_OUTPUT_FOLDER)
 
 # Add file handler to the logger
-file_handler = logging.FileHandler(f'{BASE_OUTPUT_FOLDER}/measure_mean_shift_clustering.log')
+file_handler = logging.FileHandler(f'{BASE_OUTPUT_FOLDER}/measure_hdbcscan_clustering.log')
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
@@ -79,27 +79,30 @@ with Timer("Main script runtime"):
                 md_file.write("|City mode|Embedder|Time of Clustering|Silhouette score|Davies-Bouldin score|Calinski and Harabasz score|\n")
                 md_file.write("|---------|--------|------------------|----------------|--------------------|---------------------------|\n")
 
+            MIN_CLUSTER_SIZE = 10
+            MIN_SAMPLES = 5
+
             with Timer(f"Finding clusters with embedder `{embedder_name}` for city mode `{city_mode_name}`"):
-                mean_shift = AffinityPropagation(n_jobs=-1)
+                hdbscan = HDBSCAN(min_cluster_size=MIN_CLUSTER_SIZE, min_samples=MIN_SAMPLES)
                 t0 = time.time()
-                mean_shift_result = mean_shift.fit(vectors)
+                hdbscan_result = hdbscan.fit(vectors)
                 t1 = time.time()
 
             with Timer(f"Getting metrics with embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                 model_time = t1 - t0
-                mean_shift_labels = mean_shift_result.labels_
-                logger.info("Mean Shift generated `%s` cluster(s)", len({i for i in mean_shift_labels if i != -1}))
+                hdbscan_labels = hdbscan_result.labels_
+                logger.info("HDBSCAN generated `%s` cluster(s)", len({i for i in hdbscan_labels if i != -1}))
 
                 logger.debug("Calculating silhouette score")
-                sil_score = silhouette_score(vectors, mean_shift_labels)
+                sil_score = silhouette_score(vectors, hdbscan_labels)
                 logger.info("Silhouete score: %s", sil_score)
 
                 logger.debug("Calculating Davies-Boulding score")
-                dav_boul_score = davies_bouldin_score(vectors, mean_shift_labels)
+                dav_boul_score = davies_bouldin_score(vectors, hdbscan_labels)
                 logger.info("Davies-Boulding score: %s", dav_boul_score)
 
                 logger.debug("Calculating Calinski & Harabasz score")
-                cal_har_score = calinski_harabasz_score(vectors, mean_shift_labels)
+                cal_har_score = calinski_harabasz_score(vectors, hdbscan_labels)
                 logger.info("Calinski & Harabasz score: %s", cal_har_score)
 
             with Timer(f"Storing results with embedder `{embedder_name}` for city mode `{city_mode_name}`"):
@@ -121,8 +124,8 @@ with Timer("Main script runtime"):
 
                 # Cluster length
                 with open(f"{OUTPUT_FOLDER}/cluster_length_comparisons.csv", "a") as csv_file:
-                    for j in range(-1, len(set(mean_shift_labels))):
-                        length_j = list(mean_shift_labels).count(j)
+                    for j in range(-1, len(set(hdbscan_labels))):
+                        length_j = list(hdbscan_labels).count(j)
                         if length_j > 0:
                             csv_file.write(f"{city_mode_name},{embedder_name},{j},{length_j}\n")
 
@@ -139,6 +142,6 @@ with Timer("Main script runtime"):
                 plot_clusters(scatterplot_vectors,
                             filename=f"{OUTPUT_FOLDER}/clusters.png",
                             title=f'Clusters Representation for {embedder_name}` ({city_mode_name})',
-                            labels=mean_shift_labels)
+                            labels=hdbscan_labels)
 
-            # TODO: In this case these should be embedder-wise charts maybe
+        # TODO: Add global embeddings

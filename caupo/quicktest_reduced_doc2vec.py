@@ -6,9 +6,8 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
 from sklearn.preprocessing import StandardScaler
 
-
-from preprocessing import preprocess_corpus
-from utils import get_text_from_all_tweets, plot_clusters
+from caupo.preprocessing import preprocess_corpus
+from caupo.utils import get_text_from_all_tweets, plot_clusters
 
 
 all_tweets = get_text_from_all_tweets()
