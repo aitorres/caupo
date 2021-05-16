@@ -14,6 +14,8 @@ import pymongo
 from flask import Blueprint
 from wordcloud import WordCloud
 
+from caupo.entity_extractor import get_collection_by_frequency
+
 # Initializing logger
 logger = logging.getLogger()
 
@@ -153,7 +155,7 @@ def _fetch_entities(frequency: str, amount: int = 0) -> List[Dict[str, Any]]:
         logger.warning("[_fetch_entities] Tried to fetch entities with invalid frequency `%s`", frequency)
         return []
 
-    collection = _get_collection_by_frequency(frequency)
+    collection = get_collection_by_frequency(frequency)
     entities = collection.find({}, {
         "_id": False,
         "tag": True,
@@ -181,12 +183,3 @@ def _get_b64_wordcloud(entity) -> str:
     b64 = base64.b64encode(buffer.getvalue())
 
     return b64.decode('ascii')
-
-
-# TODO: Unify with similar function in main `src` of project
-def _get_collection_by_frequency(frequency: str) -> pymongo.collection.Collection:
-    """Given a frequency, returns the appropriate collection where information should be stored"""
-
-    collection_name = f"entities_{frequency}"
-    collection = getattr(db, collection_name)
-    return collection
