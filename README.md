@@ -2,9 +2,9 @@
 
 Cluster Analysis of Unsupervised Political Opinions - Undergraduate senior thesis @ Universidad Simón Bolívar
 
-## Order of experiments
+## Order of initial experiments
 
-In order to reproduce the workflow of experiments in the project, you can follow this suggested order (although, since each experiment is independent from others, you can run just one, or several in any order you want):
+In order to reproduce the workflow of initial experiments in the project, you can follow this suggested order (although, since each experiment is independent from others, you can run just one, or several in any order you want):
 
 1. `measure_embeddings.py`
 2. `measure_proper_k_for_embeddings.py`
@@ -18,7 +18,7 @@ In order to reproduce the workflow of experiments in the project, you can follow
 You can run the following script which has been added to the repository in order to easen up each measurement run with some extra considerations, such as turning off Twitter fetching while tests run
 
 ```bash
-nohup nice -n -19 ./run_measurements.sh &
+nohup nice -n -19 ./run_initial_experiments.sh &
 ```
 
 ## Things to remember
