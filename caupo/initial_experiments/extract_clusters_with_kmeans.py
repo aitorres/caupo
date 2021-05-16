@@ -6,7 +6,6 @@ from the stored data.
 import logging
 import random
 
-
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
@@ -15,7 +14,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics import silhouette_score
 
 from caupo.preprocessing import preprocess_corpus
-from caupo.utils import get_text_from_all_tweets, Timer
+from caupo.utils import Timer, get_text_from_all_tweets
 
 # Instantiate logger
 logger = logging.getLogger("caupo")

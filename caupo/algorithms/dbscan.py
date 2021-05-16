@@ -4,6 +4,7 @@ Module for testing the scikit-learn DBSCAN algorithm implementation.
 
 from sklearn.cluster import DBSCAN
 
+
 def fit(n_clusters, data):
     """
     Runs a dataset over the K-Means algorithm and prints

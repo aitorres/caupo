@@ -1,16 +1,16 @@
-import caupo.algorithms.kmeans as kmeans
-import caupo.algorithms.minibatch_kmeans as minibatch_kmeans
-import caupo.algorithms.spectral as spectral
-import caupo.algorithms.meanshift as meanshift
-import caupo.algorithms.agglomerative as agglomerative
-import caupo.algorithms.affinity as affinity
-import caupo.algorithms.dbscan as dbscan
-import caupo.algorithms.optics as optics
-
-import numpy as np
-import matplotlib.pyplot as plt
-
 import sys
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+import caupo.algorithms.affinity as affinity
+import caupo.algorithms.agglomerative as agglomerative
+import caupo.algorithms.dbscan as dbscan
+import caupo.algorithms.kmeans as kmeans
+import caupo.algorithms.meanshift as meanshift
+import caupo.algorithms.minibatch_kmeans as minibatch_kmeans
+import caupo.algorithms.optics as optics
+import caupo.algorithms.spectral as spectral
 
 PLOT_N = 4
 PLOT_M = 2

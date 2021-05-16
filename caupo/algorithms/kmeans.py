@@ -4,6 +4,7 @@ Module for testing the scikit-learn K-Means implementation.
 
 from sklearn.cluster import KMeans
 
+
 def fit(n_clusters, data):
     """
     Runs a dataset over the K-Means algorithm and prints

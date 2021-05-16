@@ -3,9 +3,9 @@ Module that performs named entity recognition / extraction (NER) on the text of 
 and generating word clouds to visualize the result
 """
 
-import time
 import logging
 import os
+import time
 from datetime import datetime
 
 import es_core_news_md
@@ -13,8 +13,7 @@ import matplotlib as mpl
 from wordcloud import WordCloud
 
 from caupo.preprocessing import get_stopwords
-from caupo.utils import get_city_modes, get_text_from_all_tweets, Timer
-
+from caupo.utils import Timer, get_city_modes, get_text_from_all_tweets
 
 # Instantiate logger
 logger = logging.getLogger("caupo")

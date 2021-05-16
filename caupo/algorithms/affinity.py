@@ -4,6 +4,7 @@ Module for testing the scikit-learn Affinity Propagation algorithm implementatio
 
 from sklearn.cluster import AffinityPropagation
 
+
 def fit(n_clusters, data):
     """
     Runs a dataset over the K-Means algorithm and prints

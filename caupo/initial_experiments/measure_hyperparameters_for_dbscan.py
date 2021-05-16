@@ -4,20 +4,23 @@ of different hyperparameters (namely epsilon and metric) for DBSCAN, using
 different available word embeddings
 """
 
-import time
 import logging
 import os
+import time
 from datetime import datetime
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
-from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
+from sklearn.metrics import (calinski_harabasz_score, davies_bouldin_score,
+                             silhouette_score)
 
-from caupo.embeddings import get_embedder_functions, get_optimal_eps_for_embedder
+from caupo.embeddings import (get_embedder_functions,
+                              get_optimal_eps_for_embedder)
 from caupo.preprocessing import preprocess_corpus
-from caupo.utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
+from caupo.utils import (Timer, get_city_modes, get_text_from_all_tweets,
+                         plot_clusters)
 
 mpl.use('Agg')
 

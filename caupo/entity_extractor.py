@@ -19,7 +19,8 @@ import es_core_news_md
 import pymongo
 
 from caupo.preprocessing import get_stopwords, map_strange_characters
-from caupo.utils import get_non_unique_content_from_tweets, get_uninteresting_usernames
+from caupo.utils import (get_non_unique_content_from_tweets,
+                         get_uninteresting_usernames)
 
 # Instantiate logger
 logger = logging.getLogger("caupo")

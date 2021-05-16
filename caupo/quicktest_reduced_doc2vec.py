@@ -3,12 +3,12 @@ import time
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
+from sklearn.metrics import (calinski_harabasz_score, davies_bouldin_score,
+                             silhouette_score)
 from sklearn.preprocessing import StandardScaler
 
 from caupo.preprocessing import preprocess_corpus
 from caupo.utils import get_text_from_all_tweets, plot_clusters
-
 
 all_tweets = get_text_from_all_tweets()
 tweets_subset = get_text_from_all_tweets(

@@ -4,6 +4,7 @@ Module for testing the scikit-learn OPTICS algorithm implementation.
 
 from sklearn.cluster import OPTICS
 
+
 def fit(n_clusters, data):
     """
     Runs a dataset over the K-Means algorithm and prints

@@ -5,9 +5,9 @@ possible values of `eps` to be used in DBSCAN for each embedder
 src: https://towardsdatascience.com/machine-learning-clustering-dbscan-determine-the-optimal-value-for-epsilon-eps-python-example-3100091cfbc
 """
 
-import time
-import os
 import logging
+import os
+import time
 from datetime import datetime
 
 import matplotlib as mpl
@@ -18,7 +18,8 @@ from sklearn.neighbors import NearestNeighbors
 
 from caupo.embeddings import get_embedder_functions
 from caupo.preprocessing import preprocess_corpus
-from caupo.utils import get_city_modes, get_text_from_all_tweets, plot_clusters, Timer
+from caupo.utils import (Timer, get_city_modes, get_text_from_all_tweets,
+                         plot_clusters)
 
 mpl.use('Agg')
 sns.set()

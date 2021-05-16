@@ -1,7 +1,7 @@
 import logging
 import time
-import bson.regex
 
+import bson.regex
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from pymongo import MongoClient

@@ -11,8 +11,8 @@ import emoji
 import spacy
 from nltk import download as nltk_download
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
 from nltk.stem import SnowballStemmer
+from nltk.tokenize import word_tokenize
 
 # Install nltk data, if needed
 nltk_download('stopwords')

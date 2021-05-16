@@ -4,6 +4,7 @@ Module for testing the scikit-learn Spectral Clustering algorithm implementation
 
 from sklearn.cluster import SpectralClustering
 
+
 def fit(n_clusters, data):
     """
     Runs a dataset over the K-Means algorithm and prints
