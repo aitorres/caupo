@@ -5,7 +5,7 @@ logger = logging.getLogger("caupo")
 logger.setLevel(logging.DEBUG)
 
 # Create formatter
-formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
+formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s (from %(filename)s:%(funcName)s)')
 
 # Add console (standard output) handler to the logger
 handler = logging.StreamHandler()
