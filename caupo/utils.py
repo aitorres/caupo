@@ -4,15 +4,15 @@ import time
 import bson.regex
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from pymongo import MongoClient
+
+from caupo.database import get_db
 
 mpl.use('Agg')
 
 # Instantiate logger
 logger = logging.getLogger("caupo")
 
-client = MongoClient('mongodb://127.0.0.1:27019')
-db = client.caupo
+db = get_db()
 
 class Timer:
     """Context handler to measure time of a function"""

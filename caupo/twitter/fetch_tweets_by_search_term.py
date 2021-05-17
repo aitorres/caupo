@@ -11,11 +11,10 @@ from datetime import datetime
 from time import sleep
 
 import tweepy
-from pymongo import MongoClient
 
-mongo_client = MongoClient('mongodb://127.0.0.1:27019')
-db = mongo_client.caupo
-lock_db = mongo_client.caupo_settings
+from caupo.database import get_db, is_locked
+
+db = get_db()
 
 #! IMPORTANT: Set the following environment vars
 TW_CONSUMER_KEY = os.environ.get('TW_CONSUMER_KEY')
@@ -67,7 +66,7 @@ def main():
     """
 
     ## Check if database is locked
-    if lock_db.locking.find_one({"locked": True}):
+    if is_locked():
         print("The database is currently locked and I cannot proceed.")
         return sys.exit(2)
 

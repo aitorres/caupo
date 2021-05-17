@@ -22,10 +22,6 @@ from caupo.tags import Tag, get_collection_by_frequency, get_tags_by_frequency, 
 # Instantiate logger
 logger = logging.getLogger("caupo")
 
-# Database settings
-client = pymongo.MongoClient('mongodb://127.0.0.1:27019')
-db = client.caupo
-
 
 class EntityTag(Tag):
     """

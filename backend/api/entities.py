@@ -19,10 +19,6 @@ from caupo.entity_extractor import get_collection_by_frequency
 # Initializing logger
 logger = logging.getLogger('backend')
 
-# Initializing connection to the database
-client = pymongo.MongoClient('mongodb://127.0.0.1:27019')
-db = client.caupo
-
 # Initializing Flask blueprint to register endpoints with main app
 blueprint = Blueprint('entities', __name__, url_prefix='/entities')
 
