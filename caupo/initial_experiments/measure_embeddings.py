@@ -23,16 +23,6 @@ mpl.use('Agg')
 
 # Instantiate logger
 logger = logging.getLogger("caupo")
-logger.setLevel(logging.DEBUG)
-
-# Create formatter
-formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
-
-# Add console (standard output) handler to the logger
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-handler.setFormatter(formatter)
-logger.addHandler(handler)
 
 # Creating folder for output
 now = datetime.now()
@@ -40,11 +30,6 @@ timestamp = now.strftime("%Y-%m-%d-%H-%M-%S")
 OUTPUT_FOLDER = f"outputs/measure_embeddings/{ timestamp }"
 os.makedirs(OUTPUT_FOLDER)
 
-# Add file handler to the logger
-file_handler = logging.FileHandler(f'{OUTPUT_FOLDER}/measure_embeddings.log')
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
 
 # Add headers to MD file
 with open(f"{OUTPUT_FOLDER}/full_data.md", "a") as md_file:

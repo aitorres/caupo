@@ -16,7 +16,7 @@ from flask_cors import CORS
 from backend.api import entities
 
 # Logger initialization
-logger = logging.getLogger()
+logger = logging.getLogger('backend')
 
 # Flask app initialization
 app = Flask(__name__)

@@ -17,7 +17,7 @@ from wordcloud import WordCloud
 from caupo.entity_extractor import get_collection_by_frequency
 
 # Initializing logger
-logger = logging.getLogger()
+logger = logging.getLogger('backend')
 
 # Initializing connection to the database
 client = pymongo.MongoClient('mongodb://127.0.0.1:27019')
@@ -93,7 +93,7 @@ def get_variation_data(frequency: str, tag: str = "") -> Tuple[Dict[str, Any], i
             'organizations': {},
             'hashtags': {},
         }
-        for entity_type in ["persons"]:  # this should be: ["all", "misc", "persons", "locations", "organizations"]:
+        for entity_type in ["persons"]:  # TODO this should be: ["all", "misc", "persons", "locations", "organizations"]:
             filtered_tag[entity_type]["added"] = entity_tag["entities"][entity_type]["added"]
             filtered_tag[entity_type]["removed"] = entity_tag["entities"][entity_type]["removed"]
         filtered_tag["hashtags"]["added"] = entity_tag["hashtags"]["added"]

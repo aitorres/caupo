@@ -8,6 +8,7 @@ from pymongo import MongoClient
 
 mpl.use('Agg')
 
+# Instantiate logger
 logger = logging.getLogger("caupo")
 
 client = MongoClient('mongodb://127.0.0.1:27019')

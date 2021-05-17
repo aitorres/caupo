@@ -27,9 +27,7 @@ INITIAL_DAY_DICT = {
 }
 
 # Instantiate logger
-# TODO: instantiate logger in module level __init__
 logger = logging.getLogger("caupo")
-logger.setLevel(logging.DEBUG)
 
 # Database settings
 # TODO: Unify and import everywhere from `database` module

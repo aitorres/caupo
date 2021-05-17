@@ -2,7 +2,7 @@ import logging
 import os
 
 # Create logger
-logger = logging.getLogger()
+logger = logging.getLogger('backend')
 log_level = getattr(logging, os.environ.get('LOG_LEVEL', 'DEBUG'))
 logger.setLevel(log_level)
 
