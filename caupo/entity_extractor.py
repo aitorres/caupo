@@ -10,17 +10,14 @@ usage.
 import argparse
 import logging
 import os
-from calendar import monthrange
-from datetime import date, datetime, timedelta
-from typing import Any, Dict, List, Set, Tuple
+from datetime import date, datetime
+from typing import Any, Dict, List, Set
 
-import bson.regex
 import es_core_news_md
 import pymongo
 
-from caupo.preprocessing import get_stopwords, map_strange_characters
-from caupo.utils import (get_non_unique_content_from_tweets,
-                         get_uninteresting_usernames)
+from caupo.preprocessing import map_strange_characters
+from caupo.tags import Tag, get_collection_by_frequency, get_tags_by_frequency, exclude_preexisting_tags
 
 # Instantiate logger
 logger = logging.getLogger("caupo")
@@ -51,15 +48,8 @@ logger.addHandler(file_handler)
 client = pymongo.MongoClient('mongodb://127.0.0.1:27019')
 db = client.caupo
 
-# Starting point for calculations (inclusive)
-INITIAL_DAY_DICT = {
-    'daily': date(year=2021, month=1, day=29),  # First (full) day registered
-    'weekly': date(year=2021, month=2, day=1),  # First monday registered
-    'monthly': date(year=2021, month=2, day=1),  # First day of first month registered
-}
 
-
-class EntityTag:
+class EntityTag(Tag):
     """
     A wrapper class to hold a collection of extracted entities and metadata about said
     collection.
@@ -68,13 +58,7 @@ class EntityTag:
     def __init__(self, tag: str, frequency: str, dates: List[date]) -> None:
         """Initializes the wrapper"""
 
-        # Internal settings
-        self.tag = tag
-        self.frequency = frequency
-        self.dates = dates
-
-        # Text to be collected
-        self.tweets = None
+        super().__init__(tag, frequency, dates)
 
         # Hashtags to be extracted
         self.hashtags = []
@@ -241,42 +225,6 @@ class EntityTag:
 
         return json
 
-    def load_tweets(self) -> None:
-        """Loads and stores a copy of the tweets' text that are covered by this tag"""
-
-        tweets = db.tweets.find(
-            {
-                "user.screen_name": {"$nin": get_uninteresting_usernames()},
-                "full_text": {"$nin": get_non_unique_content_from_tweets()},
-                "city_tag": "Caracas",
-                "created_at": {
-                    "$in": [bson.regex.Regex(f"^{d}") for d in self.formatted_dates]
-                }
-            },
-            {"full_text": 1}
-        )
-
-        self.tweets = list({t["full_text"] for t in tweets})
-
-    def clean_tweets(self) -> None:
-        """Cleans certain events from the text of the tweets"""
-
-        if self.tweets is None:
-            return
-
-        # Creating different patterns for laughter
-        pattern_seeds = ["ja", "JA", "js", "aj", "AJ", "JS", "je", "JE", "ji", "JI", "Jajajaja", "Jajaja"]
-        laughter = set()
-        for pattern in pattern_seeds:
-            laughter = laughter.union({pattern * i for i in range(1, 6)})
-
-        stopwords = get_stopwords()
-        unwanted_words = set(stopwords).union(laughter)
-
-        # Removing laughter in Spanish (jajaja) and stopwords
-        for i, tweet in enumerate(self.tweets):
-            self.tweets[i] = " ".join(map(lambda x: "" if x in unwanted_words else x, tweet.split()))
-
     def extract_hashtags(self) -> None:
         """Stores a list of hashtags used in the tweets within the object's state"""
 
@@ -306,8 +254,9 @@ class EntityTag:
         nlp = es_core_news_md.load()
         processed_tweets = [nlp(tweet) for tweet in self.tweets]
         # Excluding mentions and/or hashtags from entities
+        droppable_entity = lambda X: X.text.startswith("@") or X.text.startswith("#")
         entities_per_tweet = [
-            {(map_strange_characters(X.text), X.label_) for X in doc.ents if not (X.text.startswith("@") or X.text.startswith("#"))}
+            {(map_strange_characters(X.text), X.label_) for X in doc.ents if not droppable_entity(X)}
             for doc in processed_tweets
         ]
         entities = set().union(*entities_per_tweet)
@@ -354,94 +303,6 @@ class EntityTag:
         logger.debug("[Tag %s] Storing information...", self.tag)
         self.store_in_db()
         logger.debug("[Tag %s] Information stored", self.tag)
-
-
-def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
-    """
-    Given a frequency, returns a list of 2-tuples (pairs) that contain a tag on the first position
-    and a list of days to consider in the second position.
-
-    Valid tags depend on the frequency, e.g. the date for `daily`, name + year of month for `monthly`,
-    and range of days for `weekly`.
-    """
-
-    initial_day = INITIAL_DAY_DICT[frequency]
-    today = date.today()
-
-    if frequency == 'daily':
-        # Calculates distance in days (amount of days to consider)
-        distance_in_days = (today - initial_day).days
-
-        # Gets a list of all days between initial day and *yesterday* (since today is still on-going)
-        days = [initial_day + timedelta(days=i) for i in range(distance_in_days)]
-        return [(day.strftime("%Y-%m-%d"), [day]) for day in days]
-
-    if frequency == 'weekly':
-        # Calculate distance in weeks
-        most_recent_monday = today - timedelta(today.weekday())
-        weeks = (most_recent_monday - initial_day).days // 7
-
-        tags = []
-        for week_number in range(weeks):
-            week_monday = initial_day + timedelta(days=7 * week_number)
-
-            # Gets list of all days in this week, from monday to sunday
-            days = [week_monday + timedelta(days=i) for i in range(7)]
-            tag_start = week_monday.strftime("%Y-%m-%d")
-            tag_end = days[-1].strftime("%Y-%m-%d")
-            week_tag = f"{tag_start} - {tag_end}"
-            tags.append((week_tag, days))
-        return tags
-
-    if frequency == 'monthly':
-        initial_year, initial_month = initial_day.year, initial_day.month
-        today_year, today_month = today.year, today.month
-
-        tags = []
-        for year in range(initial_year, today_year + 1):
-            for month in range (1, 12 + 1):
-                if year == initial_year and month < initial_month:
-                    continue
-
-                if year == today_year and month >= today_month:
-                    break
-
-                month_tag = f"{year}-{str(month).zfill(2)}"
-
-                num_days = monthrange(year, month)[1]
-                days = [date(year, month, day) for day in range(1, num_days + 1)]
-                tags.append((month_tag, days))
-        return tags
-
-    raise NotImplementedError(f"Value of `frequency` = `{frequency}` not supported in `get_tags_by_frequency`")
-
-
-def exclude_preexisting_tags(frequency: str, tags: List[Tuple[str, List[date]]]) -> List[Tuple[str, List[date]]]:
-    """
-    Given a frequency and a list of tags and dates, returns a new list containing only tags
-    that don't already exist on the database.
-    """
-
-    collection = get_collection_by_frequency(frequency)
-    filtered_tags = []
-
-    for tag in tags:
-        exists = collection.count_documents({"tag": tag[0]}) > 0
-
-        if not exists:
-            filtered_tags.append(tag)
-        else:
-            logger.info("Excluding tag %s", tag[0])
-
-    return filtered_tags
-
-
-def get_collection_by_frequency(frequency: str) -> pymongo.collection.Collection:
-    """Given a frequency, returns the appropriate collection where information should be stored"""
-
-    collection_name = f"entities_{frequency}"
-    collection = getattr(db, collection_name)
-    return collection
 
 
 def get_args_parser() -> argparse.ArgumentParser:
