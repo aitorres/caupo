@@ -96,7 +96,7 @@ def bert_embedder(corpus: List[str], model_name: str = "paraphrase-xlm-r-multili
     ref: https://www.sbert.net/
     """
 
-    model = SentenceTransformer(model_name , device=device)
+    model = SentenceTransformer(model_name, device=device)
     vectors = model.encode(corpus)
 
     return scale_vectors(vectors)
@@ -211,6 +211,7 @@ def main() -> None:
 
         for sentence, vector in zip(test_sentences, result_vectors):
             print(f"-- Sentence `{ sentence }`, vector length `{ len(vector) }`")
+
 
 if __name__ == '__main__':
     main()
