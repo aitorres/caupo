@@ -8,7 +8,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 from hdbscan import HDBSCAN
-from sklearn.cluster import KMeans
+from sklearn.cluster import OPTICS, AffinityPropagation, KMeans
 from sklearn.metrics import silhouette_score
 
 logger = logging.getLogger("caupo")
@@ -48,7 +48,7 @@ class KMeansClustering(BaseClustering):
                 raise ValueError(k)
 
             self.k = k
-            self.model = self.instantiate_model(self.k)
+            self.model = self.instantiate_model(self.k, n_jobs=-1)
             logger.debug("Initializing KMeansClustering with k=`%s`", self.k)
         else:
             self.k = None
@@ -102,6 +102,45 @@ class HdbscanClustering(BaseClustering):
         return self.model.fit_predict(vectors)
 
 
+class OpticsClustering(BaseClustering):
+    """
+    OPTICS Clustering wrapper class. Performs clustering using optics's algorithm as implemented
+    on sklearn.
+    """
+
+    def __init__(self, min_samples: int = 10):
+        """Instantiates a new instance of the Optics Clustering wrapper class"""
+
+        logger.debug("Initializing OpticsClustering with min_samples=`%s`",
+                     min_samples)
+        self.model = OPTICS(min_samples=min_samples, n_jobs=-1)
+
+    def cluster(self, vectors: List[List[float]]) -> List[float]:
+        """Given a list of vectors, performs hdbscan based clustering and returns the output labels"""
+
+        self.model.fit_predict(vectors)
+        return self.model.labels_
+
+
+class AffinityPropagationClustering(BaseClustering):
+    """
+    Affinity Propagation Clustering wrapper class. Performs clustering using optics's algorithm as implemented
+    on sklearn.
+    """
+
+    def __init__(self, min_samples: int = 10):
+        """Instantiates a new instance of the Affinity Propagation Clustering wrapper class"""
+
+        logger.debug("Initializing AffinityPropagationClustering")
+        self.model = AffinityPropagation(random_state=None)
+
+    def cluster(self, vectors: List[List[float]]) -> List[float]:
+        """Given a list of vectors, performs hdbscan based clustering and returns the output labels"""
+
+        self.model.fit_predict(vectors)
+        return self.model.labels_
+
+
 def get_clustering_functions() -> Dict[str, BaseClustering]:
     """
     Returns a dictionary of the available clustering algorithms,
@@ -111,18 +150,22 @@ def get_clustering_functions() -> Dict[str, BaseClustering]:
     return {
         'k-means': KMeansClustering(),
         'hdbscan': HdbscanClustering(),
+        'affinity': AffinityPropagationClustering(),
+        # TODO: dbscan
+        # TODO: meanshift
+        'optics': OpticsClustering(),
     }
 
 
 def main() -> None:
     """Runs a test script in order to check the behavior of clustering algorithms"""
 
-    vectors = [np.random.random(3) for _ in range(100)]
+    vectors = [np.random.random(3) for _ in range(150)]
 
     for name, algorithm in get_clustering_functions().items():
         output = algorithm.cluster(vectors)
-        print(f"{name} result: {output}")
-        print(f"{name} sil score: {silhouette_score(vectors, output)}")
+        logger.info(f"{name} result: {output}")
+        logger.info(f"{name} sil score: {silhouette_score(vectors, output)}")
 
 
 if __name__ == "__main__":
