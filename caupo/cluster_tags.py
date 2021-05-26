@@ -33,7 +33,7 @@ def main() -> None:
     logger.debug("Getting all tags with `%s` frequency", args.frequency)
     tags = get_tags_by_frequency(args.frequency)
 
-    for tag_name in tags:
+    for tag_name, _ in tags:
         logger.debug("Fetching tag `%s` from database", tag_name)
         tag = fetch_tag_from_db(args.frequency, tag_name)
         cluster_tag(tag)
