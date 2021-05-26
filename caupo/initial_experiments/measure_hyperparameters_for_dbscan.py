@@ -36,7 +36,6 @@ os.makedirs(BASE_OUTPUT_FOLDER)
 
 with Timer("Main script runtime"):
     city_modes = get_city_modes().items()
-    embedders = get_embedder_functions().items()
 
     for city_mode_name, city_mode_tag in city_modes:
         with Timer(f"Starting evaluation for city mode `{city_mode_name}`"):
@@ -53,6 +52,7 @@ with Timer("Main script runtime"):
                 clean_corpus = list(set(preprocessed_corpus))
             logger.info("Amount of clean tweets: %s", len(clean_corpus))
 
+        embedders = get_embedder_functions(clean_corpus).items()
         for embedder_name, embedder_function in embedders:
             with Timer(f"Getting vectors with embedder `{embedder_name}` for city mode `{city_mode_name}`"):
                 vectors = embedder_function(clean_corpus)

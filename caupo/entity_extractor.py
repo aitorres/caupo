@@ -9,8 +9,7 @@ usage.
 
 import argparse
 import logging
-import os
-from datetime import date, datetime
+from datetime import date
 from typing import Any, Dict, List, Set
 
 import es_core_news_md

@@ -3,8 +3,8 @@ Auxiliary module to add implementations of several word embeddings
 in order to test them for different tasks.
 """
 
+import logging
 import os
-from functools import partial
 from typing import Callable, Dict, List
 
 import fasttext
@@ -13,6 +13,8 @@ from sentence_transformers import SentenceTransformer
 from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import StandardScaler
+
+logger = logging.getLogger("caupo")
 
 
 def scale_vectors(vectors: List[float], scale: bool = True) -> List[float]:
@@ -40,28 +42,36 @@ def doc2vec_embedder(corpus: List[str]) -> List[float]:
     ref: https://radimrehurek.com/gensim/models/doc2vec.html
     """
 
+    logger.debug("Instantiating Doc2Vec model")
     tagged_documents = [TaggedDocument(doc.split(), [i]) for i, doc in enumerate(corpus)]
     model = Doc2Vec(tagged_documents, vector_size=150, window=5, min_count=3, workers=8)
-    vectors = [model.infer_vector(doc.split()) for doc in corpus]
 
-    return scale_vectors(vectors)
+    def embedder(documents: List[str]) -> List[float]:
+        """Generates an embedding using a Doc2Vec"""
+        return scale_vectors([model.infer_vector(doc.split()) for doc in documents])
+
+    return embedder
 
 
-def bow_embedder(corpus: List[str]) -> List[float]:
+def bow_embedder(corpus: List[str]) -> Callable[[List[str]], List[float]]:
     """
-    Given a corpus of texts, returns an embedding (representation
+    Given a corpus of texts, returns a callable that generates embeddings (representation
     of such texts) using a Count Vectorizer for Bag of Words.
 
     ref: https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html
     """
 
-    model = CountVectorizer(min_df=3, max_df=0.9)
-    vectors = model.fit_transform(corpus).toarray()
+    logger.debug("Instantiating CountVectorizer model")
+    model = CountVectorizer(min_df=3, max_df=0.9).fit(corpus)
 
-    return scale_vectors(vectors)
+    def embedder(documents: List[str]) -> List[float]:
+        """Generates an embedding using a Count Vectorizer for Bag of Words"""
+        return scale_vectors(model.transform(documents).to_array())
+
+    return embedder
 
 
-def fasttext_embedder(corpus: List[str], model_type: str = 'cbow') -> List[float]:
+def fasttext_embedder(corpus: List[str], model_type: str = 'cbow') -> Callable[[List[str]], List[float]]:
     """
     Given a corpus of texts and optionally a model type, returns an embedding
     (representation of such texts) using Fast Text as the embedder.
@@ -76,18 +86,20 @@ def fasttext_embedder(corpus: List[str], model_type: str = 'cbow') -> List[float
         temp_file.writelines(processed_corpus)
 
     # Train model and delete temp file
+    logger.debug("Instantiating FastText model `%s`", model_type)
     model = fasttext.train_unsupervised(corpus_path, model=model_type)
     if os.path.exists(corpus_path):
         os.remove(corpus_path)
 
-    # Get vectors
-    vectors = [model.get_sentence_vector(doc) for doc in corpus]
+    def embedder(documents: List[str]) -> List[float]:
+        """Generates an embedding using a FastText model"""
+        return scale_vectors([model.get_sentence_vector(doc) for doc in documents])
 
-    return scale_vectors(vectors)
+    return embedder
 
 
-def bert_embedder(corpus: List[str], model_name: str = "paraphrase-xlm-r-multilingual-v1",
-                  device: str = 'cpu') -> List[float]:
+def bert_embedder(model_name: str = "paraphrase-xlm-r-multilingual-v1",
+                  device: str = 'cpu') -> Callable[[List[str]], List[float]]:
     """
     Given a corpus of texts and optionally a BERT model name, returns an embedding
     (representation of such texts) using the passed BERT pretrained model from the
@@ -96,10 +108,14 @@ def bert_embedder(corpus: List[str], model_name: str = "paraphrase-xlm-r-multili
     ref: https://www.sbert.net/
     """
 
+    logger.debug("Instantiating BERT model `%s`", model_name)
     model = SentenceTransformer(model_name, device=device)
-    vectors = model.encode(corpus)
 
-    return scale_vectors(vectors)
+    def embedder(documents: List[str]) -> List[float]:
+        """Generates an embedding using a FastText model"""
+        return scale_vectors(model.encode(documents))
+
+    return embedder
 
 
 def reduce_dimensionality(embedder: Callable[[List[str]], List[float]],
@@ -110,18 +126,17 @@ def reduce_dimensionality(embedder: Callable[[List[str]], List[float]],
 
     pca_model = PCA(n_components=dimensions)
 
-    def new_embedder(corpus: List[str]):
+    logger.debug("Reducing dimensionality of embedder %s to %s dimensions", embedder, dimensions)
+
+    def new_embedder(documents: List[str]):
         """Calculates vectors using an external embedder and PCA to reduce dimensionality"""
 
-        vectors = embedder(corpus)
-        reduced_vectors = pca_model.fit_transform(vectors)
-
-        return reduced_vectors
+        return pca_model.fit_transform(embedder(documents))
 
     return new_embedder
 
 
-def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
+def get_embedder_functions(corpus: List[str]) -> Dict[str, Callable[[List[str]], List[float]]]:
     """
     Returns a list of the available embedders.
 
@@ -129,23 +144,20 @@ def get_embedder_functions() -> Dict[str, Callable[[List[str]], List[float]]]:
     """
 
     embedders = {
-        'Bag of Words': bow_embedder,
-        'Doc2Vec': doc2vec_embedder,
-        'FastText (CBOW)': partial(fasttext_embedder, model_type="cbow"),
-        'FastText (Skipgram)': partial(fasttext_embedder, model_type="skipgram"),
-        'GPT2 Small Spanish': partial(  # ref: https://huggingface.co/datificate/gpt2-small-spanish
-            bert_embedder, model_name="datificate/gpt2-small-spanish"),
-        'BERT: TinyBERT-spanish-uncased-finetuned-ner': partial(
-            bert_embedder, model_name='mrm8488/TinyBERT-spanish-uncased-finetuned-ner'),
-        'BERT: paraphrase-xlm-r-multilingual-v1': partial(
-            bert_embedder, model_name='paraphrase-xlm-r-multilingual-v1'),
-        'BERT: distiluse-base-multilingual-cased-v2': partial(
-            bert_embedder, model_name='distiluse-base-multilingual-cased-v2'),
+        'Bag of Words': bow_embedder(corpus),
+        'Doc2Vec': doc2vec_embedder(corpus),
+        'FastText (CBOW)': fasttext_embedder(corpus, model_type="cbow"),
+        'FastText (Skipgram)': fasttext_embedder(corpus, model_type="skipgram"),
+        'GPT2 Small Spanish': bert_embedder(model_name="datificate/gpt2-small-spanish"),
+        'BERT: TinyBERT-spanish-uncased-finetuned-ner':
+            bert_embedder(model_name='mrm8488/TinyBERT-spanish-uncased-finetuned-ner'),
+        'BERT: paraphrase-xlm-r-multilingual-v1': bert_embedder(model_name='paraphrase-xlm-r-multilingual-v1'),
+        'BERT: distiluse-base-multilingual-cased-v2': bert_embedder(model_name='distiluse-base-multilingual-cased-v2'),
     }
 
     reduced_embedders = {}
     for name, embedder in embedders.items():
-        reduced_embedders[f"{name} (50-dim)"] = reduce_dimensionality(embedder)
+        reduced_embedders[f"{name} (50-d)"] = reduce_dimensionality(embedder)
 
     return {**embedders, **reduced_embedders}
 
