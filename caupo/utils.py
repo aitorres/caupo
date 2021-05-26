@@ -101,6 +101,12 @@ def get_uninteresting_usernames():
     ]
 
 
+def get_main_corpus() -> List[str]:
+    """Returns the list of tweets (content as text) to consider as the main corpus"""
+
+    return list(set(get_text_from_all_tweets(city="Caracas")))
+
+
 def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_uninteresting_text=True,
                              city=None, dates=None):
     """
