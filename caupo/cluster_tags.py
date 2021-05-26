@@ -27,7 +27,7 @@ def main() -> None:
     """
 
     parser = argparse.ArgumentParser(description="Performs clustering over tweets stored on the database")
-    parser.add_argument("frequency", metavar="FREQ", type="str", choices=["daily", "weekly", "monthly"])
+    parser.add_argument("frequency", metavar="FREQ", type=str, choices=["daily", "weekly", "monthly"])
     args = parser.parse_args()
 
     logger.debug("Getting all tags with `%s` frequency", args.frequency)
