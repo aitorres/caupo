@@ -6,19 +6,68 @@ database as the main corpus.
 import argparse
 import logging
 
+from caupo.clustering import get_clustering_functions
+from caupo.embeddings import get_embedder_functions
 from caupo.tags import Tag, get_tags_by_frequency, fetch_tag_from_db
+from caupo.preprocessing import map_strange_characters, get_stopwords
+from caupo.utils import get_main_corpus
+from sklearn.metrics import silhouette_score
 
 logger = logging.getLogger("caupo")
+
+
+def quick_preprocess(tweet: str) -> str:
+    """
+    Quick prototype of preprocessing
+    # TODO: abstract this function and normalize with what is done on entity extractor
+    """
+
+    stopwords = get_stopwords()
+
+    cleaned_tweet = " ".join(
+        list(
+            map(
+                lambda t: "" if t in stopwords else t,
+                map_strange_characters(
+                    tweet.lower()
+                ).split()
+            )
+        )
+    )
+    return cleaned_tweet
 
 
 def cluster_tag(tag: Tag) -> None:
     """
     Given an entity tag, performs clustering and reports result to logs
     # TODO: Store on tags
+    # TODO: Refactor for efficiency and resource management
     """
 
-    # TODO: complete
-    print(tag)
+    # Get main corpus for recreating embedders
+    corpus = get_main_corpus()
+
+    # Extracting tweets
+    tweets = tag["tweets"]
+
+    # Normalizing tweets
+    cleaned_corpus = list(map(quick_preprocess, corpus))
+    cleaned_tweets = list(map(quick_preprocess, tweets))
+
+    # Getting vector representations
+    embedders = get_embedder_functions(cleaned_corpus)
+
+    # Applying clustering and reporting tweets
+    for embedder_name, embedder in embedders.items():
+        logger.info("Now trying embedder %s", embedder_name)
+        vectors = embedder(cleaned_tweets)
+        algorithms = get_clustering_functions()
+        for algorithm_name, algorithm in algorithms.items():
+            logger.info("Now trying algorithm %s with embedder %s", algorithm_name, embedder_name)
+            labels = algorithm.cluster(vectors)
+            logger.info("Clustering produced %s distinct labels: %s", len(labels), set(labels))
+            sil_score = silhouette_score(vectors, labels)
+            logger.info("This clusterization got a silhouette score of %s", sil_score)
 
 
 def main() -> None:
@@ -33,7 +82,8 @@ def main() -> None:
     logger.debug("Getting all tags with `%s` frequency", args.frequency)
     tags = get_tags_by_frequency(args.frequency)
 
-    for tag_name, _ in tags:
+    #! TODO: rework script
+    for tag_name, _ in tags[:1]:
         logger.debug("Fetching tag `%s` from database", tag_name)
         tag = fetch_tag_from_db(args.frequency, tag_name)
         cluster_tag(tag)
