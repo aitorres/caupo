@@ -1,5 +1,6 @@
 import logging
 import time
+from typing import List
 
 import bson.regex
 import matplotlib as mpl
@@ -13,6 +14,7 @@ mpl.use('Agg')
 logger = logging.getLogger("caupo")
 
 db = get_db()
+
 
 class Timer:
     """Context handler to measure time of a function"""
@@ -39,7 +41,7 @@ class Timer:
 def get_city_modes():
     """Returns a dictionary with options for city modes to use in standarized measurements"""
 
-    #? INFO: Elements are of the form (key, value) === (title, parameter)
+    # ? INFO: Elements are of the form (key, value) === (title, parameter)
     CITY_MODES = {
         'Caracas': 'Caracas',
         'All Cities': None,
