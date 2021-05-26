@@ -53,8 +53,10 @@ def cluster_tag(tag: Tag) -> None:
     tweets = tag["tweets"]
 
     # Normalizing tweets
-    logger.debug("Cleaning tweets and corpus")
+    logger.debug("Cleaning corpus")
     cleaned_corpus = list(map(quick_preprocess, corpus))
+
+    logger.debug("Cleaning tweets")
     cleaned_tweets = list(map(quick_preprocess, tweets))
 
     # Getting vector representations
@@ -63,6 +65,7 @@ def cluster_tag(tag: Tag) -> None:
 
     # Applying clustering and reporting tweets
     logger.debug("All ready, starting experiments!")
+    scores = {}
     for embedder_name, embedder in embedders.items():
         logger.info("Now trying embedder %s", embedder_name)
         vectors = embedder(cleaned_tweets)
@@ -70,9 +73,19 @@ def cluster_tag(tag: Tag) -> None:
         for algorithm_name, algorithm in algorithms.items():
             logger.info("Now trying algorithm %s with embedder %s", algorithm_name, embedder_name)
             labels = algorithm.cluster(vectors)
-            logger.info("Clustering produced %s distinct labels: %s", len(labels), set(labels))
-            sil_score = silhouette_score(vectors, labels)
-            logger.info("This clusterization got a silhouette score of %s", sil_score)
+            logger.info("Clustering produced %s distinct labels: %s", len(set(labels)), set(labels))
+
+            try:
+                sil_score = silhouette_score(vectors, labels)
+                logger.info("This clusterization got a silhouette score of %s", sil_score)
+                scores[(embedder_name, algorithm_name)] = sil_score
+            except ValueError:
+                logger.warning("Could not compute silhouette score for %s using $s ", algorithm_name, embedder_name)
+
+    sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    logger.debug("Silhouette score results (sort: desc, higher is better)")
+    for score_tag, score in sorted_scores:
+        logger.debug(f"{score_tag}: {score}")
 
 
 def main() -> None:
