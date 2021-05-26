@@ -82,7 +82,7 @@ def cluster_tag(tag: Tag) -> None:
                 logger.info("This clusterization got a silhouette score of %s", sil_score)
                 scores[(embedder_name, algorithm_name)] = sil_score
             except ValueError:
-                logger.warning("Could not compute silhouette score for %s using $s ", algorithm_name, embedder_name)
+                logger.warning("Could not compute silhouette score for %s using %s ", algorithm_name, embedder_name)
 
     sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
     logger.debug("Silhouette score results (sort: desc, higher is better)")
