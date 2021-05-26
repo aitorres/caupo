@@ -45,19 +45,24 @@ def cluster_tag(tag: Tag) -> None:
     """
 
     # Get main corpus for recreating embedders
+    logger.debug("Getting main corpus for training embedders")
     corpus = get_main_corpus()
 
     # Extracting tweets
+    logger.debug("Extracting tweets from tags")
     tweets = tag["tweets"]
 
     # Normalizing tweets
+    logger.debug("Cleaning tweets and corpus")
     cleaned_corpus = list(map(quick_preprocess, corpus))
     cleaned_tweets = list(map(quick_preprocess, tweets))
 
     # Getting vector representations
+    logger.debug("Initializing embedders")
     embedders = get_embedder_functions(cleaned_corpus)
 
     # Applying clustering and reporting tweets
+    logger.debug("All ready, starting experiments!")
     for embedder_name, embedder in embedders.items():
         logger.info("Now trying embedder %s", embedder_name)
         vectors = embedder(cleaned_tweets)
