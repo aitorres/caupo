@@ -10,7 +10,7 @@ by its frequency (daily, weekly or monthly).
 import logging
 from calendar import monthrange
 from datetime import date, timedelta
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import bson.regex
 import pymongo
@@ -98,6 +98,14 @@ def get_collection_by_frequency(frequency: str) -> pymongo.collection.Collection
     collection_name = f"entities_{frequency}"
     collection = getattr(db, collection_name)
     return collection
+
+
+def fetch_tag_from_db(frequency: str, tag_name: str) -> Dict[str, Any]:
+    """Given a frequency and a tag name, fetches the tag information from database and returns it"""
+
+    collection = get_collection_by_frequency(frequency)
+    tag = collection.find_one({"tag": tag_name})
+    return tag
 
 
 def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
