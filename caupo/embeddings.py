@@ -62,11 +62,11 @@ def bow_embedder(corpus: List[str]) -> Callable[[List[str]], List[float]]:
     """
 
     logger.debug("Instantiating CountVectorizer model")
-    model = CountVectorizer(min_df=3, max_df=0.9).fit(corpus)
+    model = CountVectorizer(min_df=3, max_df=0.85).fit(corpus)
 
     def embedder(documents: List[str]) -> List[float]:
         """Generates an embedding using a Count Vectorizer for Bag of Words"""
-        return scale_vectors(model.transform(documents).to_array())
+        return scale_vectors(model.transform(documents).toarray())
 
     return embedder
 
