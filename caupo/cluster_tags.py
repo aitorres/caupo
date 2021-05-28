@@ -11,7 +11,7 @@ from caupo.embeddings import get_embedder_functions
 from caupo.tags import Tag, get_tags_by_frequency, fetch_tag_from_db
 from caupo.preprocessing import map_strange_characters, get_stopwords
 from caupo.utils import get_main_corpus
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score, davies_bouldin_score
 
 logger = logging.getLogger("caupo")
 
@@ -67,7 +67,8 @@ def cluster_tag(tag: Tag) -> None:
 
     # Applying clustering and reporting tweets
     logger.debug("All ready, starting experiments!")
-    scores = {}
+    sil_scores = {}
+    db_scores = {}
     for embedder_name, embedder in embedders.items():
         logger.info("Now trying embedder %s", embedder_name)
         vectors = embedder(cleaned_tweets)
@@ -80,13 +81,25 @@ def cluster_tag(tag: Tag) -> None:
             try:
                 sil_score = silhouette_score(vectors, labels)
                 logger.info("This clusterization got a silhouette score of %s", sil_score)
-                scores[(embedder_name, algorithm_name)] = sil_score
+                sil_scores[(embedder_name, algorithm_name)] = sil_score
             except ValueError:
                 logger.warning("Could not compute silhouette score for %s using %s ", algorithm_name, embedder_name)
 
-    sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+            try:
+                db_score = davies_bouldin_score(vectors, labels)
+                logger.info("This clusterization got a Davies-Bouldin index of %s", db_score)
+                db_scores[(embedder_name, algorithm_name)] = db_score
+            except ValueError:
+                logger.warning("Could not compute Davies-Bouldin score for %s using %s ", algorithm_name, embedder_name)
+
+    sorted_sil_scores = sorted(sil_scores.items(), key=lambda x: x[1], reverse=True)
     logger.debug("Silhouette score results (sort: desc, higher is better)")
-    for score_tag, score in sorted_scores:
+    for score_tag, score in sorted_sil_scores:
+        logger.debug(f"{score_tag}: {score}")
+
+    sorted_db_scores = sorted(db_scores.items(), key=lambda x: x[1])
+    logger.debug("Silhouette score results (sort: asc, less is better)")
+    for score_tag, score in sorted_db_scores:
         logger.debug(f"{score_tag}: {score}")
 
 
