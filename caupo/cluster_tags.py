@@ -92,13 +92,15 @@ def cluster_tag(tag: Tag) -> None:
             except ValueError:
                 logger.warning("Could not compute Davies-Bouldin score for %s using %s ", algorithm_name, embedder_name)
 
+    # https://en.wikipedia.org/wiki/Silhouette_(clustering)
     sorted_sil_scores = sorted(sil_scores.items(), key=lambda x: x[1], reverse=True)
     logger.debug("Silhouette score results (sort: desc, higher is better)")
     for score_tag, score in sorted_sil_scores:
         logger.debug(f"{score_tag}: {score}")
 
+    # https://en.wikipedia.org/wiki/Davies%E2%80%93Bouldin_index
     sorted_db_scores = sorted(db_scores.items(), key=lambda x: x[1])
-    logger.debug("Silhouette score results (sort: asc, less is better)")
+    logger.debug("Davies-Boulding score results (sort: asc, less is better)")
     for score_tag, score in sorted_db_scores:
         logger.debug(f"{score_tag}: {score}")
 
