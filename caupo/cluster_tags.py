@@ -75,22 +75,23 @@ def cluster_tag(tag: Tag) -> None:
         algorithms = get_clustering_functions()
         for algorithm_name, algorithm in algorithms.items():
             logger.info("Now trying algorithm %s with embedder %s", algorithm_name, embedder_name)
-            labels = algorithm.cluster(vectors)
-            logger.info("Clustering produced %s distinct labels: %s", len(set(labels)), set(labels))
-
             try:
+                labels = algorithm.cluster(vectors)
+                logger.info("Clustering produced %s distinct labels: %s", len(set(labels)), set(labels))
+            except ValueError:
+                labels = []
+                logger.warning("Couldn't produce clusterings with algorithm %s", algorithm_name)
+
+            if len(set(labels)) > 1:
                 sil_score = silhouette_score(vectors, labels)
                 logger.info("This clusterization got a silhouette score of %s", sil_score)
                 sil_scores[(embedder_name, algorithm_name)] = sil_score
-            except ValueError:
-                logger.warning("Could not compute silhouette score for %s using %s ", algorithm_name, embedder_name)
 
-            try:
                 db_score = davies_bouldin_score(vectors, labels)
                 logger.info("This clusterization got a Davies-Bouldin index of %s", db_score)
                 db_scores[(embedder_name, algorithm_name)] = db_score
-            except ValueError:
-                logger.warning("Could not compute Davies-Bouldin score for %s using %s ", algorithm_name, embedder_name)
+            else:
+                logger.warning("Skipping calculation of scores for %s using %s", algorithm_name, embedder_name)
 
     # https://en.wikipedia.org/wiki/Silhouette_(clustering)
     sorted_sil_scores = sorted(sil_scores.items(), key=lambda x: x[1], reverse=True)
