@@ -162,41 +162,6 @@ def get_embedder_functions(corpus: List[str]) -> Dict[str, Callable[[List[str]],
     return {**embedders, **reduced_embedders}
 
 
-def get_optimal_eps_for_embedder(distance: str, name: str) -> float:
-    """
-    Given the name of a distance and an embedder, returns the optimal value for the `eps`
-    parameter that should be used in DBSCAN according to previous, human made analysis.
-    """
-
-    OPTIMAL_EPS = {
-        'euclidean': {
-            'Bag of Words': 175,
-            'Doc2Vec': 12,
-            'FastText (CBOW)': 5,
-            'FastText (Skipgram)': 7,
-            'GPT2 Small Spanish': 21,
-            'BERT: TinyBERT-spanish-uncased-finetuned-ner': 15,
-            'BERT: paraphrase-xlm-r-multilingual-v1': 30,
-            'BERT: distiluse-base-multilingual-cased-v2': 25,
-        },
-        'cosine': {
-            'Bag of Words': 0.65,
-            'Doc2Vec': 0.15,
-            'FastText (CBOW)': 0.075,
-            'FastText (Skipgram)': 0.35,
-            'GPT2 Small Spanish': 0.55,
-            'BERT: TinyBERT-spanish-uncased-finetuned-ner': 0.325,
-            'BERT: paraphrase-xlm-r-multilingual-v1': 0.55,
-            'BERT: distiluse-base-multilingual-cased-v2': 0.55,
-        }
-    }
-
-    try:
-        return OPTIMAL_EPS[distance][name]
-    except (IndexError, KeyError):
-        return 0.5
-
-
 def main() -> None:
     """
     Run a small test program for embedders
@@ -217,7 +182,7 @@ def main() -> None:
         "un dos tres cuatro cinco",
     ]
 
-    for name, embedder in get_embedder_functions().items():
+    for name, embedder in get_embedder_functions(test_sentences).items():
         print(f"*** {name} ***")
         result_vectors = embedder(test_sentences)
 
