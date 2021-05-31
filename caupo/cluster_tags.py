@@ -185,7 +185,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
 
             # Storing results of this run to database
             clusters = [
-                {label: [tweet for tweet_label, tweet in zip(labels, tweets) if tweet_label == label]}
+                {str(label): [tweet for tweet_label, tweet in zip(labels, tweets) if tweet_label == label]}
                 for label in set(clean_labels)
             ]
             clusters_info.append({
@@ -201,20 +201,6 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                 'topics': None,  # TODO: generate topics
             })
 
-    # Storing results to database
-    collection = get_collection_by_frequency(frequency, prefix="clusters")
-    db_object = {
-        'frequency': frequency,
-        'tag': tag,
-        'tweets': tweets,
-        'cleaned_tweets': cleaned_tweets,
-        'tweets_amount': len(tweets),
-        'clusters': clusters_info,
-    }
-    collection.insert_one(db_object)
-
-    # TODO Store results in DB
-
     # https://en.wikipedia.org/wiki/Silhouette_(clustering)
     sorted_sil_scores = sorted(sil_scores.items(), key=lambda x: x[1], reverse=True)
     logger.debug("Silhouette score results (sort: desc, higher is better)")
@@ -226,6 +212,20 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
     logger.debug("Davies-Boulding score results (sort: asc, less is better)")
     for score_tag, score in sorted_db_scores:
         logger.debug(f"{score_tag}: {score}")
+
+    # Storing results to database
+    logger.debug("Storing results to database...")
+    collection = get_collection_by_frequency(frequency, prefix="clusters")
+    db_object = {
+        'frequency': frequency,
+        'tag': tag,
+        'tweets': tweets,
+        'cleaned_tweets': cleaned_tweets,
+        'tweets_amount': len(tweets),
+        'clusters': clusters_info,
+    }
+    collection.insert_one(db_object)
+    logger.debug("Results stored!")
 
 
 def main() -> None:
