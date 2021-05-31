@@ -92,10 +92,10 @@ class Tag:
             self.tweets[i] = " ".join(map(lambda x: "" if x in unwanted_words else x, tweet.split()))
 
 
-def get_collection_by_frequency(frequency: str) -> pymongo.collection.Collection:
+def get_collection_by_frequency(frequency: str, prefix: str = "entities") -> pymongo.collection.Collection:
     """Given a frequency, returns the appropriate collection where information should be stored"""
 
-    collection_name = f"entities_{frequency}"
+    collection_name = f"{prefix}_{frequency}"
     collection = getattr(db, collection_name)
     return collection
 

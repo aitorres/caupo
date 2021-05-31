@@ -25,7 +25,7 @@ class BaseClustering:
 
         raise NotImplementedError("__init__() not implemented")
 
-    def cluster(self, vectors: List[List[float]]) -> List[float]:
+    def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs clustering and returns labels of the output"""
 
         raise NotImplementedError("cluster() not implemented")

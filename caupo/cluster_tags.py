@@ -97,6 +97,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
     logger.debug("All ready, starting experiments!")
     sil_scores = {}
     db_scores = {}
+    clusters_info = []
     for embedder_name, embedder in embedder_functions.items():
         logger.info("Now trying embedder %s", embedder_name)
         vectors = embedder(cleaned_tweets)
@@ -115,6 +116,15 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
 
             if labels == []:
                 logger.info("Skipping plots and computations")
+                clusters_info.append({
+                    'algorithm': algorithm_name,
+                    'embedder': embedder_name,
+                    'success': False,
+                    'labels': None,
+                    'clusters': None,
+                    'scores': None,
+                    'topics': None,
+                })
                 continue
 
             # If clusterization happened properly, produce outputs and compute scores
@@ -167,6 +177,36 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                     f"{len(vectors)}|{len(clean_vectors)}|{len(vectors) - len(clean_vectors)}|" +
                     f"{sil_score}|{db_score}|\n")
 
+            # Storing results of this run to database
+            clusters = [
+                {label: [tweet for tweet_label, tweet in zip(labels, tweets) if tweet_label == label]}
+                for label in set(clean_labels)
+            ]
+            clusters_info.append({
+                'algorithm': algorithm_name,
+                'embedder': embedder_name,
+                'success': True,
+                'labels': labels,
+                'clusters': clusters,
+                'scores': {
+                    'silhouette': sil_score,
+                    'davies_bouldin': db_score,
+                },
+                'topics': None,  # TODO: generate topics
+            })
+
+    # Storing results to database
+    collection = get_collection_by_frequency(frequency, prefix="clusters")
+    db_object = {
+        'frequency': frequency,
+        'tag': tag,
+        'tweets': tweets,
+        'cleaned_tweets': cleaned_tweets,
+        'tweets_amount': len(tweets),
+        'clusters': clusters_info,
+    }
+    collection.insert_one(db_object)
+
     # TODO Store results in DB
 
     # https://en.wikipedia.org/wiki/Silhouette_(clustering)
@@ -195,7 +235,7 @@ def main() -> None:
     tags = get_tags_by_frequency(args.frequency)
     csv_file, md_file = create_output_files(args.frequency)
 
-    #! TODO: rework script
+    # ! TODO: rework script
     for tag_name, _ in tags[:1]:
         logger.debug("Fetching tag `%s` from database", tag_name)
         tag = fetch_tag_from_db(args.frequency, tag_name)
