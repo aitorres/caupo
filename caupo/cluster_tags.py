@@ -8,6 +8,7 @@ import logging
 import os
 from pathlib import Path
 
+from numpy import ndarray
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 
 from caupo.clustering import get_clustering_functions
@@ -109,6 +110,8 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
 
             try:
                 labels = algorithm.cluster(vectors)
+                if isinstance(labels, ndarray):
+                    labels = labels.tolist()
                 logger.info("Clustering produced %s distinct labels: %s", len(set(labels)), set(labels))
             except ValueError:
                 labels = []
@@ -139,12 +142,12 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
 
             # Plotting clusters
             logger.info("Plotting clusters")
-            plot_clusters(vectors, f"{output_folder}/plot.png", f"{algorithm_name} - {embedder_name}",
+            plot_clusters(vectors, f"{output_folder}/{tag['tag']}_plot.png", f"{algorithm_name} - {embedder_name}",
                           labels=labels)
 
             if len(labels) != len(clean_labels):
                 logger.info("Plotting clean clusters (no outliers)")
-                plot_clusters(clean_vectors, f"{output_folder}/plot_clean.png",
+                plot_clusters(clean_vectors, f"{output_folder}/{tag['tag']}_plot_clean.png",
                               f"{algorithm_name} - {embedder_name} (no outliers)", labels=clean_labels)
 
             # If we got more than one cluster, compute results
