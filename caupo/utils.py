@@ -5,6 +5,7 @@ from typing import List
 import bson.regex
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 from caupo.database import get_db
 
@@ -154,16 +155,39 @@ def plot_clusters(vectors, filename, title, labels=None):
     src: https://matplotlib.org/stable/tutorials/colors/colors.html
     """
 
+    if len(vectors) == 0:
+        logger.warning("Can't plot empty clusters!")
+        return
+
+    # Reducing dimensionality if needed
+    dims = len(vectors[0])
+    if dims > 2:
+        logger.debug("Reducing dimensionality of vectors from `%s` to 2 before plotting", dims)
+        pca_model = PCA(n_components=2)
+        vectors = pca_model.fit_transform(vectors)
+
     # If no labels are passed, assume all belong to the same cluster (and are colored likewise)
     if labels is None:
         labels = [0] * len(vectors)
 
-    COLOR_PALETTE = ["#00394B", "#005B6E", "#04668C", "#3C6CA7", "#726EB7",
-                     "#A86BBA", "#DA66AC", "#FF6792", "#FF89AC", "#FFACBF",
-                     "#A6A6A6"] # gray would be used for a "-1" label
-    colors = [COLOR_PALETTE[i] for i in labels]
+    if len(set(labels)) <= 11:
+        color_palette = ["#00394B", "#005B6E", "#04668C", "#3C6CA7", "#726EB7",
+                         "#A86BBA", "#DA66AC", "#FF6792", "#FF89AC", "#FFACBF"]
+    elif len(set(labels) <= 31):
+        color_palette = ["#012733", "#0A2C37", "#13303B", "#1B353F", "#243944",
+                         "#2D3E48", "#36424C", "#3E4750", "#474B54", "#505058",
+                         "#59555C", "#615961", "#6A5E65", "#736269", "#7C676D",
+                         "#846B71", "#8D7075", "#967479", "#9F797D", "#A77D82",
+                         "#B08286", "#B9878A", "#C28B8E", "#CA9092", "#D39496",
+                         "#DC999A", "#E59D9F", "#EDA2A3", "#F6A6A7", "#FFABAB"]
+    else:
+        logger.warning("Won't plot more than 31 clusters!")
+        return
 
-    plt.scatter(vectors[:,0], vectors[:,1], c=colors, s=2)
+    color_palette.append("#A6A6A6")  # gray would be used for a "-1" label)
+
+    colors = [color_palette[i] for i in labels]
+    plt.scatter(vectors[:, 0], vectors[:, 1], c=colors, s=2)
     plt.title(title)
     plt.savefig(filename)
     plt.close()
