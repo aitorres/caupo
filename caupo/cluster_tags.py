@@ -169,15 +169,15 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
             # Storing output in CSV File
             with open(csv_file, "a") as file_handler:
                 file_handler.write(
-                    f"{frequency},{tag['tag']},{embedder_name},{algorithm_name},{set(clean_labels)},{-1 in labels}," +
-                    f"{len(vectors)},{len(clean_vectors)},{len(vectors) - len(clean_vectors)}," +
+                    f"{frequency},{tag['tag']},{embedder_name},{algorithm_name},{len(set(clean_labels))}," +
+                    f"{-1 in labels},{len(vectors)},{len(clean_vectors)},{len(vectors) - len(clean_vectors)}," +
                     f"{sil_score},{db_score}\n")
 
             # Storing output to Markdown file
             with open(md_file, "a") as file_handler:
                 file_handler.write(
-                    f"|{frequency}|{tag['tag']}|{embedder_name}|{algorithm_name}|{set(clean_labels)}|{-1 in labels}|" +
-                    f"{len(vectors)}|{len(clean_vectors)}|{len(vectors) - len(clean_vectors)}|" +
+                    f"|{frequency}|{tag['tag']}|{embedder_name}|{algorithm_name}|{len(set(clean_labels))}|" +
+                    f"{-1 in labels}|{len(vectors)}|{len(clean_vectors)}|{len(vectors) - len(clean_vectors)}|" +
                     f"{sil_score}|{db_score}|\n")
 
             # Storing results of this run to database
