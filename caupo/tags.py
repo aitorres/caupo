@@ -168,13 +168,14 @@ def get_tags_by_frequency(frequency: str) -> List[Tuple[str, List[date]]]:
     raise NotImplementedError(f"Value of `frequency` = `{frequency}` not supported in `get_tags_by_frequency`")
 
 
-def exclude_preexisting_tags(frequency: str, tags: List[Tuple[str, List[date]]]) -> List[Tuple[str, List[date]]]:
+def exclude_preexisting_tags(frequency: str, tags: List[Tuple[str, List[date]]],
+                             prefix="entities") -> List[Tuple[str, List[date]]]:
     """
     Given a frequency and a list of tags and dates, returns a new list containing only tags
     that don't already exist on the database.
     """
 
-    collection = get_collection_by_frequency(frequency)
+    collection = get_collection_by_frequency(frequency, prefix)
     filtered_tags = []
 
     for tag in tags:

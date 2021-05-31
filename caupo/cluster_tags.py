@@ -13,8 +13,8 @@ from sklearn.metrics import davies_bouldin_score, silhouette_score
 from caupo.clustering import get_clustering_functions
 from caupo.embeddings import get_embedder_functions
 from caupo.preprocessing import get_stopwords, map_strange_characters
-from caupo.tags import (Tag, fetch_tag_from_db, get_collection_by_frequency,
-                        get_tags_by_frequency)
+from caupo.tags import (Tag, exclude_preexisting_tags, fetch_tag_from_db,
+                        get_collection_by_frequency, get_tags_by_frequency)
 from caupo.utils import get_main_corpus, plot_clusters
 
 logger = logging.getLogger("caupo")
@@ -233,6 +233,7 @@ def main() -> None:
 
     logger.debug("Getting all tags with `%s` frequency", args.frequency)
     tags = get_tags_by_frequency(args.frequency)
+    tags = exclude_preexisting_tags(args.frequency, tags, prefix="clusters")
     csv_file, md_file = create_output_files(args.frequency)
 
     # ! TODO: rework script
