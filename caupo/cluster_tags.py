@@ -114,7 +114,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                 labels = []
                 logger.warning("Couldn't produce clusterings with algorithm %s", algorithm_name)
 
-            if labels == []:
+            if len(labels) == 0:
                 logger.info("Skipping plots and computations")
                 clusters_info.append({
                     'algorithm': algorithm_name,
