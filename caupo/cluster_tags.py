@@ -6,6 +6,7 @@ database as the main corpus.
 import argparse
 import logging
 import os
+from pathlib import Path
 
 from caupo.clustering import get_clustering_functions
 from caupo.embeddings import get_embedder_functions
@@ -40,7 +41,30 @@ def quick_preprocess(tweet: str) -> str:
     return cleaned_tweet
 
 
-def cluster_tag(tag: Tag, frequency: str) -> None:
+def create_output_files(frequency: str) -> None:
+    """Given a frequency, creates files with headers (if needed) to store output info"""
+
+    output_folder = f"{BASE_OUTPUT_FOLDER}/{frequency}"
+    os.makedirs(output_folder, exist_ok=True)
+
+    csv_file = Path(f"{output_folder}/results.csv")
+    if not csv_file.exists():
+        with open(csv_file, "w") as file_handler:
+            file_handler.write("frequency,tag,embedder,algorithm,n_clusters,has_outliers," +
+                               "tweets,valid_tweets,outliers,sil_score,db_score\n")
+
+    md_file = Path(f"{output_folder}/results.md")
+    if not md_file.exists():
+        with open(md_file, "w") as file_handler:
+            file_handler.write(
+                "|Frequency|Tag|Embedder|Algorithm|Amount of Clusters|Has Outliers|" +
+                "Tweets|Valid Tweets|Outliers|Silhouette Score|Davies-Bouldin Score|\n" +
+                "|---|---|---|---|---|---|---|---|\n")
+
+    return csv_file, md_file
+
+
+def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None:
     """
     Given an entity tag, performs clustering and reports result to logs
     # TODO: Store on tags
@@ -124,6 +148,24 @@ def cluster_tag(tag: Tag, frequency: str) -> None:
                 db_scores[(embedder_name, algorithm_name)] = db_score
             else:
                 logger.warning("Skipping calculation of scores for %s using %s", algorithm_name, embedder_name)
+                sil_score = None
+                db_score = None
+
+            # Storing output in CSV File
+            with open(csv_file, "a") as file_handler:
+                file_handler.write(
+                    f"{frequency},{tag['tag']},{embedder_name},{algorithm_name},{set(clean_labels)},{-1 in labels}," +
+                    f"{len(vectors)},{len(clean_vectors)},{len(vectors) - len(clean_vectors)}," +
+                    f"{sil_score},{db_score}\n")
+
+            # Storing output to Markdown file
+            with open(md_file, "a") as file_handler:
+                file_handler.write(
+                    f"|{frequency}|{tag['tag']}|{embedder_name}|{algorithm_name}|{set(clean_labels)}|{-1 in labels}|" +
+                    f"{len(vectors)}|{len(clean_vectors)}|{len(vectors) - len(clean_vectors)}|" +
+                    f"{sil_score}|{db_score}|\n")
+
+    # TODO Store results in DB
 
     # https://en.wikipedia.org/wiki/Silhouette_(clustering)
     sorted_sil_scores = sorted(sil_scores.items(), key=lambda x: x[1], reverse=True)
@@ -149,12 +191,13 @@ def main() -> None:
 
     logger.debug("Getting all tags with `%s` frequency", args.frequency)
     tags = get_tags_by_frequency(args.frequency)
+    csv_file, md_file = create_output_files(args.frequency)
 
     #! TODO: rework script
     for tag_name, _ in tags[:1]:
         logger.debug("Fetching tag `%s` from database", tag_name)
         tag = fetch_tag_from_db(args.frequency, tag_name)
-        cluster_tag(tag, args.frequency)
+        cluster_tag(tag, args.frequency, csv_file, md_file)
 
 
 if __name__ == "__main__":
