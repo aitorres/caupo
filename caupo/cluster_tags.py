@@ -5,15 +5,18 @@ database as the main corpus.
 
 import argparse
 import logging
+import os
 
 from caupo.clustering import get_clustering_functions
 from caupo.embeddings import get_embedder_functions
 from caupo.tags import Tag, get_tags_by_frequency, fetch_tag_from_db
 from caupo.preprocessing import map_strange_characters, get_stopwords
-from caupo.utils import get_main_corpus
+from caupo.utils import get_main_corpus, plot_clusters
 from sklearn.metrics import silhouette_score, davies_bouldin_score
 
 logger = logging.getLogger("caupo")
+
+BASE_OUTPUT_FOLDER = "outputs/cluster_tags/"
 
 
 def quick_preprocess(tweet: str) -> str:
@@ -37,11 +40,10 @@ def quick_preprocess(tweet: str) -> str:
     return cleaned_tweet
 
 
-def cluster_tag(tag: Tag) -> None:
+def cluster_tag(tag: Tag, frequency: str) -> None:
     """
     Given an entity tag, performs clustering and reports result to logs
     # TODO: Store on tags
-    # TODO: Refactor for efficiency and resource management
     """
 
     # Get main corpus for recreating embedders
@@ -75,6 +77,9 @@ def cluster_tag(tag: Tag) -> None:
         algorithms = get_clustering_functions()
         for algorithm_name, algorithm in algorithms.items():
             logger.info("Now trying algorithm %s with embedder %s", algorithm_name, embedder_name)
+            output_folder = f"{BASE_OUTPUT_FOLDER}/{frequency}/{embedder_name}/{algorithm_name}"
+            os.makedirs(output_folder, exist_ok=True)
+
             try:
                 labels = algorithm.cluster(vectors)
                 logger.info("Clustering produced %s distinct labels: %s", len(set(labels)), set(labels))
@@ -82,17 +87,32 @@ def cluster_tag(tag: Tag) -> None:
                 labels = []
                 logger.warning("Couldn't produce clusterings with algorithm %s", algorithm_name)
 
+            if labels == []:
+                logger.info("Skipping plots and computations")
+                continue
+
+            # If clusterization happened properly, produce outputs and compute scores
             if -1 in labels:
                 logger.info("This clusterization found %s outliers (out of %s elements)",
                             len([label for label in labels if label == -1]), len(labels))
 
-            clean_elements = [
-                (vector, label) for vector, label in zip(vectors, labels) if label != -1
-            ]
+            # Cleaning elements from outliers
+            clean_elements = [(vector, label) for vector, label in zip(vectors, labels) if label != -1]
             clean_vectors = [elem[0] for elem in clean_elements]
             clean_labels = [elem[1] for elem in clean_elements]
 
-            if len(set(labels)) > 1:
+            # Plotting clusters
+            logger.info("Plotting clusters")
+            plot_clusters(vectors, f"{output_folder}/plot.png", f"{algorithm_name} - {embedder_name}",
+                          labels=labels)
+
+            if len(labels) != len(clean_labels):
+                logger.info("Plotting clean clusters (no outliers)")
+                plot_clusters(clean_vectors, f"{output_folder}/plot_clean.png",
+                              f"{algorithm_name} - {embedder_name} (no outliers)", labels=clean_labels)
+
+            # If we got more than one cluster, compute results
+            if len(set(clean_labels)) > 1:
                 logger.info("This clusterization produced %s successfully clustered elements", len(clean_elements))
 
                 sil_score = silhouette_score(clean_vectors, clean_labels)
@@ -134,7 +154,7 @@ def main() -> None:
     for tag_name, _ in tags[:1]:
         logger.debug("Fetching tag `%s` from database", tag_name)
         tag = fetch_tag_from_db(args.frequency, tag_name)
-        cluster_tag(tag)
+        cluster_tag(tag, args.frequency)
 
 
 if __name__ == "__main__":
