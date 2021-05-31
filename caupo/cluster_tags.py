@@ -8,12 +8,14 @@ import logging
 import os
 from pathlib import Path
 
+from sklearn.metrics import davies_bouldin_score, silhouette_score
+
 from caupo.clustering import get_clustering_functions
 from caupo.embeddings import get_embedder_functions
-from caupo.tags import Tag, get_tags_by_frequency, fetch_tag_from_db
-from caupo.preprocessing import map_strange_characters, get_stopwords
+from caupo.preprocessing import get_stopwords, map_strange_characters
+from caupo.tags import (Tag, fetch_tag_from_db, get_collection_by_frequency,
+                        get_tags_by_frequency)
 from caupo.utils import get_main_corpus, plot_clusters
-from sklearn.metrics import silhouette_score, davies_bouldin_score
 
 logger = logging.getLogger("caupo")
 

@@ -16,7 +16,8 @@ import es_core_news_md
 import pymongo
 
 from caupo.preprocessing import map_strange_characters
-from caupo.tags import Tag, get_collection_by_frequency, get_tags_by_frequency, exclude_preexisting_tags
+from caupo.tags import (Tag, exclude_preexisting_tags,
+                        get_collection_by_frequency, get_tags_by_frequency)
 
 # Instantiate logger
 logger = logging.getLogger("caupo")
