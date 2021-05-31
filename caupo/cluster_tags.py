@@ -63,13 +63,13 @@ def cluster_tag(tag: Tag) -> None:
 
     # Getting vector representations
     logger.debug("Initializing embedders")
-    embedders = get_embedder_functions(cleaned_corpus)
+    embedder_functions = get_embedder_functions(cleaned_corpus)
 
     # Applying clustering and reporting tweets
     logger.debug("All ready, starting experiments!")
     sil_scores = {}
     db_scores = {}
-    for embedder_name, embedder in embedders.items():
+    for embedder_name, embedder in embedder_functions.items():
         logger.info("Now trying embedder %s", embedder_name)
         vectors = embedder(cleaned_tweets)
         algorithms = get_clustering_functions()
@@ -82,12 +82,24 @@ def cluster_tag(tag: Tag) -> None:
                 labels = []
                 logger.warning("Couldn't produce clusterings with algorithm %s", algorithm_name)
 
+            if -1 in labels:
+                logger.info("This clusterization found %s outliers (out of %s elements)",
+                            len([label for label in labels if label == -1]), len(labels))
+
+            clean_elements = [
+                (vector, label) for vector, label in zip(vectors, labels) if label != -1
+            ]
+            clean_vectors = [elem[0] for elem in clean_elements]
+            clean_labels = [elem[1] for elem in clean_elements]
+
             if len(set(labels)) > 1:
-                sil_score = silhouette_score(vectors, labels)
+                logger.info("This clusterization produced %s successfully clustered elements", len(clean_elements))
+
+                sil_score = silhouette_score(clean_vectors, clean_labels)
                 logger.info("This clusterization got a silhouette score of %s", sil_score)
                 sil_scores[(embedder_name, algorithm_name)] = sil_score
 
-                db_score = davies_bouldin_score(vectors, labels)
+                db_score = davies_bouldin_score(clean_vectors, clean_labels)
                 logger.info("This clusterization got a Davies-Bouldin index of %s", db_score)
                 db_scores[(embedder_name, algorithm_name)] = db_score
             else:
