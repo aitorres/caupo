@@ -152,7 +152,10 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
 
             # If we got more than one cluster, compute results
             if len(set(clean_labels)) > 1:
-                logger.info("This clusterization produced %s successfully clustered elements", len(clean_elements))
+                logger.info("This clusterization produced %s successfully clustered elements into %s clusters",
+                            len(clean_elements), len(set(clean_labels)))
+                for label in set(clean_labels):
+                    logger.debug("Cluster %s: %s elements", label, len([l for l in clean_labels if l == label]))
 
                 sil_score = silhouette_score(clean_vectors, clean_labels)
                 logger.info("This clusterization got a silhouette score of %s", sil_score)
