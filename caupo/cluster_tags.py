@@ -114,8 +114,13 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                 labels = []
                 logger.warning("Couldn't produce clusterings with algorithm %s", algorithm_name)
 
-            if len(labels) == 0:
-                logger.info("Skipping plots and computations")
+            # If clusterization happened properly, produce outputs and compute scores
+            if -1 in labels:
+                logger.info("This clusterization found %s outliers (out of %s elements)",
+                            len([label for label in labels if label == -1]), len(labels))
+
+            if len(set([label for label in labels if label != -1])) == 0:
+                logger.info("Skipping plots and computations since no real clusters were found")
                 clusters_info.append({
                     'algorithm': algorithm_name,
                     'embedder': embedder_name,
@@ -126,11 +131,6 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                     'topics': None,
                 })
                 continue
-
-            # If clusterization happened properly, produce outputs and compute scores
-            if -1 in labels:
-                logger.info("This clusterization found %s outliers (out of %s elements)",
-                            len([label for label in labels if label == -1]), len(labels))
 
             # Cleaning elements from outliers
             clean_elements = [(vector, label) for vector, label in zip(vectors, labels) if label != -1]
