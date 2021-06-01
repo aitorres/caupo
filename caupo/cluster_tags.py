@@ -276,7 +276,7 @@ def main() -> None:
     csv_file, md_file = create_output_files(args.frequency)
 
     # ! TODO: rework script
-    for tag_name, _ in tags[:1]:
+    for tag_name, _ in tags[len(tags) - 1:]:
         logger.debug("Fetching tag `%s` from database", tag_name)
         tag = fetch_tag_from_db(args.frequency, tag_name)
         cluster_tag(tag, args.frequency, csv_file, md_file)

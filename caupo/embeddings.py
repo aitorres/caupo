@@ -144,7 +144,7 @@ def get_embedder_functions(corpus: List[str]) -> Dict[str, Callable[[List[str]],
     """
 
     embedders = {
-        'Bag of Words': bow_embedder(corpus),
+        # 'Bag of Words': bow_embedder(corpus),
         'Doc2Vec': doc2vec_embedder(corpus),
         'FastText (CBOW)': fasttext_embedder(corpus, model_type="cbow"),
         'FastText (Skipgram)': fasttext_embedder(corpus, model_type="skipgram"),
