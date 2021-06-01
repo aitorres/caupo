@@ -155,7 +155,11 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                 logger.info("This clusterization produced %s successfully clustered elements into %s clusters",
                             len(clean_elements), len(set(clean_labels)))
                 for label in set(clean_labels):
-                    logger.debug("Cluster %s: %s elements", label, len([l for l in clean_labels if l == label]))
+                    cluster_length = len([l for l in clean_labels if l == label])
+                    logger.debug("Cluster %s: %s elements", label, cluster_length)
+                    if cluster_length == 1:
+                        cluster = [tweet for tweet, l in zip(cleaned_tweets, labels) if l == label]
+                        logger.debug("Cluster of length one made of this tweet: %s", cluster[0])
 
                 sil_score = silhouette_score(clean_vectors, clean_labels)
                 logger.info("This clusterization got a silhouette score of %s", sil_score)
