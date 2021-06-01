@@ -172,17 +172,16 @@ def plot_clusters(vectors, filename, title, labels=None):
         labels = [0] * len(vectors)
 
     if len(set(labels)) <= 11:
-        color_palette = ["#00394B", "#005B6E", "#04668C", "#3C6CA7", "#726EB7",
-                         "#A86BBA", "#DA66AC", "#FF6792", "#FF89AC", "#FFACBF"]
-    elif len(set(labels)) <= 31:
-        color_palette = ["#012733", "#0A2C37", "#13303B", "#1B353F", "#243944",
-                         "#2D3E48", "#36424C", "#3E4750", "#474B54", "#505058",
-                         "#59555C", "#615961", "#6A5E65", "#736269", "#7C676D",
-                         "#846B71", "#8D7075", "#967479", "#9F797D", "#A77D82",
-                         "#B08286", "#B9878A", "#C28B8E", "#CA9092", "#D39496",
-                         "#DC999A", "#E59D9F", "#EDA2A3", "#F6A6A7", "#FFABAB"]
+        color_palette = ['#00394B', '#726EB7', '#3C6CA7', '#005B6E', '#FFACBF', '#A86BBA',
+                         '#04668C', '#FF6792', '#FF89AC', '#DA66AC']
+    elif len(set(labels)) <= 36:
+        color_palette = ['#B08286', '#A86BBA', '#FFABAB', '#FF6792', '#2D3E48', '#59555C', '#012733',
+                         '#6A5E65', '#B9878A', '#967479', '#1B353F', '#EDA2A3', '#0A2C37', '#DA66AC',
+                         '#615961', '#005B6E', '#736269', '#A77D82', '#D39496', '#36424C', '#846B71',
+                         '#13303B', '#8D7075', '#C28B8E', '#F6A6A7', '#DC999A', '#474B54', '#7C676D',
+                         '#9F797D', '#505058', '#E59D9F', '#243944', '#3E4750', '#CA9092', '#04668C']
     else:
-        logger.warning("Won't plot more than 31 clusters!")
+        logger.warning("Won't plot more than 36 clusters!")
         return
 
     color_palette.append("#A6A6A6")  # gray would be used for a "-1" label)
