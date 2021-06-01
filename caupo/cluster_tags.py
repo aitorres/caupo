@@ -247,8 +247,8 @@ def transform_types(obj: Any) -> Any:
     if isinstance(obj, (np.generic)):
         return obj.item()
 
-    # Array types
-    if isinstance(obj, list):
+    # Collection types
+    if isinstance(obj, (list, set)):
         return [transform_types(item) for item in obj]
 
     if isinstance(obj, np.ndarray):
