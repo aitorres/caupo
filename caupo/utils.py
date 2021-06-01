@@ -97,6 +97,7 @@ def get_uninteresting_usernames():
 
     return [
         "SismosVenezuela",
+        "ElSelvatico",  # alias of @SismosVenezuela
         "DolarBeta",
         "tiempo_caracas",
     ]
