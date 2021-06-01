@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+from emoji import UNICODE_EMOJI
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 
 from caupo.clustering import get_clustering_functions
@@ -33,7 +34,12 @@ def quick_preprocess(tweet: str) -> str:
 
     stopwords = get_stopwords()
 
-    tweet = " ".join(filter(lambda x: not x.startswith("@") and not set(x) == {"j", "a"}, tweet.split()))
+    tweet = " ".join(
+        filter(
+            lambda x: not x.startswith("@") and not set(x) == {"j", "a"} and not x.isdigit() and x not in UNICODE_EMOJI['en'],
+            tweet.split()
+        )
+    )
 
     base_tweet = re.sub(r'[#@:;_\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet)
 
