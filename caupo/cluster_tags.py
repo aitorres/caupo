@@ -34,7 +34,7 @@ def quick_preprocess(tweet: str) -> str:
 
     tweet = " ".join(filter(lambda x: not x.startswith("@"), tweet.split()))
 
-    base_tweet = re.sub(r'[#@:;_-+=/°¿?¡!\"\'.,\[\]\\\(\)&]', ' ', tweet)
+    base_tweet = re.sub(r'[#@:;_\-+=/°¿?¡!\"\'.,\[\]\\\(\)&]', ' ', tweet)
 
     cleaned_tweet = " ".join(
         list(
