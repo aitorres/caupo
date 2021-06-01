@@ -64,6 +64,19 @@ def power_on(droplet_id: str) -> None:
 def resize(droplet_id: str, size: str) -> None:
     """Resize a Digitalocean instance"""
 
+    size_slug_dict = {
+        'small': 's-1vcpu-1gb',
+        'medium': 'c-8',
+        'large': 'c-16',
+        'xlarge': 'c-32',
+    }
+    size_slug = size_slug_dict.get(size)
+
+    if size_slug_dict is None:
+        logger.error("Unrecognized size: `%s`", size)
+    else:
+        logger.debug("Mapping size `%s` to `%s`", size, size_slug)
+
     response = requests.post(
         url=f"{BASE_API_URL}/v2/droplets/{droplet_id}/actions",
         headers={
@@ -72,7 +85,7 @@ def resize(droplet_id: str, size: str) -> None:
         data={
             "type": "resize",
             "disk": False,
-            "size": size,
+            "size": size_slug,
         }
     )
     logger.debug("Response: %s", response.json())
@@ -84,8 +97,8 @@ def main() -> None:
 
     parser = argparse.ArgumentParser()
     parser.add_argument("action", type=str, choices=["power_on", "power_off", "resize", "list_droplets"])
-    parser.add_argument("--droplet_id", type=str, required=False)
-    parser.add_argument("--size", type=str, required=False)
+    parser.add_argument("--droplet-id", type=str, required=False)
+    parser.add_argument("--size", type=str, required=False, default="small")
     args = parser.parse_args()
 
     logger.debug("You requested a `%s` action", args.action)
@@ -106,7 +119,7 @@ def main() -> None:
     if args.action == "list_droplets":
         list_droplets()
     elif args.action == "resize":
-        resize(args.droplet_id)
+        resize(args.droplet_id, args.size)
     elif args.action == "power_on":
         power_on(args.droplet_id)
     elif args.action == "power_off":
