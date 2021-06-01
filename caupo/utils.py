@@ -171,9 +171,9 @@ def plot_clusters(vectors, filename, title, labels=None):
     if labels is None:
         labels = [0] * len(vectors)
 
-    if len(set(labels)) <= 11:
-        color_palette = ['#00394B', '#726EB7', '#3C6CA7', '#005B6E', '#FFACBF', '#A86BBA',
-                         '#04668C', '#FF6792', '#FF89AC', '#DA66AC']
+    if len(set(labels)) <= 15:
+        color_palette = ['#00394B', '#66ff66', '#FF6792', '#8855BB', '#005B6E', '#1122dd', '#88bbff',
+                         '#726EB7', '#3C6CA7', '#DA66AC', '#04668C', '#FF89AC', '#FFACBF', '#A86BBA']
     elif len(set(labels)) <= 36:
         color_palette = ['#B08286', '#A86BBA', '#FFABAB', '#FF6792', '#2D3E48', '#59555C', '#012733',
                          '#6A5E65', '#B9878A', '#967479', '#1B353F', '#EDA2A3', '#0A2C37', '#DA66AC',
