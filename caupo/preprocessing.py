@@ -44,7 +44,7 @@ def get_stopwords() -> Set[str]:
     Returns a set with the stopwords to consider in the project
     """
 
-    spanish_stopwords = set(stopwords.words('spanish'))
+    spanish_stopwords = set(stopwords.words('spanish')).union({"q", "wtf", "csm"})
 
     # We manually add laughter
     laughter = {"ja" * i for i in range(1, 7)}

@@ -32,9 +32,9 @@ def quick_preprocess(tweet: str) -> str:
 
     stopwords = get_stopwords()
 
-    tweet = " ".join(filter(lambda x: not x.startswith("@"), tweet.split()))
+    tweet = " ".join(filter(lambda x: not x.startswith("@") and not set(x) == {"j", "a"}, tweet.split()))
 
-    base_tweet = re.sub(r'[#@:;_\-+=/°¿?¡!\"\'.,\[\]\\\(\)&]', ' ', tweet)
+    base_tweet = re.sub(r'[#@:;_\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet)
 
     cleaned_tweet = " ".join(
         list(
