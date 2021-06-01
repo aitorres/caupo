@@ -244,7 +244,7 @@ def transform_types(obj: Any) -> Any:
     """Given an object, transforms its type to a native Python type for storage in database"""
 
     # Numpy types
-    if isinstance(obj, (np.int16, np.int32, np.int64, np.float16, np.float32, np.float64)):
+    if isinstance(obj, (np.generic)):
         return obj.item()
 
     # Array types
