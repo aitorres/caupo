@@ -46,7 +46,7 @@ def quick_preprocess(tweet: str) -> str:
             )
         )
     )
-    return cleaned_tweet
+    return " ".join(cleaned_tweet.split())
 
 
 def create_output_files(frequency: str) -> None:
