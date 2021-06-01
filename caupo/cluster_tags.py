@@ -8,8 +8,9 @@ import logging
 import os
 import re
 from pathlib import Path
+from typing import Any
 
-from numpy import ndarray
+import numpy as np
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 
 from caupo.clustering import get_clustering_functions
@@ -161,10 +162,10 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                 logger.info("This clusterization produced %s successfully clustered elements into %s clusters",
                             len(clean_elements), len(set(clean_labels)))
                 for label in set(clean_labels):
-                    cluster_length = len([l for l in clean_labels if l == label])
+                    cluster_length = len([cln_lab for cln_lab in clean_labels if cln_lab == label])
                     logger.debug("Cluster %s: %s elements", label, cluster_length)
                     if cluster_length == 1:
-                        cluster = [tweet for tweet, l in zip(cleaned_tweets, labels) if l == label]
+                        cluster = [tweet for tweet, lab in zip(cleaned_tweets, labels) if lab == label]
                         logger.debug("Cluster of length %s made of this tweet: %s", cluster_length, cluster[0])
 
                 sil_score = silhouette_score(clean_vectors, clean_labels)
@@ -234,8 +235,30 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
         'tweets_amount': len(tweets),
         'clusters': clusters_info,
     }
-    collection.insert_one(db_object)
+    typed_object = transform_types(db_object)
+    collection.insert_one(typed_object)
     logger.debug("Results stored!")
+
+
+def transform_types(obj: Any) -> Any:
+    """Given an object, transforms its type to a native Python type for storage in database"""
+
+    # Numpy types
+    if isinstance(obj, (np.int16, np.int32, np.int64, np.float16, np.float32, np.float64)):
+        return obj.item()
+
+    # Array types
+    if isinstance(obj, list):
+        return [transform_types(item) for item in obj]
+
+    if isinstance(obj, np.ndarray):
+        return transform_types(obj.tolist())
+
+    # Structures
+    if isinstance(obj, dict):
+        return {key: transform_types(value) for key, value in obj.items()}
+
+    return obj
 
 
 def main() -> None:
