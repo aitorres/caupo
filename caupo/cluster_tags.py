@@ -116,7 +116,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
 
             try:
                 labels = algorithm.cluster(vectors)
-                if isinstance(labels, ndarray):
+                if isinstance(labels, np.ndarray):
                     labels = labels.tolist()
                 logger.info("Clustering produced %s distinct labels: %s", len(set(labels)), set(labels))
             except ValueError:
