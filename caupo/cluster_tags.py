@@ -6,6 +6,7 @@ database as the main corpus.
 import argparse
 import logging
 import os
+import re
 from pathlib import Path
 
 from numpy import ndarray
@@ -31,12 +32,16 @@ def quick_preprocess(tweet: str) -> str:
 
     stopwords = get_stopwords()
 
+    tweet = " ".join(filter(lambda x: not x.startswith("@"), tweet.split()))
+
+    base_tweet = re.sub(r'[#¿?¡!.,\[\]\\\(\)&]', ' ', tweet)
+
     cleaned_tweet = " ".join(
         list(
             map(
                 lambda t: "" if t in stopwords else t,
                 map_strange_characters(
-                    tweet.lower()
+                    base_tweet.lower()
                 ).split()
             )
         )
