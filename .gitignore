@@ -110,3 +110,4 @@ venv.bak/
 *.out
 *.sock
 *logs*
+*_private.sh
