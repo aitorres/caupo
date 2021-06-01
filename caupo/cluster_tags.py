@@ -34,7 +34,7 @@ def quick_preprocess(tweet: str) -> str:
 
     tweet = " ".join(filter(lambda x: not x.startswith("@"), tweet.split()))
 
-    base_tweet = re.sub(r'[#¿?¡!.,\[\]\\\(\)&]', ' ', tweet)
+    base_tweet = re.sub(r'[#¿?¡!\"\'.,\[\]\\\(\)&]', ' ', tweet)
 
     cleaned_tweet = " ".join(
         list(
@@ -164,7 +164,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                     logger.debug("Cluster %s: %s elements", label, cluster_length)
                     if cluster_length == 1:
                         cluster = [tweet for tweet, l in zip(cleaned_tweets, labels) if l == label]
-                        logger.debug("Cluster of length one made of this tweet: %s", cluster[0])
+                        logger.debug("Cluster of length %s made of this tweet: %s", cluster_length, cluster[0])
 
                 sil_score = silhouette_score(clean_vectors, clean_labels)
                 logger.info("This clusterization got a silhouette score of %s", sil_score)
