@@ -8,7 +8,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 from hdbscan import HDBSCAN
-from sklearn.cluster import (OPTICS, AffinityPropagation, KMeans, MeanShift,
+from sklearn.cluster import (DBSCAN, OPTICS, AffinityPropagation, KMeans, MeanShift,
                              SpectralClustering)
 from sklearn.metrics import silhouette_score
 
@@ -142,6 +142,25 @@ class AffinityPropagationClustering(BaseClustering):
         return self.model.labels_
 
 
+class DBSCANClustering(BaseClustering):
+    """
+    DBSCAN Clustering wrapper class. Performs clustering using optics's algorithm as implemented
+    on sklearn.
+    """
+
+    def __init__(self):
+        """Instantiates a new instance of the DBSCAN Clustering wrapper class"""
+
+        logger.debug("Initializing DBSCANClustering")
+        self.model = DBSCAN(eps=0.3, min_samples=5, n_jobs=-1)
+
+    def cluster(self, vectors: List[List[float]]) -> List[float]:
+        """Given a list of vectors, performs hdbscan based clustering and returns the output labels"""
+
+        self.model.fit_predict(vectors)
+        return self.model.labels_
+
+
 class MeanShiftClustering(BaseClustering):
     """
     Mean Shift Clustering wrapper class. Performs clustering using optics's algorithm as implemented
@@ -224,11 +243,12 @@ def get_clustering_functions() -> Dict[str, BaseClustering]:
     # TODO: Consider including DBSCAN
     return {
         'k-means': KMeansClustering(),
-        'hdbscan': HdbscanClustering(),
-        'affinity': AffinityPropagationClustering(),
-        'mean-shift': MeanShiftClustering(),
-        'optics': OpticsClustering(),
         'spectral': SpectClustering(),
+        'dbscan': DBSCANClustering(),
+        'hdbscan': HdbscanClustering(),
+        'mean-shift': MeanShiftClustering(),
+        'affinity': AffinityPropagationClustering(),
+        'optics': OpticsClustering(),
     }
 
 
