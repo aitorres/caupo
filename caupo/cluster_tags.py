@@ -155,13 +155,14 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
             # Plotting clusters
             logger.info("Plotting clusters")
             plot_clusters(vectors, f"{output_folder}/{tag['tag']}_plot.png",
-                          f"{algorithm_name} - {embedder_name} (n={len(set(labels))})", labels=labels)
+                          f"{algorithm_name} - {embedder_name} (n={len(set(labels))})",
+                          labels=labels, plot_outliers=True)
 
             if -1 in labels:
                 logger.info("Plotting clean clusters (no outliers)")
-                plot_clusters(clean_vectors, f"{output_folder}/{tag['tag']}_plot_clean.png",
-                              f"{algorithm_name} - {embedder_name} (no outliers, n={len(set(clean_labels))})",
-                              labels=clean_labels)
+                plot_clusters(vectors, f"{output_folder}/{tag['tag']}_plot_clean.png",
+                              f"{algorithm_name} - {embedder_name} (no outliers, n={len(set(labels))})",
+                              labels=labels, plot_outliers=False)
 
             # If we got more than one cluster, compute results
             if len(set(clean_labels)) > 1:
