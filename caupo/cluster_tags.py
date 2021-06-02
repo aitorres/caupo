@@ -95,11 +95,11 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
 
     # Normalizing tweets
     logger.debug("Cleaning corpus")
-    cleaned_corpus = list(map(quick_preprocess, corpus))
+    cleaned_corpus = list(set(map(quick_preprocess, corpus)))
     logger.info("Cleaned corpus has %s tweets", len(cleaned_corpus))
 
     logger.debug("Cleaning tweets")
-    cleaned_tweets = list(map(quick_preprocess, tweets))
+    cleaned_tweets = list(set(map(quick_preprocess, tweets)))
     logger.info("Collection of cleaned tweets has a size of %s tweets", len(cleaned_tweets))
 
     # Getting vector representations
