@@ -58,7 +58,7 @@ class KMeansClustering(BaseClustering):
     def instantiate_model(self, k: int) -> KMeans:
         """Instantiates Sklearn's KMeans class and stores within wrapper class"""
 
-        return KMeans(n_clusters=k, n_jobs=-1)
+        return KMeans(n_clusters=k)
 
     def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs kmeans based clustering and returns labels of the output"""
@@ -97,6 +97,8 @@ class KMeansNoNoiseClustering(KMeansClustering):
     def cluster(self, vectors: List[List[float]]) -> List[int]:
         # First round of clustering:
         initial_labels = super().cluster(vectors)
+        if isinstance(initial_labels, np.ndarray):
+            initial_labels = initial_labels.tolist()
 
         # Checking if we have noise
         label_sizes = {label: initial_labels.count(label) for label in set(initial_labels)}
