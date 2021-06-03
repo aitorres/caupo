@@ -60,7 +60,7 @@ class KMeansClustering(BaseClustering):
 
         return KMeans(n_clusters=k, n_jobs=-1)
 
-    def cluster(self, vectors: List[List[float]]) -> List[float]:
+    def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs kmeans based clustering and returns labels of the output"""
 
         # Easy case: we know `k` beforehand
@@ -70,6 +70,7 @@ class KMeansClustering(BaseClustering):
         # Determining best K
         sil_scores = {}
         for k in range(self.MIN_K, self.MAX_K + 1):
+            logger.debug("Trying k=`%s`...", k)
             model = self.instantiate_model(k)
             output = model.fit_predict(vectors)
             sil_score = silhouette_score(vectors, output)
@@ -97,7 +98,7 @@ class HdbscanClustering(BaseClustering):
                      min_cluster_size)
         self.model = HDBSCAN(min_cluster_size=min_cluster_size)
 
-    def cluster(self, vectors: List[List[float]]) -> List[float]:
+    def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs hdbscan based clustering and returns the output labels"""
 
         return self.model.fit_predict(vectors)
@@ -116,7 +117,7 @@ class OpticsClustering(BaseClustering):
                      min_samples)
         self.model = OPTICS(min_samples=min_samples, n_jobs=-1)
 
-    def cluster(self, vectors: List[List[float]]) -> List[float]:
+    def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs hdbscan based clustering and returns the output labels"""
 
         self.model.fit_predict(vectors)
@@ -135,7 +136,7 @@ class AffinityPropagationClustering(BaseClustering):
         logger.debug("Initializing AffinityPropagationClustering")
         self.model = AffinityPropagation(random_state=None)
 
-    def cluster(self, vectors: List[List[float]]) -> List[float]:
+    def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs hdbscan based clustering and returns the output labels"""
 
         self.model.fit_predict(vectors)
@@ -154,8 +155,8 @@ class DBSCANClustering(BaseClustering):
         logger.debug("Initializing DBSCANClustering")
         self.model = DBSCAN(eps=0.3, min_samples=5, n_jobs=-1)
 
-    def cluster(self, vectors: List[List[float]]) -> List[float]:
-        """Given a list of vectors, performs hdbscan based clustering and returns the output labels"""
+    def cluster(self, vectors: List[List[float]]) -> List[int]:
+        """Given a list of vectors, performs dbscan based clustering and returns the output labels"""
 
         self.model.fit_predict(vectors)
         return self.model.labels_
@@ -173,7 +174,7 @@ class MeanShiftClustering(BaseClustering):
         logger.debug("Initializing MeanShiftClustering")
         self.model = MeanShift(n_jobs=-1)
 
-    def cluster(self, vectors: List[List[float]]) -> List[float]:
+    def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs hdbscan based clustering and returns the output labels"""
 
         self.model.fit_predict(vectors)
@@ -209,7 +210,7 @@ class SpectClustering(BaseClustering):
 
         return SpectralClustering(n_clusters=k, n_jobs=-1)
 
-    def cluster(self, vectors: List[List[float]]) -> List[float]:
+    def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs kmeans based clustering and returns labels of the output"""
 
         # Easy case: we know `k` beforehand
