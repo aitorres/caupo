@@ -49,7 +49,7 @@ class KMeansClustering(BaseClustering):
                 raise ValueError(k)
 
             self.k = k
-            self.model = self.instantiate_model(self.k, n_jobs=-1)
+            self.model = self.instantiate_model(self.k)
             logger.debug("Initializing KMeansClustering with k=`%s`", self.k)
         else:
             self.k = None
@@ -58,7 +58,7 @@ class KMeansClustering(BaseClustering):
     def instantiate_model(self, k: int) -> KMeans:
         """Instantiates Sklearn's KMeans class and stores within wrapper class"""
 
-        return KMeans(n_clusters=k)
+        return KMeans(n_clusters=k, n_jobs=-1)
 
     def cluster(self, vectors: List[List[float]]) -> List[float]:
         """Given a list of vectors, performs kmeans based clustering and returns labels of the output"""
