@@ -82,8 +82,50 @@ class KMeansClustering(BaseClustering):
         self.model = self.instantiate_model(self.k)
         logger.debug("Maximum silhouette score achieved with k=%s (silhouette score: %s)", max_sil[0], max_sil[1])
 
-        # Recursive call will get the real result
-        return self.cluster(vectors)
+        # Get and return the real result
+        return self.model.fit_predict(vectors)
+
+
+class KMeansNoNoiseClustering(KMeansClustering):
+    """
+    KMeans Clustering wrapper class, with a basic procedure for removing noise points e.g. points
+    that are clustered by themselves and that may be labelled as noise.
+    """
+
+    MIN_CLUSTER_SIZE = 2
+
+    def cluster(self, vectors: List[List[float]]) -> List[int]:
+        # First round of clustering:
+        initial_labels = super().cluster(vectors)
+
+        # Checking if we have noise
+        label_sizes = {label: initial_labels.count(label) for label in set(initial_labels)}
+        has_noise = any(label_sizes[i] < self.MIN_CLUSTER_SIZE for i in label_sizes)
+
+        if not has_noise:
+            return initial_labels
+
+        # If we have noise, we need to re-cluster.
+        # 1. First mark vectors that should be reclustered and vectors that should be ignored
+        should_recluster = [
+            label_sizes[label] >= self.MIN_CLUSTER_SIZE for label in initial_labels
+        ]
+        vectors_to_recluster = [vector for vector, flag in zip(vectors, should_recluster) if flag]
+
+        # 2. Re-cluster
+        self.k = None
+        new_labels = self.cluster(vectors_to_recluster)
+
+        # 3. Reconstruct labels in original order and size
+        i = 0
+        full_labels = []
+        for flag in should_recluster:
+            if flag and i < len(new_labels):
+                full_labels.append(new_labels[i])
+                i += 1
+            else:
+                full_labels.append(-1)
+        return full_labels
 
 
 class HdbscanClustering(BaseClustering):
@@ -243,13 +285,14 @@ def get_clustering_functions() -> Dict[str, BaseClustering]:
 
     # TODO: Consider including DBSCAN
     return {
-        'k-means': KMeansClustering(),
-        'spectral': SpectClustering(),
-        'dbscan': DBSCANClustering(),
-        'hdbscan': HdbscanClustering(),
-        'mean-shift': MeanShiftClustering(),
-        'affinity': AffinityPropagationClustering(),
-        'optics': OpticsClustering(),
+        'K-means': KMeansClustering(),
+        'K-means no noise': KMeansNoNoiseClustering(),
+        'Spectral': SpectClustering(),
+        'DBSCAN': DBSCANClustering(),
+        'HDBSCAN': HdbscanClustering(),
+        'Mean-Shift': MeanShiftClustering(),
+        'Affinity': AffinityPropagationClustering(),
+        'OPTICS': OpticsClustering(),
     }
 
 
