@@ -116,7 +116,10 @@ class KMeansNoNoiseClustering(KMeansClustering):
 
         # 2. Re-cluster
         self.k = None
-        new_labels = self.cluster(vectors_to_recluster)
+        if vectors_to_recluster:
+            new_labels = self.cluster(vectors_to_recluster)
+        else:
+            new_labels = []
 
         # 3. Reconstruct labels in original order and size
         i = 0
