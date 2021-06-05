@@ -292,11 +292,11 @@ def get_clustering_functions() -> Dict[str, BaseClustering]:
     return {
         'K-means': KMeansClustering(),
         'K-means no noise': KMeansNoNoiseClustering(),
-        'Spectral': SpectClustering(),
         'DBSCAN': DBSCANClustering(),
         'HDBSCAN': HdbscanClustering(),
         'Mean-Shift': MeanShiftClustering(),
         'Affinity': AffinityPropagationClustering(),
+        'Spectral': SpectClustering(),
         'OPTICS': OpticsClustering(),
     }
 
