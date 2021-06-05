@@ -15,7 +15,7 @@ from caupo.preprocessing import get_stopwords
 
 logger = logging.getLogger("caupo")
 stopwords = get_stopwords()
-AMOUNT_OF_TOPICS = 3
+DEF_AMNT = 3
 
 
 def _get_tfidf_vectorizer() -> TfidfVectorizer:
@@ -40,7 +40,7 @@ def _get_tf_vectorizer() -> CountVectorizer:
     )
 
 
-def nmf_frobenius_topics(documents: List[str]) -> Tuple[NMF, List[str]]:
+def nmf_frobenius_topics(documents: List[str], topics_amount: int = DEF_AMNT) -> Tuple[NMF, List[str]]:
     """
     Given a series of documents, performs NMF-based
     topic modelling with Frobenius norm
@@ -50,7 +50,7 @@ def nmf_frobenius_topics(documents: List[str]) -> Tuple[NMF, List[str]]:
     tfidf = tfidf_vectorizer.fit_transform(documents)
     feature_names = tfidf_vectorizer.get_feature_names()
     nmf = NMF(
-        n_components=AMOUNT_OF_TOPICS,
+        n_components=topics_amount,
         init=None,
         alpha=0.1,
         l1_ratio=0.5,
@@ -59,7 +59,7 @@ def nmf_frobenius_topics(documents: List[str]) -> Tuple[NMF, List[str]]:
     return nmf, feature_names
 
 
-def plsi_topics(documents: List[str]) -> Tuple[NMF, List[str]]:
+def plsi_topics(documents: List[str], topics_amount: int = DEF_AMNT) -> Tuple[NMF, List[str]]:
     """
     Given a series of documents, performs NMF-based topic modelling
     with the generalized Kullback-Leibler divergence as norm, which
@@ -70,7 +70,7 @@ def plsi_topics(documents: List[str]) -> Tuple[NMF, List[str]]:
     tfidf = tfidf_vectorizer.fit_transform(documents)
     feature_names = tfidf_vectorizer.get_feature_names()
     nmf = NMF(
-        n_components=AMOUNT_OF_TOPICS,
+        n_components=topics_amount,
         init=None,
         beta_loss='kullback-leibler',
         solver='mu',
@@ -81,7 +81,7 @@ def plsi_topics(documents: List[str]) -> Tuple[NMF, List[str]]:
     return nmf, feature_names
 
 
-def lda_topics(documents: List[str]) -> Tuple[LatentDirichletAllocation, List[str]]:
+def lda_topics(documents: List[str], topics_amount: int = DEF_AMNT) -> Tuple[LatentDirichletAllocation, List[str]]:
     """
     Given a series of documents, performs LDA-based topic modelling
     with the Latent Dirichlet Allocation algorithm.
@@ -91,7 +91,7 @@ def lda_topics(documents: List[str]) -> Tuple[LatentDirichletAllocation, List[st
     tf = tf_vectorizer.fit_transform(documents)
     feature_names = tf_vectorizer.get_feature_names()
     lda = LatentDirichletAllocation(
-        n_components=AMOUNT_OF_TOPICS,
+        n_components=topics_amount,
         max_iter=100,
         learning_method='online',
         learning_offset=50.0,
