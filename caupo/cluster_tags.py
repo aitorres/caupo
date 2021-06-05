@@ -192,7 +192,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
             logger.info("Starting topics generation")
             tweet_clusters = get_clusters_from_labels(cleaned_tweets, labels)
             topics_list = []
-            for topic_model_name, topic_model in get_topic_models():
+            for topic_model_name, topic_model in get_topic_models().items():
                 logger.info("Now trying %s", topic_model_name)
                 topic_dict = {
                     'model': topic_model_name,
@@ -207,7 +207,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                     topic_dict['topics_per_cluster'].append(topics)
                     plot_top_words(model, feature_names, top_words_amount,
                                    f"Cluster {idx} - {algorithm_name} - {embedder_name}",
-                                   f"{output_folder}/{tag['tag']}_cluster_{idx}_topics.png")
+                                   f"{output_folder}/{tag['tag']}_cluster_{idx}_topics_{topic_model_name}.png")
                 topics_list.append(topic_dict)
 
             # Storing output in CSV File
