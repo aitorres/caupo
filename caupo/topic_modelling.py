@@ -15,6 +15,7 @@ from caupo.preprocessing import get_stopwords
 
 logger = logging.getLogger("caupo")
 stopwords = get_stopwords()
+AMOUNT_OF_TOPICS = 3
 
 
 def _get_tfidf_vectorizer() -> TfidfVectorizer:
@@ -49,7 +50,7 @@ def nmf_frobenius_topics(documents: List[str]) -> Tuple[NMF, List[str]]:
     tfidf = tfidf_vectorizer.fit_transform(documents)
     feature_names = tfidf_vectorizer.get_feature_names()
     nmf = NMF(
-        n_components=3,
+        n_components=AMOUNT_OF_TOPICS,
         init=None,
         alpha=0.1,
         l1_ratio=0.5,
@@ -69,7 +70,7 @@ def plsi_topics(documents: List[str]) -> Tuple[NMF, List[str]]:
     tfidf = tfidf_vectorizer.fit_transform(documents)
     feature_names = tfidf_vectorizer.get_feature_names()
     nmf = NMF(
-        n_components=3,
+        n_components=AMOUNT_OF_TOPICS,
         init=None,
         beta_loss='kullback-leibler',
         solver='mu',
@@ -90,7 +91,7 @@ def lda_topics(documents: List[str]) -> Tuple[LatentDirichletAllocation, List[st
     tf = tf_vectorizer.fit_transform(documents)
     feature_names = tf_vectorizer.get_feature_names()
     lda = LatentDirichletAllocation(
-        n_components=3,
+        n_components=AMOUNT_OF_TOPICS,
         max_iter=100,
         learning_method='online',
         learning_offset=50.0,
@@ -118,6 +119,7 @@ def main():
         "podriamos escribir un tratado con estos documentos",
         "aqui te va el quinto documento",
         "no se que es un articulo otro",
+        "escribiendo un articulo podemos escribir un tratado",
     ]
     n_top_words = 5
 
