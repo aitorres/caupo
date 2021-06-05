@@ -301,6 +301,12 @@ def get_clustering_functions() -> Dict[str, BaseClustering]:
     }
 
 
+def get_clusters_from_labels(texts: List[str], labels: List[int]) -> List[List[str]]:
+    """Given a series of texts and their labels (as produced during clustering), reconstructs the clusters"""
+
+    return [[text for text, lab in zip(texts, labels) if lab == label] for label in set(labels) if label != -1]
+
+
 def main() -> None:
     """Runs a test script in order to check the behavior of clustering algorithms"""
 
