@@ -20,7 +20,7 @@ from caupo.preprocessing import get_stopwords, map_strange_characters
 from caupo.tags import (Tag, exclude_preexisting_tags, fetch_tag_from_db,
                         get_collection_by_frequency, get_tags_by_frequency)
 from caupo.topic_modelling import get_topic_models, get_topics_from_model
-from caupo.utils import get_main_corpus, plot_clusters
+from caupo.utils import get_main_corpus, plot_clusters, plot_top_words
 
 logger = logging.getLogger("caupo")
 
@@ -303,7 +303,7 @@ def main() -> None:
     csv_file, md_file = create_output_files(args.frequency)
 
     # ! TODO: rework script
-    for tag_name, _ in tags[len(tags) - 1:]:
+    for tag_name, _ in tags[len(tags) - 2:]:
         logger.debug("Fetching tag `%s` from database", tag_name)
         tag = fetch_tag_from_db(args.frequency, tag_name)
         cluster_tag(tag, args.frequency, csv_file, md_file)

@@ -196,7 +196,7 @@ def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True):
     plt.close()
 
 
-def plot_top_words(model, feature_names, n_top_words, title):
+def plot_top_words(model, feature_names, n_top_words, title, filename):
     """
     Given a Topic Modelling model from skleanr (LDA, NMF), generates a plot
     containing the top terms
@@ -222,4 +222,5 @@ def plot_top_words(model, feature_names, n_top_words, title):
         fig.suptitle(title, fontsize=40)
 
     plt.subplots_adjust(top=0.90, bottom=0.05, wspace=0.90, hspace=0.3)
-    plt.show()
+    plt.savefig(filename)
+    plt.close()
