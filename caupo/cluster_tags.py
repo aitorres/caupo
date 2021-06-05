@@ -205,6 +205,9 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                     topics = get_topics_from_model(model, top_words_amount, feature_names)
                     logger.info("Topics for cluster %s: %s", idx, topics)
                     topic_dict['topics_per_cluster'].append(topics)
+                    plot_top_words(model, feature_names, top_words_amount,
+                                   f"Cluster {idx} - {algorithm_name} - {embedder_name}",
+                                   f"{output_folder}/{tag['tag']}_cluster_{idx}_topics.png")
                 topics_list.append(topic_dict)
 
             # Storing output in CSV File
