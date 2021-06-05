@@ -109,6 +109,22 @@ def get_topic_models() -> Dict[str, Callable[[List[str]], Tuple[Union[NMF, Laten
     }
 
 
+def get_topics_from_model(model: Union[NMF, LatentDirichletAllocation], n_top_words: int,
+                          feature_names: List[str]) -> List[List[Tuple[str, float]]]:
+    """
+    Given a fitted model and feature names, return each produced topic as a list of important
+    words, each word a tuple that contains the word per se and its weight
+    """
+
+    topics = []
+    for topic in model.components_:
+        top_features_ind = topic.argsort()[:-n_top_words - 1:-1]
+        top_features = [feature_names[i] for i in top_features_ind]
+        weights = topic[top_features_ind]
+        topics.append([(feature, weight) for feature, weight in zip(top_features, weights)])
+    return topics
+
+
 def main():
     """Runs a small test client to test the implementation of the algorithms"""
 
