@@ -99,7 +99,7 @@ def lda_topics(documents: List[str], topics_amount: int = DEF_AMNT) -> Tuple[Lat
     return lda, feature_names
 
 
-def get_topic_models() -> Dict[str, Callable[[List[str]], Tuple[Union[NMF, LatentDirichletAllocation], List[str]]]]:
+def get_topic_models() -> Dict[str, Callable[[List[str], int], Tuple[Union[NMF, LatentDirichletAllocation], List[str]]]]:
     """Returns a dictionary that contains the name and model instance for all topic models available"""
 
     return {

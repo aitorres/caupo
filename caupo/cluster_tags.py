@@ -14,11 +14,12 @@ import numpy as np
 from emoji import UNICODE_EMOJI
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 
-from caupo.clustering import get_clustering_functions
+from caupo.clustering import get_clustering_functions, get_clusters_from_labels
 from caupo.embeddings import get_embedder_functions
 from caupo.preprocessing import get_stopwords, map_strange_characters
 from caupo.tags import (Tag, exclude_preexisting_tags, fetch_tag_from_db,
                         get_collection_by_frequency, get_tags_by_frequency)
+from caupo.topic_modelling import get_topic_models, get_topics_from_model
 from caupo.utils import get_main_corpus, plot_clusters
 
 logger = logging.getLogger("caupo")
@@ -116,6 +117,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
         vectors = embedder(cleaned_tweets)
         algorithms = get_clustering_functions()
         for algorithm_name, algorithm in algorithms.items():
+            topics_list = None
             logger.info("Now trying algorithm %s with embedder %s", algorithm_name, embedder_name)
             output_folder = f"{BASE_OUTPUT_FOLDER}/{frequency}/{embedder_name}/{algorithm_name}"
             os.makedirs(output_folder, exist_ok=True)
@@ -143,7 +145,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                     'labels': None,
                     'clusters': None,
                     'scores': None,
-                    'topics': None,
+                    'topics': topics_list,
                 })
                 continue
 
@@ -187,6 +189,24 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                 sil_score = None
                 db_score = None
 
+            logger.info("Starting topics generation")
+            tweet_clusters = get_clusters_from_labels(cleaned_tweets, labels)
+            topics_list = []
+            for topic_model_name, topic_model in get_topic_models():
+                logger.info("Now trying %s", topic_model_name)
+                topic_dict = {
+                    'model': topic_model_name,
+                    'topics_per_cluster': [],
+                }
+                for idx, tweet_cluster in enumerate(tweet_clusters):
+                    topics_amount = 5
+                    top_words_amount = 3
+                    model, feature_names = topic_model(tweet_cluster, topics_amount)
+                    topics = get_topics_from_model(model, top_words_amount, feature_names)
+                    logger.info("Topics for cluster %s: %s", idx, topics)
+                    topic_dict['topics_per_cluster'].append(topics)
+                topics_list.append(topic_dict)
+
             # Storing output in CSV File
             with open(csv_file, "a") as file_handler:
                 file_handler.write(
@@ -216,7 +236,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                     'silhouette': sil_score,
                     'davies_bouldin': db_score,
                 },
-                'topics': None,  # TODO: generate topics
+                'topics': topics_list,
             })
 
     # https://en.wikipedia.org/wiki/Silhouette_(clustering)
