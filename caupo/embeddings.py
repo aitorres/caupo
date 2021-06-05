@@ -44,7 +44,7 @@ def doc2vec_embedder(corpus: List[str]) -> List[float]:
 
     logger.debug("Instantiating Doc2Vec model")
     tagged_documents = [TaggedDocument(doc.split(), [i]) for i, doc in enumerate(corpus)]
-    model = Doc2Vec(tagged_documents, vector_size=150, window=5, min_count=3, workers=8)
+    model = Doc2Vec(tagged_documents, vector_size=100, window=5, min_count=3, workers=16)
 
     def embedder(documents: List[str]) -> List[float]:
         """Generates an embedding using a Doc2Vec"""

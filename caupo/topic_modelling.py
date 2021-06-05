@@ -14,7 +14,7 @@ from sklearn.decomposition import NMF, LatentDirichletAllocation
 from caupo.preprocessing import get_stopwords
 
 logger = logging.getLogger("caupo")
-stopwords = get_stopwords()
+stopwords = list(get_stopwords())
 DEF_AMNT = 3
 
 
@@ -22,9 +22,8 @@ def _get_tfidf_vectorizer() -> TfidfVectorizer:
     """Instantiates and returns a Tfidf Vectorizer instance"""
 
     return TfidfVectorizer(
-        max_df=0.95,
-        min_df=2,
-        max_features=1000,
+        max_df=0.85,
+        min_df=3,
         stop_words=stopwords
     )
 
@@ -33,9 +32,8 @@ def _get_tf_vectorizer() -> CountVectorizer:
     """Instantiates and returns a Term Frequency (Count) Vectorizer instance"""
 
     return CountVectorizer(
-        max_df=0.95,
-        min_df=2,
-        max_features=1000,
+        max_df=0.85,
+        min_df=3,
         stop_words=stopwords
     )
 
