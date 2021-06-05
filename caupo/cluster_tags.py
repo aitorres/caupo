@@ -199,6 +199,9 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                     'topics_per_cluster': [],
                 }
                 for idx, tweet_cluster in enumerate(tweet_clusters):
+                    if len(tweet_cluster) < 3:
+                        logger.warning("Ignoring cluster %s since it's only got %s elements", idx, len(tweet_cluster))
+                        continue
                     topics_amount = 5
                     top_words_amount = 3
                     model, feature_names = topic_model(tweet_cluster, topics_amount)
