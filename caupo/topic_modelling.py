@@ -95,6 +95,7 @@ def lda_topics(documents: List[str], topics_amount: int = DEF_AMNT) -> Tuple[Lat
         max_iter=100,
         learning_method='online',
         learning_offset=50.0,
+        n_jobs=-1
     ).fit(tf)
     return lda, feature_names
 
