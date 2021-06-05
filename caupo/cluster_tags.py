@@ -37,7 +37,7 @@ def quick_preprocess(tweet: str) -> str:
 
     tweet = " ".join(
         filter(
-            lambda x: not x.startswith("@") and not set(x) == {"j", "a"} and not x.isdigit() and x not in UNICODE_EMOJI['en'],
+            lambda x: not x.startswith("@") and not set(x) == {"j", "a"} and not x.isdigit() and x not in UNICODE_EMOJI['en'] and len(x) > 2,
             tweet.split()
         )
     )
