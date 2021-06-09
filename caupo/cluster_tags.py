@@ -199,7 +199,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                     'topics_per_cluster': [],
                 }
                 for idx, tweet_cluster in enumerate(tweet_clusters):
-                    if len(tweet_cluster) < 3:
+                    if len(tweet_cluster) < 4:
                         logger.warning("Ignoring cluster %s since it's only got %s elements", idx, len(tweet_cluster))
                         topic_dict['topics_per_cluster'].append({
                             'cluster_id': idx,
@@ -208,23 +208,26 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                         continue
                     topics_amount = 3
                     top_words_amount = 5
-                    model, feature_names = topic_model(tweet_cluster, topics_amount)
-                    topics = get_topics_from_model(model, top_words_amount, feature_names)
-                    logger.info("Topics for cluster %s: %s", idx, topics)
-                    topic_dict['topics_per_cluster'].append({
-                        'cluster_id': idx,
-                        'topics': [
-                            [
-                                {
-                                    'keyword': keyword,
-                                    'weight': weight,
-                                } for keyword, weight in topic
-                            ] for topic in topics]
-                    })
-                    plot_top_words(model, feature_names, top_words_amount,
-                                   f"Cluster {idx} - {algorithm_name} - {embedder_name}",
-                                   f"{output_folder}/{tag['tag']}_cluster_{idx}_topics_{topic_model_name}.png")
-                topics_list.append(topic_dict)
+                    try:
+                        model, feature_names = topic_model(tweet_cluster, topics_amount)
+                        topics = get_topics_from_model(model, top_words_amount, feature_names)
+                        logger.info("Topics for cluster %s: %s", idx, topics)
+                        topic_dict['topics_per_cluster'].append({
+                            'cluster_id': idx,
+                            'topics': [
+                                [
+                                    {
+                                        'keyword': keyword,
+                                        'weight': weight,
+                                    } for keyword, weight in topic
+                                ] for topic in topics]
+                        })
+                        topics_list.append(topic_dict)
+                        plot_top_words(model, feature_names, top_words_amount,
+                                       f"Cluster {idx} - {algorithm_name} - {embedder_name}",
+                                       f"{output_folder}/{tag['tag']}_cluster_{idx}_topics_{topic_model_name}.png")
+                    except ValueError:
+                        logger.warning("Error during topic modelling on cluster %s", idx)
 
             # Storing output in CSV File
             with open(csv_file, "a") as file_handler:
