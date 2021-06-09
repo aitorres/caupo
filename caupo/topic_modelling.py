@@ -22,8 +22,8 @@ def _get_tfidf_vectorizer() -> TfidfVectorizer:
     """Instantiates and returns a Tfidf Vectorizer instance"""
 
     return TfidfVectorizer(
-        max_df=0.85,
-        min_df=3,
+        max_df=0.95,
+        min_df=2,
         stop_words=stopwords
     )
 
@@ -32,8 +32,8 @@ def _get_tf_vectorizer() -> CountVectorizer:
     """Instantiates and returns a Term Frequency (Count) Vectorizer instance"""
 
     return CountVectorizer(
-        max_df=0.85,
-        min_df=3,
+        max_df=0.95,
+        min_df=2,
         stop_words=stopwords
     )
 
