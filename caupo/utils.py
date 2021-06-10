@@ -204,7 +204,7 @@ def plot_top_words(model, feature_names, n_top_words, title, filename):
     src: https://scikit-learn.org/stable/auto_examples/applications/plot_topics_extraction_with_nmf_lda.html
     """
 
-    fig, axes = plt.subplots(1, 5, figsize=(60, 30), sharex=True)
+    fig, axes = plt.subplots(1, len(model.components_), figsize=(60, 30), sharex=True)
     axes = axes.flatten()
     for topic_idx, topic in enumerate(model.components_):
         top_features_ind = topic.argsort()[:-n_top_words - 1:-1]
