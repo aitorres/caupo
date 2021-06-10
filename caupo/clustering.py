@@ -288,16 +288,14 @@ def get_clustering_functions() -> Dict[str, BaseClustering]:
     indexable by their names.
     """
 
-    # TODO: Consider including DBSCAN
     return {
         'K-means': KMeansClustering(),
-        'K-means no noise': KMeansNoNoiseClustering(),
         'DBSCAN': DBSCANClustering(),
         'HDBSCAN': HdbscanClustering(),
         'Mean-Shift': MeanShiftClustering(),
         'Affinity': AffinityPropagationClustering(),
-        'Spectral': SpectClustering(),
         'OPTICS': OpticsClustering(),
+        'Spectral': SpectClustering(),
     }
 
 

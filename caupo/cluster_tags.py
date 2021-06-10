@@ -83,7 +83,6 @@ def create_output_files(frequency: str) -> None:
 def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None:
     """
     Given an entity tag, performs clustering and reports result to logs
-    # TODO: Store on tags
     """
 
     # Get main corpus for recreating embedders
