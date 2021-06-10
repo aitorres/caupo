@@ -7,6 +7,7 @@ import argparse
 import logging
 import os
 import re
+import time
 from pathlib import Path
 from typing import Any
 
@@ -66,14 +67,14 @@ def create_output_files(frequency: str) -> None:
     csv_file = Path(f"{output_folder}/results.csv")
     if not csv_file.exists():
         with open(csv_file, "w") as file_handler:
-            file_handler.write("frequency,tag,embedder,algorithm,n_clusters,has_outliers," +
+            file_handler.write("frequency,tag,embedder,algorithm,time,n_clusters,has_outliers," +
                                "tweets,valid_tweets,outliers,sil_score,db_score\n")
 
     md_file = Path(f"{output_folder}/results.md")
     if not md_file.exists():
         with open(md_file, "w") as file_handler:
             file_handler.write(
-                "|Frequency|Tag|Embedder|Algorithm|Amount of Clusters|Has Outliers|" +
+                "|Frequency|Tag|Embedder|Algorithm|Time (s)|Amount of Clusters|Has Outliers|" +
                 "Tweets|Valid Tweets|Outliers|Silhouette Score|Davies-Bouldin Score|\n" +
                 "|---|---|---|---|---|---|---|---|---|---|---|\n")
 
@@ -116,13 +117,16 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
         vectors = embedder(cleaned_tweets)
         algorithms = get_clustering_functions()
         for algorithm_name, algorithm in algorithms.items():
+            t1 = -1  # safeguard?
             topics_list = None
             logger.info("Now trying algorithm %s with embedder %s", algorithm_name, embedder_name)
             output_folder = f"{BASE_OUTPUT_FOLDER}/{frequency}/{embedder_name}/{algorithm_name}"
             os.makedirs(output_folder, exist_ok=True)
 
             try:
+                t0 = time.time()
                 labels = algorithm.cluster(vectors)
+                t1 = time.time() - t0
                 if isinstance(labels, np.ndarray):
                     labels = labels.tolist()
                 logger.info("Clustering produced %s distinct labels: %s", len(set(labels)), set(labels))
@@ -231,14 +235,14 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
             # Storing output in CSV File
             with open(csv_file, "a") as file_handler:
                 file_handler.write(
-                    f"{frequency},{tag['tag']},{embedder_name},{algorithm_name},{len(set(clean_labels))}," +
+                    f"{frequency},{tag['tag']},{embedder_name},{algorithm_name},{t1},{len(set(clean_labels))}," +
                     f"{-1 in labels},{len(vectors)},{len(clean_vectors)},{len(vectors) - len(clean_vectors)}," +
                     f"{sil_score},{db_score}\n")
 
             # Storing output to Markdown file
             with open(md_file, "a") as file_handler:
                 file_handler.write(
-                    f"|{frequency}|{tag['tag']}|{embedder_name}|{algorithm_name}|{len(set(clean_labels))}|" +
+                    f"|{frequency}|{tag['tag']}|{embedder_name}|{algorithm_name}|{t1}|{len(set(clean_labels))}|" +
                     f"{-1 in labels}|{len(vectors)}|{len(clean_vectors)}|{len(vectors) - len(clean_vectors)}|" +
                     f"{sil_score}|{db_score}|\n")
 
