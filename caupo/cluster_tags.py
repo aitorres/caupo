@@ -76,7 +76,7 @@ def create_output_files(frequency: str) -> None:
             file_handler.write(
                 "|Frequency|Tag|Embedder|Algorithm|Time (s)|Amount of Clusters|Has Outliers|" +
                 "Tweets|Valid Tweets|Outliers|Silhouette Score|Davies-Bouldin Score|\n" +
-                "|---|---|---|---|---|---|---|---|---|---|---|\n")
+                "|---|---|---|----|---|---|---|---|---|---|---|---|\n")
 
     return csv_file, md_file
 
