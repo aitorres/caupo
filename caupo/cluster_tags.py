@@ -214,7 +214,7 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                     try:
                         model, feature_names = topic_model(tweet_cluster, topics_amount)
                         topics = get_topics_from_model(model, top_words_amount, feature_names)
-                        logger.info("Topics for cluster %s: %s", idx, topics)
+                        logger.info("Topics for cluster %s (length is %s): %s", idx, len(tweet_cluster), topics)
                         topic_dict['topics_per_cluster'].append({
                             'cluster_id': idx,
                             'topics': [
