@@ -211,8 +211,15 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                         continue
                     topics_amount = 4
                     top_words_amount = 6
+                    min_word_length_for_topics = 3
                     try:
-                        model, feature_names = topic_model(tweet_cluster, topics_amount)
+                        tweet_cluster_for_topics = list(
+                            map(
+                                lambda t: " ".join([w for w in t.split() if len(w) >= min_word_length_for_topics]),
+                                tweet_cluster
+                            )
+                        )
+                        model, feature_names = topic_model(tweet_cluster_for_topics, topics_amount)
                         topics = get_topics_from_model(model, top_words_amount, feature_names)
                         logger.info("Topics for cluster %s (length is %s): %s", idx, len(tweet_cluster), topics)
                         topic_dict['topics_per_cluster'].append({
