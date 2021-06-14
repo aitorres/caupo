@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from emoji import UNICODE_EMOJI
+from emoji import get_emoji_regexp
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 
 from caupo.clustering import get_clustering_functions, get_clusters_from_labels
@@ -38,12 +38,13 @@ def quick_preprocess(tweet: str) -> str:
 
     tweet = " ".join(
         filter(
-            lambda x: not x.startswith("@") and not set(x) == {"j", "a"} and not x.isdigit() and not x[0].isdigit() and x not in UNICODE_EMOJI['en'],
+            lambda x: not x.startswith("@") and not set(x) == {"j", "a"} and not x.isdigit() and not x[0].isdigit(),
             tweet.split()
         )
     )
+    tweet = " ".join(re.sub(get_emoji_regexp(), "", tweet).split())
 
-    base_tweet = re.sub(r'[#@:;_\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet)
+    base_tweet = " ".join(re.sub(r'[#@:;_\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet).split())
 
     cleaned_tweet = " ".join(
         list(
