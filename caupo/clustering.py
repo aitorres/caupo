@@ -157,7 +157,7 @@ class OpticsClustering(BaseClustering):
     on sklearn.
     """
 
-    def __init__(self, min_samples: int = 10):
+    def __init__(self, min_samples: int = 5):
         """Instantiates a new instance of the Optics Clustering wrapper class"""
 
         logger.debug("Initializing OpticsClustering with min_samples=`%s`",
