@@ -295,7 +295,7 @@ def get_clustering_functions() -> Dict[str, BaseClustering]:
         'Mean-Shift': MeanShiftClustering(),
         'Affinity': AffinityPropagationClustering(),
         'OPTICS': OpticsClustering(),
-        'Spectral': SpectClustering(),
+        # 'Spectral': SpectClustering(),
     }
 
 

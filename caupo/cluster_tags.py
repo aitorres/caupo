@@ -209,9 +209,9 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                             'topics': None,
                         })
                         continue
-                    topics_amount = 4
-                    top_words_amount = 6
                     min_word_length_for_topics = 3
+                    topics_amount = 3
+                    top_words_amount = 5
                     try:
                         tweet_cluster_for_topics = list(
                             map(
