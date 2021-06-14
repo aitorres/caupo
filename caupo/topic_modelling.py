@@ -52,7 +52,7 @@ def nmf_frobenius_topics(documents: List[str], topics_amount: int = DEF_AMNT) ->
         init=None,
         alpha=0.1,
         l1_ratio=0.5,
-        max_iter=1000
+        max_iter=2000
     ).fit(tfidf)
     return nmf, feature_names
 
@@ -74,7 +74,7 @@ def plsi_topics(documents: List[str], topics_amount: int = DEF_AMNT) -> Tuple[NM
         solver='mu',
         alpha=0.1,
         l1_ratio=0.5,
-        max_iter=1000
+        max_iter=2000
     ).fit(tfidf)
     return nmf, feature_names
 
@@ -90,7 +90,7 @@ def lda_topics(documents: List[str], topics_amount: int = DEF_AMNT) -> Tuple[Lat
     feature_names = tf_vectorizer.get_feature_names()
     lda = LatentDirichletAllocation(
         n_components=topics_amount,
-        max_iter=100,
+        max_iter=1000,
         learning_method='online',
         learning_offset=50.0,
         n_jobs=-1
