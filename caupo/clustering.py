@@ -320,7 +320,7 @@ def get_clustering_functions() -> Dict[str, BaseClustering]:
         'HDBSCAN': HdbscanClustering(),
         'Mean-Shift': MeanShiftClustering(),
         'Affinity': AffinityPropagationClustering(),
-        'OPTICS': OpticsClustering(),
+        # OPTICS': OpticsClustering(),  # Tests imply that OPTICS almost never returns a result
         # 'Spectral': SpectClustering(),
     }
 
