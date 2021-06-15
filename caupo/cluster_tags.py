@@ -9,7 +9,7 @@ import os
 import re
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, Dict, List
 
 import numpy as np
 from emoji import get_emoji_regexp
@@ -82,31 +82,20 @@ def create_output_files(frequency: str) -> None:
     return csv_file, md_file
 
 
-def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None:
+def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], List[float]]],
+                frequency: str, csv_file: Path, md_file: Path) -> None:
     """
     Given an entity tag, performs clustering and reports result to logs
     """
-
-    # Get main corpus for recreating embedders
-    logger.debug("Getting main corpus for training embedders")
-    corpus = get_main_corpus()
 
     # Extracting tweets
     logger.debug("Extracting tweets from tags")
     tweets = tag["tweets"]
 
     # Normalizing tweets
-    logger.debug("Cleaning corpus")
-    cleaned_corpus = list(set(map(quick_preprocess, corpus)))
-    logger.info("Cleaned corpus has %s tweets", len(cleaned_corpus))
-
     logger.debug("Cleaning tweets")
     cleaned_tweets = list(set(map(quick_preprocess, tweets)))
     logger.info("Collection of cleaned tweets has a size of %s tweets", len(cleaned_tweets))
-
-    # Getting vector representations
-    logger.debug("Initializing embedders")
-    embedder_functions = get_embedder_functions(cleaned_corpus)
 
     # Applying clustering and reporting tweets
     logger.debug("All ready, starting experiments!")
@@ -338,11 +327,23 @@ def main() -> None:
     tags = exclude_preexisting_tags(args.frequency, tags, prefix="clusters")
     csv_file, md_file = create_output_files(args.frequency)
 
+    # Get main corpus for recreating embedders
+    logger.debug("Getting main corpus for training embedders")
+    corpus = get_main_corpus()
+
+    logger.debug("Cleaning corpus")
+    cleaned_corpus = list(set(map(quick_preprocess, corpus)))
+    logger.info("Cleaned corpus has %s tweets", len(cleaned_corpus))
+
+    # Getting vector embedders
+    logger.debug("Initializing embedders")
+    embedder_functions = get_embedder_functions(cleaned_corpus)
+
     # ! TODO: rework script
     for tag_name, _ in tags[len(tags) - 2:]:
         logger.debug("Fetching tag `%s` from database", tag_name)
         tag = fetch_tag_from_db(args.frequency, tag_name)
-        cluster_tag(tag, args.frequency, csv_file, md_file)
+        cluster_tag(tag, embedder_functions, args.frequency, csv_file, md_file)
 
 
 if __name__ == "__main__":
