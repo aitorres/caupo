@@ -21,6 +21,7 @@ class BaseClustering:
     """
 
     MIN_CLUSTER_SIZE = 3
+    RANDOM_SEED = 12345678
 
     def __init__(self) -> None:
         """Initializes a new instance of the clustering algorithm"""
@@ -85,7 +86,7 @@ class KMeansClustering(BaseClustering):
     def instantiate_model(self, k: int) -> KMeans:
         """Instantiates Sklearn's KMeans class and stores within wrapper class"""
 
-        return KMeans(n_clusters=k)
+        return KMeans(n_clusters=k, random_state=self.RANDOM_SEED)
 
     def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs kmeans based clustering and returns labels of the output"""
@@ -206,7 +207,7 @@ class AffinityPropagationClustering(BaseClustering):
         """Instantiates a new instance of the Affinity Propagation Clustering wrapper class"""
 
         logger.debug("Initializing AffinityPropagationClustering")
-        self.model = AffinityPropagation(random_state=None)
+        self.model = AffinityPropagation(random_state=self.RANDOM_SEED)
 
     def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs hdbscan based clustering and returns the output labels"""
@@ -280,7 +281,7 @@ class SpectClustering(BaseClustering):
     def instantiate_model(self, k: int) -> SpectralClustering:
         """Instantiates Sklearn's KMeans class and stores within wrapper class"""
 
-        return SpectralClustering(n_clusters=k, n_jobs=-1)
+        return SpectralClustering(n_clusters=k, n_jobs=-1, random_state=self.RANDOM_SEED)
 
     def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs kmeans based clustering and returns labels of the output"""
