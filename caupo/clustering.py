@@ -226,7 +226,7 @@ class DBSCANClustering(BaseClustering):
         """Instantiates a new instance of the DBSCAN Clustering wrapper class"""
 
         logger.debug("Initializing DBSCANClustering")
-        self.model = DBSCAN(eps=0.3, min_samples=5, n_jobs=-1)
+        self.model = DBSCAN(eps=0.25, min_samples=5, n_jobs=-1)
 
     def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs dbscan based clustering and returns the output labels"""
@@ -316,10 +316,10 @@ def get_clustering_functions() -> Dict[str, BaseClustering]:
 
     return {
         'K-means': KMeansClustering(),
-        'DBSCAN': DBSCANClustering(),
-        'HDBSCAN': HdbscanClustering(),
         'Mean-Shift': MeanShiftClustering(),
         'Affinity': AffinityPropagationClustering(),
+        'DBSCAN': DBSCANClustering(),
+        'HDBSCAN': HdbscanClustering(),
         # OPTICS': OpticsClustering(),  # Tests imply that OPTICS almost never returns a result
         # 'Spectral': SpectClustering(),
     }
