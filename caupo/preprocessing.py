@@ -45,11 +45,12 @@ def get_stopwords() -> Set[str]:
     """
 
     spanish_stopwords = set(stopwords.words('spanish')).union({"q", "wtf", "csm"})
+    spanish_stopwords_no_accent = set(list(map(map_strange_characters, spanish_stopwords)))
 
     # We manually add laughter
     laughter = {"ja" * i for i in range(1, 7)}
 
-    return spanish_stopwords.union(laughter)
+    return spanish_stopwords.union(laughter).union(spanish_stopwords_no_accent)
 
 
 def remove_emoji(phrase):
