@@ -131,6 +131,9 @@ def cluster_tag(tag: Tag, frequency: str, csv_file: Path, md_file: Path) -> None
                 if isinstance(labels, np.ndarray):
                     labels = labels.tolist()
                 logger.info("Clustering produced %s distinct labels: %s", len(set(labels)), set(labels))
+                labels = algorithm.remove_small_clusters(labels)
+                logger.info("After removing small clusters, clustering produced %s distinct labels: %s",
+                            len(set(labels)), set(labels))
             except ValueError:
                 labels = []
                 logger.warning("Couldn't produce clusterings with algorithm %s", algorithm_name)

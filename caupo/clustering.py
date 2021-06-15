@@ -20,6 +20,8 @@ class BaseClustering:
     Base class to wrap functionality of clustering algorithms
     """
 
+    MIN_CLUSTER_SIZE = 3
+
     def __init__(self) -> None:
         """Initializes a new instance of the clustering algorithm"""
 
@@ -29,6 +31,31 @@ class BaseClustering:
         """Given a list of vectors, performs clustering and returns labels of the output"""
 
         raise NotImplementedError("cluster() not implemented")
+
+    def remove_small_clusters(self, labels: List[int]) -> List[int]:
+        """Given a labeling result, transforms small clusters into noise"""
+
+        # Determining noise labels
+        noise_labels = set()
+        for label in set(labels):
+            if label == -1 or labels.count(label) < self.MIN_CLUSTER_SIZE:
+                noise_labels.add(label)
+
+        # `label_map` will help transform the non-continuous non-noise label set to a continuous sequence
+        label_map, next_label = {}, 0
+        new_labels = []
+        for label in labels:
+            if label not in label_map.keys():
+                if label in noise_labels:
+                    # noise is always -1
+                    label_map[label] = -1
+                else:
+                    # we start from 0 and map old labels to a new linear sequence
+                    label_map[label] = next_label
+                    next_label += 1
+            new_labels.append(label_map[label])
+
+        return new_labels
 
 
 class KMeansClustering(BaseClustering):
@@ -91,8 +118,6 @@ class KMeansNoNoiseClustering(KMeansClustering):
     KMeans Clustering wrapper class, with a basic procedure for removing noise points e.g. points
     that are clustered by themselves and that may be labelled as noise.
     """
-
-    MIN_CLUSTER_SIZE = 2
 
     def cluster(self, vectors: List[List[float]]) -> List[int]:
         # First round of clustering:
