@@ -1,4 +1,7 @@
 import logging
+import os
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # Create logger
 logger = logging.getLogger("caupo")
