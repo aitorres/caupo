@@ -19,8 +19,7 @@ from caupo.clustering import get_clustering_functions, get_clusters_from_labels
 from caupo.embeddings import get_embedder_functions
 from caupo.database import get_results_collection, result_already_exists, transform_types_for_database
 from caupo.preprocessing import get_stopwords, map_strange_characters
-from caupo.tags import (Tag, exclude_preexisting_tags, fetch_tag_from_db,
-                        get_tags_by_frequency)
+from caupo.tags import Tag, fetch_tag_from_db, get_tags_by_frequency
 from caupo.topic_modelling import get_topic_models, get_topics_from_model
 from caupo.utils import get_main_corpus, plot_clusters, plot_top_words
 
@@ -39,13 +38,12 @@ def quick_preprocess(tweet: str) -> str:
 
     tweet = " ".join(
         filter(
-            lambda x: not x.startswith("@") and not set(x) == {"j", "a"} and not x.isdigit() and not x[0].isdigit(),
+            lambda x: not x.startswith("@") and not x.isdigit() and not x[0].isdigit() and not x[-1].isdigit(),
             tweet.split()
         )
     )
     tweet = " ".join(re.sub(get_emoji_regexp(), "", tweet).split())
-
-    base_tweet = " ".join(re.sub(r'[#@:;_\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet).split())
+    base_tweet = " ".join(re.sub(r'[0-9#@:;_\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet).split())
 
     cleaned_tweet = " ".join(
         list(
