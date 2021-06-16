@@ -159,15 +159,31 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     'noiseAmount': None,
                     'noisePercentage': None,
                     'clusters': None,
-                    'avgClusterSize': -1,
-                    'minClusterSize': -1,
+                    'avgClusterSize': None,
+                    'minClusterSize': None,
                     'maxClusterSize': None,
                     'scores': {
                         'silhouette': None,
                         'davies_bouldin': None,
+                        'calinski-harabasz': None,
                     },
                     'topics': topics_list,
                 }))
+                # Storing output in CSV File
+                with open(csv_file, "a") as file_handler:
+                    file_handler.write(
+                        f"{frequency},{tag['tag']},{embedder_name},{algorithm_name},{t1},{None}," +
+                        f"{None},{len(vectors)},{None},{None}," +
+                        f"{None},{None},{None},{None}," +
+                        f"{None},{None},{None}\n")
+
+                # Storing output to Markdown file
+                with open(md_file, "a") as file_handler:
+                    file_handler.write(
+                        f"|{frequency}|{tag['tag']}|{embedder_name}|{algorithm_name}|{t1}|{None}|" +
+                        f"{None}|{len(vectors)}|{None}|{None}|" +
+                        f"{None}|{None}|{None}|{None}|" +
+                        f"{None}|{None}|{None}|\n")
                 continue
 
             # Cleaning elements from outliers
