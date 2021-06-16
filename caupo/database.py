@@ -65,6 +65,12 @@ def transform_types_for_database(obj: Any) -> Any:
     return obj
 
 
+def get_results_collection() -> pymongo.collection.Collection:
+    """Returns the appropriate collection where results information should be stored"""
+
+    return db.results
+
+
 def main() -> None:
     """Small script that un/locks the database on demand"""
 

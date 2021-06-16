@@ -17,10 +17,10 @@ from sklearn.metrics import davies_bouldin_score, silhouette_score
 
 from caupo.clustering import get_clustering_functions, get_clusters_from_labels
 from caupo.embeddings import get_embedder_functions
-from caupo.database import transform_types_for_database
+from caupo.database import get_results_collection, transform_types_for_database
 from caupo.preprocessing import get_stopwords, map_strange_characters
 from caupo.tags import (Tag, exclude_preexisting_tags, fetch_tag_from_db,
-                        get_collection_by_frequency, get_tags_by_frequency)
+                        get_tags_by_frequency)
 from caupo.topic_modelling import get_topic_models, get_topics_from_model
 from caupo.utils import get_main_corpus, plot_clusters, plot_top_words
 
@@ -70,15 +70,17 @@ def create_output_files(frequency: str) -> None:
     if not csv_file.exists():
         with open(csv_file, "w") as file_handler:
             file_handler.write("frequency,tag,embedder,algorithm,time,n_clusters,has_outliers," +
-                               "tweets,valid_tweets,outliers,sil_score,db_score\n")
+                               "tweets,valid_tweets,outliers,noise_percentage,avg_cluster_size," +
+                               "min_cluster_size,max_cluster_size,sil_score,db_score\n")
 
     md_file = Path(f"{output_folder}/results.md")
     if not md_file.exists():
         with open(md_file, "w") as file_handler:
             file_handler.write(
                 "|Frequency|Tag|Embedder|Algorithm|Time (s)|Amount of Clusters|Has Outliers|" +
-                "Tweets|Valid Tweets|Outliers|Silhouette Score|Davies-Bouldin Score|\n" +
-                "|---|---|---|----|---|---|---|---|---|---|---|---|\n")
+                "Tweets|Valid Tweets|Outliers|Noise Percentage|Avg. Cluster Size |Min. Cluster Size|" +
+                "Max. Cluster Size|Silhouette Score|Davies-Bouldin Score|\n" +
+                "|---|---|---|----|---|---|---|---|---|---|---|---|---|---|---|---|\n")
 
     return csv_file, md_file
 
@@ -88,6 +90,8 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
     """
     Given an entity tag, performs clustering and reports result to logs
     """
+
+    results_collection = get_results_collection()
 
     # Extracting tweets
     logger.debug("Extracting tweets from tags")
@@ -102,13 +106,13 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
     logger.debug("All ready, starting experiments!")
     sil_scores = {}
     db_scores = {}
-    clusters_info = []
     for embedder_name, embedder in embedder_functions.items():
         logger.info("Now trying embedder %s", embedder_name)
         vectors = embedder(cleaned_tweets)
         algorithms = get_clustering_functions()
         for algorithm_name, algorithm in algorithms.items():
-            t1 = -1  # safeguard?
+            # TODO CHECK FOR COMBINATION OF (frequency, tag, algorithm, embedder) AND SKIP IF NEEDED
+            t1 = -1
             topics_list = None
             logger.info("Now trying algorithm %s with embedder %s", algorithm_name, embedder_name)
             output_folder = f"{BASE_OUTPUT_FOLDER}/{frequency}/{embedder_name}/{algorithm_name}"
@@ -135,15 +139,30 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
 
             if len(set([label for label in labels if label != -1])) == 0:
                 logger.info("Skipping plots and computations since no real clusters were found")
-                clusters_info.append({
+                results_collection.insert_one(transform_types_for_database({
+                    'frequency': frequency,
+                    'tag': tag["tag"],
                     'algorithm': algorithm_name,
                     'embedder': embedder_name,
                     'success': False,
-                    'labels': None,
+                    'time': t1,
+                    'labels': labels,
+                    'amountCleanLabels': None,
+                    'hasNoise': None,
+                    'tweetsAmount': len(vectors),
+                    'validTweetsAmount': None,
+                    'noiseAmount': None,
+                    'noisePercentage': None,
                     'clusters': None,
-                    'scores': None,
+                    'avgClusterSize': -1,
+                    'minClusterSize': -1,
+                    'maxClusterSize': None,
+                    'scores': {
+                        'silhouette': None,
+                        'davies_bouldin': None,
+                    },
                     'topics': topics_list,
-                })
+                }))
                 continue
 
             # Cleaning elements from outliers
@@ -233,11 +252,22 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     except ValueError:
                         logger.warning("Error during topic modelling on cluster %s", idx)
 
+            clusters = [
+                {str(label): [tweet for tweet_label, tweet in zip(labels, tweets) if tweet_label == label]}
+                for label in set(clean_labels)
+            ]
+            noise_percentage = round(len(vectors) - len(clean_vectors) / len(vectors), 2)
+            cluster_sizes = [len(cluster) for cluster in clusters.values()]
+            avg_cluster_size = round(sum(cluster_sizes) / len(clusters.keys()), 2)
+            min_cluster_size = min(cluster_sizes)
+            max_cluster_size = max(cluster_sizes)
+
             # Storing output in CSV File
             with open(csv_file, "a") as file_handler:
                 file_handler.write(
                     f"{frequency},{tag['tag']},{embedder_name},{algorithm_name},{t1},{len(set(clean_labels))}," +
                     f"{-1 in labels},{len(vectors)},{len(clean_vectors)},{len(vectors) - len(clean_vectors)}," +
+                    f"{noise_percentage},{avg_cluster_size},{min_cluster_size},{max_cluster_size}," +
                     f"{sil_score},{db_score}\n")
 
             # Storing output to Markdown file
@@ -245,25 +275,36 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 file_handler.write(
                     f"|{frequency}|{tag['tag']}|{embedder_name}|{algorithm_name}|{t1}|{len(set(clean_labels))}|" +
                     f"{-1 in labels}|{len(vectors)}|{len(clean_vectors)}|{len(vectors) - len(clean_vectors)}|" +
+                    f"{noise_percentage}|{avg_cluster_size}|{min_cluster_size}|{max_cluster_size}|" +
                     f"{sil_score}|{db_score}|\n")
 
             # Storing results of this run to database
-            clusters = [
-                {str(label): [tweet for tweet_label, tweet in zip(labels, tweets) if tweet_label == label]}
-                for label in set(clean_labels)
-            ]
-            clusters_info.append({
+            logger.debug("Storing results to database...")
+            results_collection.insert_one(transform_types_for_database({
+                'frequency': frequency,
+                'tag': tag["tag"],
                 'algorithm': algorithm_name,
                 'embedder': embedder_name,
                 'success': True,
+                'time': t1,
                 'labels': labels,
+                'amountCleanLabels': len(set(clean_labels)),
+                'hasNoise': -1 in labels,
+                'tweetsAmount': len(vectors),
+                'validTweetsAmount': len(clean_vectors),
+                'noiseAmount': len(vectors) - len(clean_vectors),
+                'noisePercentage': noise_percentage,
                 'clusters': clusters,
+                'avgClusterSize': avg_cluster_size,
+                'minClusterSize': min_cluster_size,
+                'maxClusterSize': max_cluster_size,
                 'scores': {
                     'silhouette': sil_score,
                     'davies_bouldin': db_score,
                 },
                 'topics': topics_list,
-            })
+            }))
+            logger.debug("Results stored!")
 
     # https://en.wikipedia.org/wiki/Silhouette_(clustering)
     sorted_sil_scores = sorted(sil_scores.items(), key=lambda x: x[1], reverse=True)
@@ -276,19 +317,6 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
     logger.debug("Davies-Boulding score results (sort: asc, less is better)")
     for score_tag, score in sorted_db_scores:
         logger.debug(f"{score_tag}: {score}")
-
-    # Storing results to database
-    logger.debug("Storing results to database...")
-    collection = get_collection_by_frequency(frequency, prefix="clusters")
-    db_object = {
-        'frequency': frequency,
-        'tag': tag,
-        'tweets_amount': len(tweets),
-        'clusters': clusters_info,
-    }
-    typed_object = transform_types_for_database(db_object)
-    collection.insert_one(typed_object)
-    logger.debug("Results stored!")
 
 
 def main() -> None:
