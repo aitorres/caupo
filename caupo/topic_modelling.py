@@ -102,7 +102,7 @@ def get_topic_models() -> Dict[str, Callable[[List[str], int], Tuple[Union[NMF, 
     """Returns a dictionary that contains the name and model instance for all topic models available"""
 
     return {
-        'LDA': lda_topics,
+        # 'LDA': lda_topics,  # too slow
         'PLSI': plsi_topics,
         'NMF': nmf_frobenius_topics,
     }
