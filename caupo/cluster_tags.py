@@ -262,10 +262,10 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     except ValueError:
                         logger.warning("Error during topic modelling on cluster %s", idx)
 
-            clusters = [
-                {str(label): [tweet for tweet_label, tweet in zip(labels, tweets) if tweet_label == label]}
+            clusters = {
+                str(label): [tweet for tweet_label, tweet in zip(labels, tweets) if tweet_label == label]
                 for label in set(clean_labels)
-            ]
+            }
             noise_percentage = round(len(vectors) - len(clean_vectors) / len(vectors), 2)
             cluster_sizes = [len(cluster) for cluster in clusters.values()]
             avg_cluster_size = round(sum(cluster_sizes) / len(clusters.keys()), 2)
