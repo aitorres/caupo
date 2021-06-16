@@ -171,23 +171,26 @@ def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True):
     if labels is None:
         labels = [0] * len(vectors)
 
-    if len(set(labels)) <= 15:
+    if len(set(labels)) <= 14:
         color_palette = ['#00394B', '#FF6792', '#66ff66',  '#8855BB', '#005B6E', '#1122dd', '#88bbff',
                          '#726EB7', '#3C6CA7', '#DA66AC', '#04668C', '#FF89AC', '#FFACBF', '#A86BBA']
-    elif len(set(labels)) <= 36:
-        color_palette = ['#B08286', '#005B6E', '#A86BBA', '#FFABAB', '#FF6792', '#2D3E48', '#59555C',
+    elif len(set(labels)) <= 42:
+        color_palette = ['#00394B', '#FF6792', '#66ff66',  '#8855BB', '#005BAF', '#1122dd', '#88bbff',
+                         '#B08286', '#005B6E', '#A86BBA', '#FFABAB', '#FF6792', '#2D3E48', '#59555C',
                          '#6A5E65', '#B9878A', '#967479', '#1B353F', '#EDA2A3', '#0A2C37', '#DA66AC',
                          '#615961', '#012733', '#736269', '#A77D82', '#D39496', '#36424C', '#846B71',
                          '#13303B', '#8D7075', '#C28B8E', '#F6A6A7', '#DC999A', '#474B54', '#7C676D',
                          '#9F797D', '#505058', '#E59D9F', '#243944', '#3E4750', '#CA9092', '#04668C']
     else:
-        logger.warning("Won't plot more than 36 clusters!")
+        logger.warning("Won't plot more than 42 clusters!")
         return
 
     if plot_outliers:
         color_palette.append("#A6A6A6")  # gray would be used for a "-1" label)
     else:
         color_palette.append("#FFFFFF")
+        vectors = [vector for vector, label in zip(vectors, labels) if label != -1]
+        labels = [label for label in labels if label != -1]
 
     colors = [color_palette[i] for i in labels]
     plt.scatter(vectors[:, 0], vectors[:, 1], c=colors, s=2)
