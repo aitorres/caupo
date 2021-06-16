@@ -282,8 +282,6 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
     db_object = {
         'frequency': frequency,
         'tag': tag,
-        'tweets': tweets,
-        'cleaned_tweets': cleaned_tweets,
         'tweets_amount': len(tweets),
         'clusters': clusters_info,
     }
