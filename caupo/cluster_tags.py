@@ -349,11 +349,6 @@ def main() -> None:
     parser.add_argument("frequency", metavar="FREQ", type=str, choices=["daily", "weekly", "monthly"])
     args = parser.parse_args()
 
-    logger.debug("Getting all tags with `%s` frequency", args.frequency)
-    tags = get_tags_by_frequency(args.frequency)
-    tags = exclude_preexisting_tags(args.frequency, tags, prefix="clusters")
-    csv_file, md_file = create_output_files(args.frequency)
-
     # Get main corpus for recreating embedders
     logger.debug("Getting main corpus for training embedders")
     corpus = get_main_corpus()
@@ -366,11 +361,16 @@ def main() -> None:
     logger.debug("Initializing embedders")
     embedder_functions = get_embedder_functions(cleaned_corpus)
 
-    # ! TODO: rework script
-    for tag_name, _ in tags[len(tags) - 2:]:
+    logger.debug("Getting all tags with `%s` frequency", args.frequency)
+    tags = get_tags_by_frequency(args.frequency)
+    csv_file, md_file = create_output_files(args.frequency)
+
+    # We traverse the iterable in reverse order
+    for tag_name, _ in tags[::-1]:
         logger.debug("Fetching tag `%s` from database", tag_name)
         tag = fetch_tag_from_db(args.frequency, tag_name)
         cluster_tag(tag, embedder_functions, args.frequency, csv_file, md_file)
+        logger.debug("Finished work in tag `%s`", tag_name)
 
 
 if __name__ == "__main__":
