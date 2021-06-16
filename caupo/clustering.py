@@ -20,7 +20,7 @@ class BaseClustering:
     Base class to wrap functionality of clustering algorithms
     """
 
-    MIN_CLUSTER_SIZE = 3
+    MIN_CLUSTER_SIZE = 4
     RANDOM_SEED = 12345678
 
     def __init__(self) -> None:

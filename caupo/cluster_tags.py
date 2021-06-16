@@ -221,7 +221,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     'topics_per_cluster': [],
                 }
                 for idx, tweet_cluster in enumerate(tweet_clusters):
-                    if len(tweet_cluster) < 4:
+                    if len(tweet_cluster) < algorithm.MIN_CLUSTER_SIZE:
                         logger.warning("Ignoring cluster %s since it's only got %s elements", idx, len(tweet_cluster))
                         topic_dict['topics_per_cluster'].append({
                             'cluster_id': idx,
