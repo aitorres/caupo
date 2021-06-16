@@ -17,7 +17,7 @@ from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silho
 
 from caupo.clustering import get_clustering_functions, get_clusters_from_labels
 from caupo.embeddings import get_embedder_functions
-from caupo.database import get_results_collection, transform_types_for_database
+from caupo.database import get_results_collection, result_already_exists, transform_types_for_database
 from caupo.preprocessing import get_stopwords, map_strange_characters
 from caupo.tags import (Tag, exclude_preexisting_tags, fetch_tag_from_db,
                         get_tags_by_frequency)
@@ -96,6 +96,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
     # Extracting tweets
     logger.debug("Extracting tweets from tags")
     tweets = tag["tweets"]
+    tag_name = tag["tag"]
 
     # Normalizing tweets
     logger.debug("Cleaning tweets")
@@ -112,7 +113,12 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
         vectors = embedder(cleaned_tweets)
         algorithms = get_clustering_functions()
         for algorithm_name, algorithm in algorithms.items():
-            # TODO CHECK FOR COMBINATION OF (frequency, tag, algorithm, embedder) AND SKIP IF NEEDED
+
+            if result_already_exists(frequency, tag_name, algorithm_name, embedder_name):
+                logger.debug("Skipping combination %s, %s, %s and %s since it already exists", frequency, tag_name,
+                             algorithm_name, embedder_name)
+                continue
+
             t1 = -1
             topics_list = None
             logger.info("Now trying algorithm %s with embedder %s", algorithm_name, embedder_name)
@@ -142,7 +148,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 logger.info("Skipping plots and computations since no real clusters were found")
                 results_collection.insert_one(transform_types_for_database({
                     'frequency': frequency,
-                    'tag': tag["tag"],
+                    'tag': tag_name,
                     'algorithm': algorithm_name,
                     'embedder': embedder_name,
                     'success': False,
@@ -288,7 +294,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
             logger.debug("Storing results to database...")
             results_collection.insert_one(transform_types_for_database({
                 'frequency': frequency,
-                'tag': tag["tag"],
+                'tag': tag_name,
                 'algorithm': algorithm_name,
                 'embedder': embedder_name,
                 'success': True,

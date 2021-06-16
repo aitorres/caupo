@@ -4,7 +4,7 @@ in certain processes
 """
 
 import sys
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
 import pymongo
@@ -26,7 +26,7 @@ def get_settings_db() -> pymongo.database.Database:
     return settings_db
 
 
-def is_locked() -> None:
+def is_locked() -> Optional[Any]:
     """Determines whether the database is in a locked state"""
 
     return settings_db.locking.find_one({"locked": True})
@@ -69,6 +69,18 @@ def get_results_collection() -> pymongo.collection.Collection:
     """Returns the appropriate collection where results information should be stored"""
 
     return db.results
+
+
+def result_already_exists(frequency: str, tag: str, algorithm: str, embedding: str) -> bool:
+    """Given data of a result output, determines if the result already exists in the database"""
+
+    collection = get_results_collection()
+    return collection.find_one({
+        'frequency': frequency,
+        'tag': tag,
+        'algorithm': algorithm,
+        'embedding': embedding,
+    })
 
 
 def main() -> None:
