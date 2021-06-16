@@ -13,7 +13,7 @@ from typing import Callable, Dict, List
 
 import numpy as np
 from emoji import get_emoji_regexp
-from sklearn.metrics import davies_bouldin_score, silhouette_score
+from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
 
 from caupo.clustering import get_clustering_functions, get_clusters_from_labels
 from caupo.embeddings import get_embedder_functions
@@ -71,7 +71,7 @@ def create_output_files(frequency: str) -> None:
         with open(csv_file, "w") as file_handler:
             file_handler.write("frequency,tag,embedder,algorithm,time,n_clusters,has_outliers," +
                                "tweets,valid_tweets,outliers,noise_percentage,avg_cluster_size," +
-                               "min_cluster_size,max_cluster_size,sil_score,db_score\n")
+                               "min_cluster_size,max_cluster_size,sil_score,db_score,ch_score\n")
 
     md_file = Path(f"{output_folder}/results.md")
     if not md_file.exists():
@@ -79,8 +79,8 @@ def create_output_files(frequency: str) -> None:
             file_handler.write(
                 "|Frequency|Tag|Embedder|Algorithm|Time (s)|Amount of Clusters|Has Outliers|" +
                 "Tweets|Valid Tweets|Outliers|Noise Percentage|Avg. Cluster Size |Min. Cluster Size|" +
-                "Max. Cluster Size|Silhouette Score|Davies-Bouldin Score|\n" +
-                "|---|---|---|----|---|---|---|---|---|---|---|---|---|---|---|---|\n")
+                "Max. Cluster Size|Silhouette Score|Davies-Bouldin Score|Calinski-Harabasz Score|\n" +
+                "|---|---|---|----|---|---|---|---|---|---|---|---|---|---|---|---|---|\n")
 
     return csv_file, md_file
 
@@ -106,6 +106,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
     logger.debug("All ready, starting experiments!")
     sil_scores = {}
     db_scores = {}
+    ch_scores = {}
     for embedder_name, embedder in embedder_functions.items():
         logger.info("Now trying embedder %s", embedder_name)
         vectors = embedder(cleaned_tweets)
@@ -200,10 +201,15 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 db_score = davies_bouldin_score(clean_vectors, clean_labels)
                 logger.info("This clusterization got a Davies-Bouldin index of %s", db_score)
                 db_scores[(embedder_name, algorithm_name, len(set(clean_labels)))] = db_score
+
+                ch_score = calinski_harabasz_score(clean_vectors, clean_labels)
+                logger.info("This clusterization got a Calisnki-Harabasz score of %s", ch_score)
+                ch_scores[(embedder_name, algorithm_name, len(set(clean_labels)))] = ch_score
             else:
                 logger.warning("Skipping calculation of scores for %s using %s", algorithm_name, embedder_name)
                 sil_score = None
                 db_score = None
+                ch_score = None
 
             logger.info("Starting topics generation")
             tweet_clusters = get_clusters_from_labels(cleaned_tweets, labels)
@@ -268,7 +274,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     f"{frequency},{tag['tag']},{embedder_name},{algorithm_name},{t1},{len(set(clean_labels))}," +
                     f"{-1 in labels},{len(vectors)},{len(clean_vectors)},{len(vectors) - len(clean_vectors)}," +
                     f"{noise_percentage},{avg_cluster_size},{min_cluster_size},{max_cluster_size}," +
-                    f"{sil_score},{db_score}\n")
+                    f"{sil_score},{db_score},{ch_score}\n")
 
             # Storing output to Markdown file
             with open(md_file, "a") as file_handler:
@@ -276,7 +282,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     f"|{frequency}|{tag['tag']}|{embedder_name}|{algorithm_name}|{t1}|{len(set(clean_labels))}|" +
                     f"{-1 in labels}|{len(vectors)}|{len(clean_vectors)}|{len(vectors) - len(clean_vectors)}|" +
                     f"{noise_percentage}|{avg_cluster_size}|{min_cluster_size}|{max_cluster_size}|" +
-                    f"{sil_score}|{db_score}|\n")
+                    f"{sil_score}|{db_score}|{ch_score}|\n")
 
             # Storing results of this run to database
             logger.debug("Storing results to database...")
@@ -301,6 +307,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 'scores': {
                     'silhouette': sil_score,
                     'davies_bouldin': db_score,
+                    'calinski_harabasz': ch_score,
                 },
                 'topics': topics_list,
             }))
@@ -311,12 +318,20 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
     logger.debug("Silhouette score results (sort: desc, higher is better)")
     for score_tag, score in sorted_sil_scores:
         logger.debug(f"{score_tag}: {score}")
+    print()
 
     # https://en.wikipedia.org/wiki/Davies%E2%80%93Bouldin_index
     sorted_db_scores = sorted(db_scores.items(), key=lambda x: x[1])
     logger.debug("Davies-Boulding score results (sort: asc, less is better)")
     for score_tag, score in sorted_db_scores:
         logger.debug(f"{score_tag}: {score}")
+    print()
+
+    sorted_ch_scores = sorted(ch_scores.items(), key=lambda x: x[1], reverse=True)
+    logger.debug("Calinski-Harabasz score results (sort: desc, higher is better)")
+    for score_tag, score in sorted_ch_scores:
+        logger.debug(f"{score_tag}: {score}")
+    print()
 
 
 def main() -> None:
