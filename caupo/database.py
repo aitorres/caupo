@@ -4,7 +4,9 @@ in certain processes
 """
 
 import sys
+from typing import Any
 
+import numpy as np
 import pymongo
 
 client = pymongo.MongoClient('mongodb://127.0.0.1:27019')
@@ -40,6 +42,27 @@ def unlock() -> None:
     """Unlocks the database"""
 
     settings_db.locking.delete_many({"locked": True})
+
+
+def transform_types_for_database(obj: Any) -> Any:
+    """Given an object, transforms its type to a native Python type for storage in database"""
+
+    # Numpy types
+    if isinstance(obj, (np.generic)):
+        return obj.item()
+
+    # Collection types
+    if isinstance(obj, (list, set)):
+        return [transform_types_for_database(item) for item in obj]
+
+    if isinstance(obj, np.ndarray):
+        return transform_types_for_database(obj.tolist())
+
+    # Structures
+    if isinstance(obj, dict):
+        return {key: transform_types_for_database(value) for key, value in obj.items()}
+
+    return obj
 
 
 def main() -> None:

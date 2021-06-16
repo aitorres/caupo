@@ -9,7 +9,7 @@ import os
 import re
 import time
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Callable, Dict, List
 
 import numpy as np
 from emoji import get_emoji_regexp
@@ -17,6 +17,7 @@ from sklearn.metrics import davies_bouldin_score, silhouette_score
 
 from caupo.clustering import get_clustering_functions, get_clusters_from_labels
 from caupo.embeddings import get_embedder_functions
+from caupo.database import transform_types_for_database
 from caupo.preprocessing import get_stopwords, map_strange_characters
 from caupo.tags import (Tag, exclude_preexisting_tags, fetch_tag_from_db,
                         get_collection_by_frequency, get_tags_by_frequency)
@@ -285,30 +286,9 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
         'tweets_amount': len(tweets),
         'clusters': clusters_info,
     }
-    typed_object = transform_types(db_object)
+    typed_object = transform_types_for_database(db_object)
     collection.insert_one(typed_object)
     logger.debug("Results stored!")
-
-
-def transform_types(obj: Any) -> Any:
-    """Given an object, transforms its type to a native Python type for storage in database"""
-
-    # Numpy types
-    if isinstance(obj, (np.generic)):
-        return obj.item()
-
-    # Collection types
-    if isinstance(obj, (list, set)):
-        return [transform_types(item) for item in obj]
-
-    if isinstance(obj, np.ndarray):
-        return transform_types(obj.tolist())
-
-    # Structures
-    if isinstance(obj, dict):
-        return {key: transform_types(value) for key, value in obj.items()}
-
-    return obj
 
 
 def main() -> None:
