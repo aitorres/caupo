@@ -160,6 +160,10 @@ def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True):
         logger.warning("Can't plot empty clusters!")
         return
 
+    if not plot_outliers:
+        vectors = [vector for vector, label in zip(vectors, labels) if label != -1]
+        labels = [label for label in labels if label != -1]
+
     # Reducing dimensionality if needed
     dims = len(vectors[0])
     if dims > 2:
@@ -187,10 +191,6 @@ def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True):
 
     if plot_outliers:
         color_palette.append("#A6A6A6")  # gray would be used for a "-1" label)
-    else:
-        color_palette.append("#FFFFFF")
-        vectors = [vector for vector, label in zip(vectors, labels) if label != -1]
-        labels = [label for label in labels if label != -1]
 
     colors = [color_palette[i] for i in labels]
     plt.scatter(vectors[:, 0], vectors[:, 1], c=colors, s=2)
