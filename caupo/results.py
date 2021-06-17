@@ -25,7 +25,7 @@ def calculate_valid_entries(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
     data.dropna()
 
     grouped_data = data[["algorithm", "embedder", "sil_score"]].groupby(["algorithm", "embedder"])
-    return grouped_data.count()
+    return grouped_data.count().rename({'sil_score': 'valid_entries'})
 
 
 def calculate_average_silhouette(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
@@ -63,12 +63,10 @@ def main() -> None:
     # Get average of silhouette score
     avg_silhouette_scores = calculate_average_silhouette("daily", data.copy())
     valid_entries = calculate_valid_entries("daily", data.copy())
-    merge = pd.concat([avg_silhouette_scores, valid_entries], axis=1)
+    consolidated_data = pd.concat([avg_silhouette_scores, valid_entries], axis=1)
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-        print("Average Silhouette Score for each combination of algorithm and embedding, averaged over all days")
-        print(avg_silhouette_scores)
-        print(valid_entries)
-        print(merge)
+        print("Avg. Silhouette Score & valid entries for each algorithm and embedding, over all entries")
+        print(consolidated_data)
 
 
 if __name__ == "__main__":
