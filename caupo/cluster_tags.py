@@ -107,7 +107,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
     db_scores = {}
     ch_scores = {}
     for embedder_name, embedder in embedder_functions.items():
-        logger.info("Now trying embedder %s", embedder_name)
+        logger.info("[%s] Now trying embedder %s", tag_name, embedder_name)
         vectors = embedder(cleaned_tweets)
         algorithms = get_clustering_functions()
         for algorithm_name, algorithm in algorithms.items():
@@ -119,7 +119,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
 
             t1 = -1
             topics_list = None
-            logger.info("Now trying algorithm %s with embedder %s", algorithm_name, embedder_name)
+            logger.info("[%s] Now trying algorithm %s with embedder %s", tag_name, algorithm_name, embedder_name)
             output_folder = f"{BASE_OUTPUT_FOLDER}/{frequency}/{embedder_name}/{algorithm_name}"
             os.makedirs(output_folder, exist_ok=True)
 
@@ -129,21 +129,21 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 t1 = time.time() - t0
                 if isinstance(labels, np.ndarray):
                     labels = labels.tolist()
-                logger.info("Clustering produced %s distinct labels: %s", len(set(labels)), set(labels))
+                logger.info("[%s] Clustering produced %s distinct labels: %s", tag_name, len(set(labels)), set(labels))
                 labels = algorithm.remove_small_clusters(labels)
-                logger.info("After removing small clusters, clustering produced %s distinct labels: %s",
-                            len(set(labels)), set(labels))
+                logger.info("[%s] After removing small clusters, clustering produced %s distinct labels: %s",
+                            tag_name, len(set(labels)), set(labels))
             except ValueError:
                 labels = []
-                logger.warning("Couldn't produce clusterings with algorithm %s", algorithm_name)
+                logger.warning("[%s] Couldn't produce clusterings with algorithm %s", tag_name, algorithm_name)
 
             # If clusterization happened properly, produce outputs and compute scores
             if -1 in labels:
-                logger.info("This clusterization found %s outliers (out of %s elements)",
-                            len([label for label in labels if label == -1]), len(labels))
+                logger.info("[%s] This clusterization found %s outliers (out of %s elements)",
+                            tag_name, len([label for label in labels if label == -1]), len(labels))
 
             if len(set([label for label in labels if label != -1])) == 0:
-                logger.info("Skipping plots and computations since no real clusters were found")
+                logger.info("[%s] Skipping plots and computations since no real clusters were found", tag_name)
                 results_collection.insert_one(transform_types_for_database({
                     'frequency': frequency,
                     'tag': tag_name,
@@ -192,46 +192,46 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
             clean_labels = [elem[1] for elem in clean_elements]
 
             # Plotting clusters
-            logger.info("Plotting clusters")
+            logger.info("[%s] Plotting %s clusters", tag_name, len(set(labels)))
             plot_clusters(vectors, f"{output_folder}/{tag['tag']}_plot.png",
                           f"{algorithm_name} - {embedder_name} (n={len(set(labels))})",
                           labels=labels, plot_outliers=True)
 
             if -1 in labels:
-                logger.info("Plotting clean clusters (no outliers)")
+                logger.info("[%s] Plotting %s clean clusters (no outliers)", tag_name, len(set(clean_labels)))
                 plot_clusters(vectors, f"{output_folder}/{tag['tag']}_plot_clean.png",
                               f"{algorithm_name} - {embedder_name} (no outliers, n={len(set(labels))})",
                               labels=labels, plot_outliers=False)
 
             # If we got more than one cluster, compute results
             if len(set(clean_labels)) > 1:
-                logger.info("This clusterization produced %s successfully clustered elements into %s clusters",
-                            len(clean_elements), len(set(clean_labels)))
+                logger.info("[%s] This clusterization produced %s successfully clustered elements into %s clusters",
+                            tag_name, len(clean_elements), len(set(clean_labels)))
                 for label in set(clean_labels):
                     cluster_length = len([cln_lab for cln_lab in clean_labels if cln_lab == label])
-                    logger.debug("Cluster %s: %s elements", label, cluster_length)
+                    logger.debug("[%s] Cluster %s: %s elements", tag_name, label, cluster_length)
                     if cluster_length == 1:
                         cluster = [tweet for tweet, lab in zip(cleaned_tweets, labels) if lab == label]
-                        logger.debug("Cluster of length %s made of this tweet: %s", cluster_length, cluster[0])
+                        logger.debug("[%s] Cluster of length %s made of this tweet: %s", tag_name, cluster_length, cluster[0])
 
                 sil_score = silhouette_score(clean_vectors, clean_labels)
-                logger.info("This clusterization got a silhouette score of %s", sil_score)
+                logger.info("[%s] This clusterization got a silhouette score of %s", tag_name, sil_score)
                 sil_scores[(embedder_name, algorithm_name, len(set(clean_labels)))] = sil_score
 
                 db_score = davies_bouldin_score(clean_vectors, clean_labels)
-                logger.info("This clusterization got a Davies-Bouldin index of %s", db_score)
+                logger.info("[%s] This clusterization got a Davies-Bouldin index of %s", tag_name, db_score)
                 db_scores[(embedder_name, algorithm_name, len(set(clean_labels)))] = db_score
 
                 ch_score = calinski_harabasz_score(clean_vectors, clean_labels)
-                logger.info("This clusterization got a Calisnki-Harabasz score of %s", ch_score)
+                logger.info("[%s] This clusterization got a Calisnki-Harabasz score of %s", tag_name, ch_score)
                 ch_scores[(embedder_name, algorithm_name, len(set(clean_labels)))] = ch_score
             else:
-                logger.warning("Skipping calculation of scores for %s using %s", algorithm_name, embedder_name)
+                logger.warning("[%s] Skipping calculation of scores for %s using %s", tag_name, algorithm_name, embedder_name)
                 sil_score = None
                 db_score = None
                 ch_score = None
 
-            logger.info("Starting topics generation")
+            logger.info("[%s] Starting topics generation", tag_name)
             tweet_clusters = get_clusters_from_labels(cleaned_tweets, labels)
             topics_list = []
             for topic_model_name, topic_model in get_topic_models().items():
@@ -305,7 +305,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     f"{sil_score}|{db_score}|{ch_score}|\n")
 
             # Storing results of this run to database
-            logger.debug("Storing results to database...")
+            logger.debug("[%s] Storing results to database...", tag_name)
             results_collection.insert_one(transform_types_for_database({
                 'frequency': frequency,
                 'tag': tag_name,
@@ -331,7 +331,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 },
                 'topics': topics_list,
             }))
-            logger.debug("Results stored!")
+            logger.debug("[%s] Results stored!", tag_name)
 
     # https://en.wikipedia.org/wiki/Silhouette_(clustering)
     sorted_sil_scores = sorted(sil_scores.items(), key=lambda x: x[1], reverse=True)
