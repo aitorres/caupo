@@ -15,6 +15,19 @@ VALID_FREQUENCIES = [
 ]
 
 
+def calculate_valid_entries(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
+    """Given raw result data, finds amount of valid entries"""
+
+    assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
+
+    data = data.loc[data["frequency"] == frequency]
+    data["sil_score"] = data["sil_score"].apply(lambda x: "NaN" if str(x) == "None" else x).astype("float32")
+    data.dropna()
+
+    grouped_data = data[["algorithm", "embedder", "sil_score"]].groupby(["algorithm", "embedder"])
+    return grouped_data.count()
+
+
 def calculate_average_silhouette(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
     """Given raw result data, finds average silhouette data for a given frequency"""
 
@@ -49,8 +62,13 @@ def main() -> None:
 
     # Get average of silhouette score
     avg_silhouette_scores = calculate_average_silhouette("daily", data.copy())
+    valid_entries = calculate_valid_entries("daily", data.copy())
+    merge = pd.concat([avg_silhouette_scores, valid_entries], axis=1)
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print("Average Silhouette Score for each combination of algorithm and embedding, averaged over all days")
         print(avg_silhouette_scores)
+        print(valid_entries)
+        print(merge)
 
 
 if __name__ == "__main__":
