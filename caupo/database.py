@@ -71,7 +71,7 @@ def get_results_collection() -> pymongo.collection.Collection:
     return db.results
 
 
-def result_already_exists(frequency: str, tag: str, algorithm: str, embedding: str) -> bool:
+def result_already_exists(frequency: str, tag: str, algorithm: str, embedder: str) -> bool:
     """Given data of a result output, determines if the result already exists in the database"""
 
     collection = get_results_collection()
@@ -79,7 +79,7 @@ def result_already_exists(frequency: str, tag: str, algorithm: str, embedding: s
         'frequency': frequency,
         'tag': tag,
         'algorithm': algorithm,
-        'embedding': embedding,
+        'embedder': embedder,
     })
 
 
