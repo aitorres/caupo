@@ -23,7 +23,9 @@ def calculate_average_silhouette(frequency: str, data: pd.DataFrame) -> pd.DataF
     data = data.loc[data["frequency"] == frequency]
     data["sil_score"] = data["sil_score"].apply(lambda x: "NaN" if str(x) == "None" else x).astype("float32")
 
-    return data[["frequency", "algorithm", "embedder", "sil_score"]].groupby("algorithm").mean().sort_values(
+    grouped_data = data[["frequency", "algorithm", "embedder", "sil_score"]].groupby("algorithm").agg("count")
+
+    return grouped_data.mean().sort_values(
         by=["sil_score"], ascending=False)
 
 
