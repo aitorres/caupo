@@ -20,8 +20,7 @@ from caupo.embeddings import get_embedder_functions
 from caupo.database import get_results_collection, result_already_exists, transform_types_for_database
 from caupo.preprocessing import get_stopwords, map_strange_characters
 from caupo.tags import Tag, fetch_tag_from_db, get_tags_by_frequency
-from caupo.topic_modelling import get_topic_models, get_topics_from_model
-from caupo.utils import get_main_corpus, plot_clusters, plot_top_words
+from caupo.utils import get_main_corpus, plot_clusters
 
 logger = logging.getLogger("caupo")
 
@@ -118,7 +117,6 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 continue
 
             t1 = -1
-            topics_list = None
             logger.info("[%s] Now trying algorithm %s with embedder %s", tag_name, algorithm_name, embedder_name)
             output_folder = f"{BASE_OUTPUT_FOLDER}/{frequency}/{embedder_name}/{algorithm_name}"
             os.makedirs(output_folder, exist_ok=True)
@@ -167,7 +165,6 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                         'davies_bouldin': None,
                         'calinski-harabasz': None,
                     },
-                    'topics': topics_list,
                 }))
                 # Storing output in CSV File
                 with open(csv_file, "a") as file_handler:
@@ -212,7 +209,8 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     logger.debug("[%s] Cluster %s: %s elements", tag_name, label, cluster_length)
                     if cluster_length == 1:
                         cluster = [tweet for tweet, lab in zip(cleaned_tweets, labels) if lab == label]
-                        logger.debug("[%s] Cluster of length %s made of this tweet: %s", tag_name, cluster_length, cluster[0])
+                        logger.debug("[%s] Cluster of length %s made of this tweet: %s",
+                                     tag_name, cluster_length, cluster[0])
 
                 sil_score = silhouette_score(clean_vectors, clean_labels)
                 logger.info("[%s] This clusterization got a silhouette score of %s", tag_name, sil_score)
@@ -226,57 +224,15 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 logger.info("[%s] This clusterization got a Calisnki-Harabasz score of %s", tag_name, ch_score)
                 ch_scores[(embedder_name, algorithm_name, len(set(clean_labels)))] = ch_score
             else:
-                logger.warning("[%s] Skipping calculation of scores for %s using %s", tag_name, algorithm_name, embedder_name)
+                logger.warning("[%s] Skipping calculation of scores for %s using %s",
+                               tag_name, algorithm_name, embedder_name)
                 sil_score = None
                 db_score = None
                 ch_score = None
 
-            logger.info("[%s] Starting topics generation", tag_name)
+            logger.info("[%s] Labelling clusters with most frequent bigrams", tag_name)
             tweet_clusters = get_clusters_from_labels(cleaned_tweets, labels)
-            topics_list = []
-            for topic_model_name, topic_model in get_topic_models().items():
-                logger.info("Now trying %s", topic_model_name)
-                topic_dict = {
-                    'model': topic_model_name,
-                    'topics_per_cluster': [],
-                }
-                for idx, tweet_cluster in enumerate(tweet_clusters):
-                    if len(tweet_cluster) < algorithm.MIN_CLUSTER_SIZE:
-                        logger.warning("Ignoring cluster %s since it's only got %s elements", idx, len(tweet_cluster))
-                        topic_dict['topics_per_cluster'].append({
-                            'cluster_id': idx,
-                            'topics': None,
-                        })
-                        continue
-                    min_word_length_for_topics = 3
-                    topics_amount = 1
-                    top_words_amount = 6
-                    try:
-                        tweet_cluster_for_topics = list(
-                            map(
-                                lambda t: " ".join([w for w in t.split() if len(w) >= min_word_length_for_topics]),
-                                tweet_cluster
-                            )
-                        )
-                        model, feature_names = topic_model(tweet_cluster_for_topics, topics_amount)
-                        topics = get_topics_from_model(model, top_words_amount, feature_names)
-                        logger.info("Topics for cluster %s (length is %s): %s", idx, len(tweet_cluster), topics)
-                        topic_dict['topics_per_cluster'].append({
-                            'cluster_id': idx,
-                            'topics': [
-                                [
-                                    {
-                                        'keyword': keyword,
-                                        'weight': weight,
-                                    } for keyword, weight in topic
-                                ] for topic in topics]
-                        })
-                        topics_list.append(topic_dict)
-                        plot_top_words(model, feature_names, top_words_amount,
-                                       f"Cluster {idx} - {algorithm_name} - {embedder_name}",
-                                       f"{output_folder}/{tag['tag']}_cluster_{idx}_topics_{topic_model_name}.png")
-                    except ValueError:
-                        logger.warning("Error during topic modelling on cluster %s", idx)
+            # TODO: label with bigrams
 
             clusters = {
                 str(label): [tweet for tweet_label, tweet in zip(labels, tweets) if tweet_label == label]
@@ -320,7 +276,6 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 'validTweetsAmount': len(clean_vectors),
                 'noiseAmount': len(vectors) - len(clean_vectors),
                 'noisePercentage': noise_percentage,
-                'clusters': None,
                 'avgClusterSize': avg_cluster_size,
                 'minClusterSize': min_cluster_size,
                 'maxClusterSize': max_cluster_size,
@@ -329,7 +284,6 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     'davies_bouldin': db_score,
                     'calinski_harabasz': ch_score,
                 },
-                'topics': topics_list,
             }))
             logger.debug("[%s] Results stored!", tag_name)
 
