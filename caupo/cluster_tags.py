@@ -320,7 +320,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 'validTweetsAmount': len(clean_vectors),
                 'noiseAmount': len(vectors) - len(clean_vectors),
                 'noisePercentage': noise_percentage,
-                'clusters': clusters,
+                'clusters': None,
                 'avgClusterSize': avg_cluster_size,
                 'minClusterSize': min_cluster_size,
                 'maxClusterSize': max_cluster_size,
