@@ -56,6 +56,7 @@ def main() -> None:
     print(f"Received frequency `{args.frequency}`")
 
     file_path = Path(f"outputs/cluster_tags/{args.frequency}/results.csv")
+    output_file_path = Path(f"outputs/cluster_tags/{args.frequency}/aggregated_results.csv")
     assert file_path.exists(), f"The file {file_path} does not exist"
 
     data = read_csv(file_path)
@@ -67,6 +68,7 @@ def main() -> None:
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print("Avg. Silhouette Score & valid entries for each algorithm and embedding, over all entries")
         print(consolidated_data)
+    consolidated_data.to_csv(output_file_path)
 
 
 if __name__ == "__main__":
