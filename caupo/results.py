@@ -21,11 +21,11 @@ def calculate_valid_entries(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
     assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
 
     data = data.loc[data["frequency"] == frequency]
-    data["sil_score"] = data["sil_score"].apply(lambda x: "NaN" if str(x) == "None" else x).astype("float32")
+    data["valid_entries"] = data["sil_score"].apply(lambda x: "NaN" if str(x) == "None" else x).astype("float32")
     data.dropna()
 
-    grouped_data = data[["algorithm", "embedder", "sil_score"]].groupby(["algorithm", "embedder"])
-    return grouped_data.count().rename({'sil_score': 'valid_entries'})
+    grouped_data = data[["algorithm", "embedder", "valid_entries"]].groupby(["algorithm", "embedder"])
+    return grouped_data.count()
 
 
 def calculate_average_silhouette(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
