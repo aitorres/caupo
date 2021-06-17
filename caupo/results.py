@@ -36,16 +36,17 @@ def main() -> None:
     """Read input arguments and calculates and returns results"""
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--csv-file", metavar="CSV_FILE", type=str, default="outputs/cluster_tags/results.csv")
+    parser.add_argument("--frequency", metavar="FREQUENCY", type=str, default="daily",
+                        choices=VALID_FREQUENCIES)
     args = parser.parse_args()
 
-    file_path = Path(args.csv_file)
-    assert file_path.exists(), "The file does not exist"
+    file_path = Path(f"outputs/cluster_tags/{args.frequency}/results.csv")
+    assert file_path.exists(), f"The file {file_path} does not exist"
 
     data = read_csv(file_path)
 
     # Get average of silhouette score
-    avg_silhouette_scores = calculate_average_silhouette(data.copy())
+    avg_silhouette_scores = calculate_average_silhouette("daily", data.copy())
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print(avg_silhouette_scores)
 
