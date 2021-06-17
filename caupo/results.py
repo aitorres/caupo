@@ -23,10 +23,8 @@ def calculate_average_silhouette(frequency: str, data: pd.DataFrame) -> pd.DataF
     data = data.loc[data["frequency"] == frequency]
     data["sil_score"] = data["sil_score"].apply(lambda x: "NaN" if str(x) == "None" else x).astype("float32")
 
-    grouped_data = data[["frequency", "algorithm", "embedder", "sil_score"]].groupby("algorithm").agg("count")
-
-    return grouped_data.mean().sort_values(
-        by=["sil_score"], ascending=False)
+    grouped_data = data[["algorithm", "embedder", "sil_score"]].groupby(["algorithm", "embedder"])
+    return grouped_data.mean().sort_values(by=["sil_score"], ascending=False)
 
 
 def read_csv(file_path: Path) -> pd.DataFrame:
@@ -42,6 +40,7 @@ def main() -> None:
     parser.add_argument("--frequency", metavar="FREQUENCY", type=str, default="daily",
                         choices=VALID_FREQUENCIES)
     args = parser.parse_args()
+    print(f"Received frequency `{args.frequency}`")
 
     file_path = Path(f"outputs/cluster_tags/{args.frequency}/results.csv")
     assert file_path.exists(), f"The file {file_path} does not exist"
