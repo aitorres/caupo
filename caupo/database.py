@@ -80,7 +80,7 @@ def result_already_exists(frequency: str, tag: str, algorithm: str, embedder: st
         'tag': tag,
         'algorithm': algorithm,
         'embedder': embedder,
-    })
+    }) is not None
 
 
 def main() -> None:
