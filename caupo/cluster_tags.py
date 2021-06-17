@@ -13,11 +13,14 @@ from typing import Callable, Dict, List
 
 import numpy as np
 from emoji import get_emoji_regexp
-from sklearn.metrics import calinski_harabasz_score, davies_bouldin_score, silhouette_score
+from sklearn.metrics import (calinski_harabasz_score, davies_bouldin_score,
+                             silhouette_score)
 
+from caupo.bigrams import get_top_bigrams
 from caupo.clustering import get_clustering_functions, get_clusters_from_labels
+from caupo.database import (get_results_collection, result_already_exists,
+                            transform_types_for_database)
 from caupo.embeddings import get_embedder_functions
-from caupo.database import get_results_collection, result_already_exists, transform_types_for_database
 from caupo.preprocessing import get_stopwords, map_strange_characters
 from caupo.tags import Tag, fetch_tag_from_db, get_tags_by_frequency
 from caupo.utils import get_main_corpus, plot_clusters
@@ -160,6 +163,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     'avgClusterSize': None,
                     'minClusterSize': None,
                     'maxClusterSize': None,
+                    'clusterThemes': None,
                     'scores': {
                         'silhouette': None,
                         'davies_bouldin': None,
@@ -232,7 +236,12 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
 
             logger.info("[%s] Labelling clusters with most frequent bigrams", tag_name)
             tweet_clusters = get_clusters_from_labels(cleaned_tweets, labels)
-            # TODO: label with bigrams
+
+            cluster_themes = {}
+            for idx, tweet_cluster in enumerate(tweet_clusters):
+                cluster_bigram = get_top_bigrams(tweet_cluster)
+                logger.info("[%s] Cluster `%s` has a theme of: %s", tag_name, idx, cluster_bigram)
+                cluster_themes[str(idx)] = cluster_bigram
 
             clusters = {
                 str(label): [tweet for tweet_label, tweet in zip(labels, tweets) if tweet_label == label]
@@ -279,6 +288,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 'avgClusterSize': avg_cluster_size,
                 'minClusterSize': min_cluster_size,
                 'maxClusterSize': max_cluster_size,
+                'clusterThemes': cluster_themes,
                 'scores': {
                     'silhouette': sil_score,
                     'davies_bouldin': db_score,
