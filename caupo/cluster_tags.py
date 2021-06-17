@@ -109,6 +109,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
     db_scores = {}
     ch_scores = {}
     for embedder_name, embedder in embedder_functions.items():
+        print()
         logger.info("[%s] Now trying embedder %s", tag_name, embedder_name)
         vectors = embedder(cleaned_tweets)
         algorithms = get_clustering_functions()
