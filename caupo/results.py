@@ -63,7 +63,7 @@ def main() -> None:
     # Get average of silhouette score
     avg_silhouette_scores = calculate_average_silhouette("daily", data.copy())
     valid_entries = calculate_valid_entries("daily", data.copy())
-    consolidated_data = pd.concat([avg_silhouette_scores, valid_entries], axis=1)
+    consolidated_data = pd.concat([avg_silhouette_scores, valid_entries], axis=1).sort_values(by=["sil_score"])
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print("Avg. Silhouette Score & valid entries for each algorithm and embedding, over all entries")
         print(consolidated_data)
