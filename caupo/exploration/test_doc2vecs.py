@@ -43,27 +43,31 @@ def main() -> None:
 
     print("Getting main corpus")
     corpus = get_main_corpus()
-    print("Cleaning main corpus")
-    cleaned_corpus = list(set(map(preprocess_v2, corpus)))
-
     tag_name, _ = get_tags_by_frequency(frequency)[0]
     print("Getting tweets of %s", tag_name)
-    tag = fetch_tag_from_db(frequency, tag_name)
-    tweets = tag["tweets"]
 
-    print("Cleaning tweets")
-    cleaned_tweets = list(set(map(preprocess_v2, tweets)))
+    for stem in scales:
+        print("Using %s for stemming", stem)
 
-    for window in windows:
-        for size in sizes:
-            for scale in scales:
-                print(f"Now trying scale={scale}, size={size}, window={window}")
-                model = doc2vec_embedder(cleaned_corpus, scale, size, window)
-                vectors = model(cleaned_tweets)
+        print("Cleaning main corpus")
+        cleaned_corpus = list(set(map(lambda t: preprocess_v2(t, stem), corpus)))
 
-                print("Plotting...")
-                plot_clusters(vectors, f"{output_path}/window{window}-size{size}-scale{scale}.png",
-                              f"scale={scale}, size={size}, window={window}")
+        tag = fetch_tag_from_db(frequency, tag_name)
+        tweets = tag["tweets"]
+
+        print("Cleaning tweets")
+        cleaned_tweets = list(set(map(lambda t: preprocess_v2(t, stem), tweets)))
+
+        for window in windows:
+            for size in sizes:
+                for scale in scales:
+                    print(f"Now trying scale={scale}, size={size}, window={window}, stem={stem}")
+                    model = doc2vec_embedder(cleaned_corpus, scale, size, window)
+                    vectors = model(cleaned_tweets)
+
+                    print("Plotting...")
+                    plot_clusters(vectors, f"{output_path}/window{window}-size{size}-scale{scale}_stem{stem}.png",
+                                  f"scale={scale}, size={size}, window={window}, stem={stem}")
     print("Done!")
 
 
