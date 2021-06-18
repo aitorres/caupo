@@ -210,11 +210,17 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                         tag_name)
             tweet_clusters = get_clusters_from_labels(cleaned_tweets, labels)
 
+            top_n_amount_per_frequency = {
+                'daily': 3,
+                'weekly': 4,
+                'monthly': 6,
+            }
+            top_n_amount = top_n_amount_per_frequency[frequency]
             cluster_themes = {}
             average_sentiment = {}
             for idx, tweet_cluster in enumerate(tweet_clusters):
                 cluster_size = len(tweet_cluster)
-                cluster_bigram = get_top_ngrams(tweet_cluster, top_n_amount=3, ngram_size=2)
+                cluster_bigram = get_top_ngrams(tweet_cluster, top_n_amount=top_n_amount, ngram_size=2)
                 logger.info("[%s] Cluster `%s` (size: %s) has a theme of: %s",
                             tag_name, idx, cluster_size, cluster_bigram)
                 cluster_themes[str(idx)] = cluster_bigram
