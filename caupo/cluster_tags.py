@@ -213,12 +213,15 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
             cluster_themes = {}
             average_sentiment = {}
             for idx, tweet_cluster in enumerate(tweet_clusters):
+                cluster_size = len(tweet_cluster)
                 cluster_bigram = get_top_bigrams(tweet_cluster)
-                logger.info("[%s] Cluster `%s` has a theme of: %s", tag_name, idx, cluster_bigram)
+                logger.info("[%s] Cluster `%s` (size: %s) has a theme of: %s",
+                            tag_name, idx, cluster_size, cluster_bigram)
                 cluster_themes[str(idx)] = cluster_bigram
 
                 cluster_sentiment = calculate_average_sentiment(tweet_cluster)
-                logger.info("[%s] Cluster `%s` has an average sentiment of: %s", tag_name, idx, cluster_sentiment)
+                logger.info("[%s] Cluster `%s` (size: %s) has an average sentiment of: %s",
+                            tag_name, idx, cluster_size, cluster_sentiment)
                 average_sentiment[str(idx)] = cluster_sentiment
 
             clusters = {
