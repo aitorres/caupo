@@ -326,6 +326,9 @@ def main() -> None:
     for tag_name, _ in tags[::-1]:
         logger.debug("Fetching tag `%s` from database", tag_name)
         tag = fetch_tag_from_db(args.frequency, tag_name)
+        if tag is None:
+            logger.warning("Tag %s has not been found in the database, skipping...")
+            continue
         cluster_tag(tag, embedder_functions, args.frequency, csv_file, md_file)
         logger.debug("Finished work in tag `%s`", tag_name)
 
