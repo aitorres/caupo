@@ -87,7 +87,7 @@ def fasttext_embedder(corpus: List[str], model_type: str = 'cbow') -> Callable[[
 
     # Train model and delete temp file
     logger.debug("Instantiating FastText model `%s`", model_type)
-    model = fasttext.train_unsupervised(corpus_path, model=model_type, lr=0.25, epoch=10, thread=16)
+    model = fasttext.train_unsupervised(corpus_path, model=model_type, epoch=10, thread=16)
     if os.path.exists(corpus_path):
         os.remove(corpus_path)
 
