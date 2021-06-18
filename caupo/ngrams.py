@@ -20,7 +20,7 @@ def get_top_ngrams(phrases: List[str], top_n_amount: int = 3, ngram_size: int = 
     ngrams_distribution = FreqDist(ngrams_flat_list)
     ngrams_by_frequency = sorted(ngrams_distribution.items(), key=lambda item: (item[1], item[0]), reverse=True)
     top_n_ngrams = [" ".join(ngram).capitalize() for ngram, _ in ngrams_by_frequency[:top_n_amount]]
-    return " - ".join(top_n_ngrams)
+    return top_n_ngrams
 
 
 def main() -> None:
