@@ -141,6 +141,7 @@ def preprocess_v2(tweet: str, should_stem: bool = False) -> str:
 
     stopwords = get_stopwords()
 
+    # remove digits, numbers, @mentions
     tweet = " ".join(
         filter(
             lambda x: not x.startswith("@") and not x.isdigit() and not x[0].isdigit() and not x[-1].isdigit(),
@@ -148,9 +149,13 @@ def preprocess_v2(tweet: str, should_stem: bool = False) -> str:
         )
     )
 
+    # remove meoji
     tweet = remove_emoji(tweet)
+
+    # remove punctuation
     base_tweet = " ".join(re.sub(r'[0-9#@:;_\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet).split())
 
+    # lowercase, remove accents and breaklines and remove stopwords
     cleaned_tweet = " ".join(
         list(
             map(
@@ -164,6 +169,7 @@ def preprocess_v2(tweet: str, should_stem: bool = False) -> str:
 
     preprocessed_tweet = " ".join(cleaned_tweet.split())
 
+    # stemming
     if should_stem:
         preprocessed_tweet = stem(preprocessed_tweet)
 
