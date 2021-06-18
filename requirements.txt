@@ -92,6 +92,7 @@ scipy==1.6.3
 seaborn==0.11.1
 sentence-transformers==1.1.1
 sentencepiece==0.1.95
+sentiment-analysis-spanish==0.0.25
 six==1.15.0
 smart-open==3.0.0
 spacy==3.0.6

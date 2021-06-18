@@ -21,6 +21,7 @@ from caupo.database import (get_results_collection, result_already_exists,
                             transform_types_for_database)
 from caupo.embeddings import get_embedder_functions
 from caupo.preprocessing import preprocess_v2
+from caupo.sentiment import calculate_average_sentiment
 from caupo.tags import Tag, fetch_tag_from_db, get_tags_by_frequency
 from caupo.utils import get_main_corpus, plot_clusters
 
@@ -134,6 +135,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                     'minClusterSize': None,
                     'maxClusterSize': None,
                     'clusterThemes': None,
+                    'averageSentiment': None,
                     'scores': {
                         'silhouette': None,
                         'davies_bouldin': None,
@@ -204,14 +206,20 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 db_score = None
                 ch_score = None
 
-            logger.info("[%s] Labelling clusters with most frequent bigrams", tag_name)
+            logger.info("[%s] Labelling clusters with most frequent bigrams and calculating sentiment",
+                        tag_name)
             tweet_clusters = get_clusters_from_labels(cleaned_tweets, labels)
 
             cluster_themes = {}
+            average_sentiment = {}
             for idx, tweet_cluster in enumerate(tweet_clusters):
                 cluster_bigram = get_top_bigrams(tweet_cluster)
                 logger.info("[%s] Cluster `%s` has a theme of: %s", tag_name, idx, cluster_bigram)
                 cluster_themes[str(idx)] = cluster_bigram
+
+                cluster_sentiment = calculate_average_sentiment(tweet_cluster)
+                logger.info("[%s] Cluster `%s` has an average sentiment of: %s", tag_name, idx, cluster_sentiment)
+                average_sentiment[str(idx)] = cluster_sentiment
 
             clusters = {
                 str(label): [tweet for tweet_label, tweet in zip(labels, tweets) if tweet_label == label]
@@ -259,6 +267,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
                 'minClusterSize': min_cluster_size,
                 'maxClusterSize': max_cluster_size,
                 'clusterThemes': cluster_themes,
+                'averageSentiment': average_sentiment,
                 'scores': {
                     'silhouette': sil_score,
                     'davies_bouldin': db_score,
