@@ -143,9 +143,9 @@ def get_embedder_functions(corpus: List[str]) -> Dict[str, Callable[[List[str]],
 
     embedders = {
         # 'Bag of Words': bow_embedder(corpus),
-        'Doc2Vec': doc2vec_embedder(corpus),
         'FastText (CBOW)': fasttext_embedder(corpus, model_type="cbow"),
         'FastText (Skipgram)': fasttext_embedder(corpus, model_type="skipgram"),
+        'Doc2Vec': doc2vec_embedder(corpus),
         'GPT2 Small Spanish': bert_embedder(model_name="datificate/gpt2-small-spanish"),
         'BERT: TinyBERT-spanish-uncased-finetuned-ner':
             bert_embedder(model_name='mrm8488/TinyBERT-spanish-uncased-finetuned-ner'),
