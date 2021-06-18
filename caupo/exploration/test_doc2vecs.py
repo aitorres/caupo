@@ -6,8 +6,8 @@ import os
 from typing import List
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 
-from caupo.cluster_tags import quick_preprocess
 from caupo.embeddings import scale_vectors
+from caupo.preprocessing import preprocess_v2
 from caupo.tags import get_tags_by_frequency, fetch_tag_from_db
 from caupo.utils import get_main_corpus, plot_clusters
 
@@ -44,7 +44,7 @@ def main() -> None:
     print("Getting main corpus")
     corpus = get_main_corpus()
     print("Cleaning main corpus")
-    cleaned_corpus = list(set(map(quick_preprocess, corpus)))
+    cleaned_corpus = list(set(map(preprocess_v2, corpus)))
 
     tag_name, _ = get_tags_by_frequency(frequency)[0]
     print("Getting tweets of %s", tag_name)
@@ -52,7 +52,7 @@ def main() -> None:
     tweets = tag["tweets"]
 
     print("Cleaning tweets")
-    cleaned_tweets = list(set(map(quick_preprocess, tweets)))
+    cleaned_tweets = list(set(map(preprocess_v2, tweets)))
 
     for window in windows:
         for size in sizes:

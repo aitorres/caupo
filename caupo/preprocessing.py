@@ -3,12 +3,13 @@ Auxiliary module that contains several functions useful for
 common preprocessing tasks for the project
 """
 
+import re
 from functools import partial
 from itertools import filterfalse
 from typing import List, Set
 
-import emoji
 import spacy
+from emoji import get_emoji_regexp
 from nltk import download as nltk_download
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
@@ -56,7 +57,7 @@ def get_stopwords() -> Set[str]:
 def remove_emoji(phrase):
     """Removes all emojis from a phrase"""
 
-    return emoji.get_emoji_regexp().sub(r'', phrase)
+    return get_emoji_regexp().sub(r'', phrase)
 
 
 def map_strange_characters(phrase):
@@ -94,7 +95,7 @@ def remove_urls_mentions_hashtags(phrase):
     # TODO: this function is incomplete
 
 
-def preprocess_corpus(corpus: List[str], lemmatize: bool = True) -> List[str]:
+def preprocess_v1(corpus: List[str], lemmatize: bool = True) -> List[str]:
     """
     Given a corpus of phrases / text, applies a series of functions
     that will preprocess the text and return a list of each preprocessed
@@ -131,6 +132,36 @@ def preprocess_corpus(corpus: List[str], lemmatize: bool = True) -> List[str]:
         final_corpus = list(map(stem, rejoined_corpus))
 
     return final_corpus
+
+
+def preprocess_v2(tweet: str) -> str:
+    """
+    Quick prototype of preprocessing
+    """
+
+    stopwords = get_stopwords()
+
+    tweet = " ".join(
+        filter(
+            lambda x: not x.startswith("@") and not x.isdigit() and not x[0].isdigit() and not x[-1].isdigit(),
+            tweet.split()
+        )
+    )
+
+    tweet = remove_emoji(tweet)
+    base_tweet = " ".join(re.sub(r'[0-9#@:;_\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet).split())
+
+    cleaned_tweet = " ".join(
+        list(
+            map(
+                lambda t: "" if t in stopwords else t,
+                map_strange_characters(
+                    base_tweet.lower()
+                ).split()
+            )
+        )
+    )
+    return " ".join(cleaned_tweet.split())
 
 
 def main() -> None:

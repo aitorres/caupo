@@ -6,13 +6,12 @@ database as the main corpus.
 import argparse
 import logging
 import os
-import re
 import time
 from pathlib import Path
 from typing import Callable, Dict, List
 
 import numpy as np
-from emoji import get_emoji_regexp
+
 from sklearn.metrics import (calinski_harabasz_score, davies_bouldin_score,
                              silhouette_score)
 
@@ -21,43 +20,13 @@ from caupo.clustering import get_clustering_functions, get_clusters_from_labels
 from caupo.database import (get_results_collection, result_already_exists,
                             transform_types_for_database)
 from caupo.embeddings import get_embedder_functions
-from caupo.preprocessing import get_stopwords, map_strange_characters
+from caupo.preprocessing import preprocess_v2
 from caupo.tags import Tag, fetch_tag_from_db, get_tags_by_frequency
 from caupo.utils import get_main_corpus, plot_clusters
 
 logger = logging.getLogger("caupo")
 
 BASE_OUTPUT_FOLDER = "outputs/cluster_tags/"
-
-
-def quick_preprocess(tweet: str) -> str:
-    """
-    Quick prototype of preprocessing
-    # TODO: abstract this function and normalize with what is done on entity extractor
-    """
-
-    stopwords = get_stopwords()
-
-    tweet = " ".join(
-        filter(
-            lambda x: not x.startswith("@") and not x.isdigit() and not x[0].isdigit() and not x[-1].isdigit(),
-            tweet.split()
-        )
-    )
-    tweet = " ".join(re.sub(get_emoji_regexp(), "", tweet).split())
-    base_tweet = " ".join(re.sub(r'[0-9#@:;_\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet).split())
-
-    cleaned_tweet = " ".join(
-        list(
-            map(
-                lambda t: "" if t in stopwords else t,
-                map_strange_characters(
-                    base_tweet.lower()
-                ).split()
-            )
-        )
-    )
-    return " ".join(cleaned_tweet.split())
 
 
 def create_output_files(frequency: str) -> None:
@@ -100,7 +69,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
 
     # Normalizing tweets
     logger.debug("Cleaning tweets")
-    cleaned_tweets = list(set(map(quick_preprocess, tweets)))
+    cleaned_tweets = list(set(map(preprocess_v2, tweets)))
     logger.info("Collection of cleaned tweets has a size of %s tweets", len(cleaned_tweets))
 
     # Applying clustering and reporting tweets
@@ -333,7 +302,7 @@ def main() -> None:
     corpus = get_main_corpus()
 
     logger.debug("Cleaning corpus")
-    cleaned_corpus = list(set(map(quick_preprocess, corpus)))
+    cleaned_corpus = list(set(map(preprocess_v2, corpus)))
     logger.info("Cleaned corpus has %s tweets", len(cleaned_corpus))
 
     # Getting vector embedders
