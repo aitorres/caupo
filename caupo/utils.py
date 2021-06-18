@@ -164,17 +164,6 @@ def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True):
         vectors = [vector for vector, label in zip(vectors, labels) if label != -1]
         labels = [label for label in labels if label != -1]
 
-    # Reducing dimensionality if needed
-    dims = len(vectors[0])
-    if dims > 2:
-        logger.debug("Reducing dimensionality of vectors from `%s` to 2 before plotting", dims)
-        pca_model = PCA(n_components=2)
-        vectors = pca_model.fit_transform(vectors)
-
-    # If no labels are passed, assume all belong to the same cluster (and are colored likewise)
-    if labels is None:
-        labels = [0] * len(vectors)
-
     if len(set(labels)) <= 14:
         color_palette = ['#00394B', '#FF6792', '#66ff66', '#8855BB', '#FFFF11', '#1BFCFF', '#88bbff',
                          '#3300FF', '#87dd72', '#DA66AC', '#dfb026', '#FF89AC', '#FFACBF', '#b13504']
@@ -190,6 +179,17 @@ def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True):
     else:
         logger.warning("Won't plot more than 51 clusters!")
         return
+
+    # Reducing dimensionality if needed
+    dims = len(vectors[0])
+    if dims > 2:
+        logger.debug("Reducing dimensionality of vectors from `%s` to 2 before plotting", dims)
+        pca_model = PCA(n_components=2)
+        vectors = pca_model.fit_transform(vectors)
+
+    # If no labels are passed, assume all belong to the same cluster (and are colored likewise)
+    if labels is None:
+        labels = [0] * len(vectors)
 
     if plot_outliers:
         color_palette.append("#A6A6A6")  # gray would be used for a "-1" label)
