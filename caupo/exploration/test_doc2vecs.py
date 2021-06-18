@@ -44,10 +44,10 @@ def main() -> None:
     print("Getting main corpus")
     corpus = get_main_corpus()
     tag_name, _ = get_tags_by_frequency(frequency)[0]
-    print("Getting tweets of %s", tag_name)
+    print(f"Getting tweets of {tag_name}")
 
     for stem in scales:
-        print("Using %s for stemming", stem)
+        print(f"Using {stem} for stemming")
 
         print("Cleaning main corpus")
         cleaned_corpus = list(set(map(lambda t: preprocess_v2(t, stem), corpus)))
