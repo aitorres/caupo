@@ -62,7 +62,7 @@ def main() -> None:
                 vectors = model(cleaned_tweets)
 
                 print("Plotting...")
-                plot_clusters(vectors, f"{output_path}/window{window}-size{scale}-scale{scale}.png",
+                plot_clusters(vectors, f"{output_path}/window{window}-size{size}-scale{scale}.png",
                               f"scale={scale}, size={size}, window={window}")
     print("Done!")
 
