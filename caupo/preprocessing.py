@@ -45,7 +45,7 @@ def get_stopwords() -> Set[str]:
     Returns a set with the stopwords to consider in the project
     """
 
-    spanish_stopwords = set(stopwords.words('spanish')).union({"q", "wtf", "csm", "bla", "blah"})
+    spanish_stopwords = set(stopwords.words('spanish')).union({"q", "wtf", "csm", "bla", "blah", "xq"})
     spanish_stopwords_no_accent = set(list(map(map_strange_characters, spanish_stopwords)))
 
     # We manually add laughter
@@ -153,7 +153,7 @@ def preprocess_v2(tweet: str, should_stem: bool = False) -> str:
     tweet = remove_emoji(tweet)
 
     # remove punctuation
-    base_tweet = " ".join(re.sub(r'[0-9$¢€*|»“”《》«#@:{};_•^\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet).split())
+    base_tweet = " ".join(re.sub(r'[0-9$¢€*|»“”《》«#…@:{};_•·^\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet).split())
 
     # lowercase, remove accents and breaklines and remove stopwords
     cleaned_tweet = " ".join(
