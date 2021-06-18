@@ -139,8 +139,6 @@ def reduce_dimensionality(embedder: Callable[[List[str]], List[float]],
 def get_embedder_functions(corpus: List[str]) -> Dict[str, Callable[[List[str]], List[float]]]:
     """
     Returns a list of the available embedders.
-
-    # TODO: Add GloVe if possible
     """
 
     embedders = {
