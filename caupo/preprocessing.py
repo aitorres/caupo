@@ -153,7 +153,7 @@ def preprocess_v2(tweet: str, should_stem: bool = False) -> str:
     tweet = remove_emoji(tweet)
 
     # remove punctuation
-    base_tweet = " ".join(re.sub(r'[0-9$¢€*|»“”《》«#…@:{};_•·^–\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet).split())
+    base_tweet = " ".join(re.sub(r'[0-9$¢’€*|»“”《》«#…@:{};_•·^—–\-+=/°¿?¡%!\"\'.,\[\]\\\(\)&]', ' ', tweet).split())
 
     # lowercase, remove accents and breaklines and remove stopwords
     cleaned_tweet = " ".join(
