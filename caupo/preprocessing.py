@@ -37,7 +37,7 @@ def stem(text: str) -> str:
     Given a text, returns the same text stemmed
     """
 
-    return " ".join([stemmer.stem(i) for i in word_tokenize(text)])
+    return " ".join([stemmer.stem(t) for t in word_tokenize(text)])
 
 
 def get_stopwords() -> Set[str]:
@@ -134,7 +134,7 @@ def preprocess_v1(corpus: List[str], lemmatize: bool = True) -> List[str]:
     return final_corpus
 
 
-def preprocess_v2(tweet: str) -> str:
+def preprocess_v2(tweet: str, should_stem: bool = False) -> str:
     """
     Quick prototype of preprocessing
     """
@@ -161,7 +161,13 @@ def preprocess_v2(tweet: str) -> str:
             )
         )
     )
-    return " ".join(cleaned_tweet.split())
+
+    preprocessed_tweet = " ".join(cleaned_tweet.split())
+
+    if should_stem:
+        preprocessed_tweet = stem(preprocessed_tweet)
+
+    return preprocessed_tweet
 
 
 def main() -> None:
@@ -175,8 +181,14 @@ def main() -> None:
         BASADO
         😋"""
     ]
-    preprocessed_corpus = preprocess_v1(test_corpus)
 
+    print("v1")
+    preprocessed_corpus = preprocess_v1(test_corpus)
+    for phrase in preprocessed_corpus:
+        print(f"(*) {phrase}")
+
+    print("v2")
+    preprocessed_corpus = list(set(map(preprocess_v2, test_corpus)))
     for phrase in preprocessed_corpus:
         print(f"(*) {phrase}")
 
