@@ -100,6 +100,8 @@ def get_uninteresting_usernames():
         "ElSelvatico",  # alias of @SismosVenezuela
         "DolarBeta",
         "tiempo_caracas",
+        "6Uslar",  # gnb bots
+        "61brigada",  # gnb bots
     ]
 
 
