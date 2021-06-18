@@ -11,16 +11,16 @@ from nltk.util import ngrams
 from nltk.tokenize import word_tokenize
 
 
-def get_top_bigrams(phrases: List[str], top_n_amount: int = 2) -> str:
+def get_top_ngrams(phrases: List[str], top_n_amount: int = 3, ngram_size: int = 2) -> str:
     """Returns a string containing the `n` top bigrams of a set of phrases"""
 
     tokenized_phrases = [word_tokenize(phrase) for phrase in phrases]
-    bigrams_list = [ngrams(tkn_phrase, 2) for tkn_phrase in tokenized_phrases]
-    bigrams = [bigram for bigram_list in bigrams_list for bigram in bigram_list]
-    distribution = FreqDist(bigrams)
-    bigrams_by_frequency = sorted(distribution.items(), key=lambda item: (item[1], item[0]), reverse=True)
-    top_n_phrases = [" ".join(bigram).capitalize() for bigram, _ in bigrams_by_frequency[:top_n_amount]]
-    return " - ".join(top_n_phrases)
+    ngrams_list = [ngrams(tkn_phrase, ngram_size) for tkn_phrase in tokenized_phrases]
+    ngrams_flat_list = [ngram for ngram_list in ngrams_list for ngram in ngram_list]
+    ngrams_distribution = FreqDist(ngrams_flat_list)
+    ngrams_by_frequency = sorted(ngrams_distribution.items(), key=lambda item: (item[1], item[0]), reverse=True)
+    top_n_ngrams = [" ".join(ngram).capitalize() for ngram, _ in ngrams_by_frequency[:top_n_amount]]
+    return " - ".join(top_n_ngrams)
 
 
 def main() -> None:
@@ -35,8 +35,9 @@ def main() -> None:
         "yo sonoro sí soy",
         "qué persona yo puedo llegar a ser",
         "quisiera ser yo alguna persona feliz",
+        "feliz como persona que yo soy",
     ]
-    print(get_top_bigrams(phrases))
+    print(get_top_ngrams(phrases))
 
 
 if __name__ == "__main__":

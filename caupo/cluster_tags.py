@@ -15,7 +15,7 @@ import numpy as np
 from sklearn.metrics import (calinski_harabasz_score, davies_bouldin_score,
                              silhouette_score)
 
-from caupo.bigrams import get_top_bigrams
+from caupo.ngrams import get_top_ngrams
 from caupo.clustering import get_clustering_functions, get_clusters_from_labels
 from caupo.database import (get_results_collection, result_already_exists,
                             transform_types_for_database)
@@ -214,7 +214,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
             average_sentiment = {}
             for idx, tweet_cluster in enumerate(tweet_clusters):
                 cluster_size = len(tweet_cluster)
-                cluster_bigram = get_top_bigrams(tweet_cluster)
+                cluster_bigram = get_top_ngrams(tweet_cluster, top_n_amount=3, ngram_size=2)
                 logger.info("[%s] Cluster `%s` (size: %s) has a theme of: %s",
                             tag_name, idx, cluster_size, cluster_bigram)
                 cluster_themes[str(idx)] = cluster_bigram
