@@ -131,7 +131,7 @@ def reduce_dimensionality(embedder: Callable[[List[str]], List[float]],
     def new_embedder(documents: List[str]):
         """Calculates vectors using an external embedder and PCA to reduce dimensionality"""
 
-        return pca_model.fit_transform(embedder(documents))
+        return scale_vectors(pca_model.fit_transform(embedder(documents)))
 
     return new_embedder
 
