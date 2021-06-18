@@ -175,7 +175,7 @@ def main() -> None:
         BASADO
         😋"""
     ]
-    preprocessed_corpus = preprocess_corpus(test_corpus)
+    preprocessed_corpus = preprocess_v1(test_corpus)
 
     for phrase in preprocessed_corpus:
         print(f"(*) {phrase}")

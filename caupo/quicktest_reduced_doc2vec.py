@@ -7,7 +7,7 @@ from sklearn.metrics import (calinski_harabasz_score, davies_bouldin_score,
                              silhouette_score)
 from sklearn.preprocessing import StandardScaler
 
-from caupo.preprocessing import preprocess_corpus
+from caupo.preprocessing import preprocess_v1
 from caupo.utils import get_text_from_all_tweets, plot_clusters
 
 all_tweets = get_text_from_all_tweets()
@@ -26,8 +26,8 @@ tweets_subset = get_text_from_all_tweets(
 print("All tweets: ", len(all_tweets))
 print("Subset: ", len(tweets_subset))
 
-all_preprocessed = list(set(preprocess_corpus(all_tweets)))
-subset_preprocessed = list(set(preprocess_corpus(tweets_subset)))
+all_preprocessed = list(set(preprocess_v1(all_tweets)))
+subset_preprocessed = list(set(preprocess_v1(tweets_subset)))
 
 print("All tweets prepro: ", len(all_preprocessed))
 print("Subset prepro: ", len(subset_preprocessed))

@@ -17,7 +17,7 @@ import seaborn as sns
 from sklearn.neighbors import NearestNeighbors
 
 from caupo.embeddings import get_embedder_functions
-from caupo.preprocessing import preprocess_corpus
+from caupo.preprocessing import preprocess_v1
 from caupo.utils import (Timer, get_city_modes, get_text_from_all_tweets,
                          plot_clusters)
 
@@ -46,7 +46,7 @@ with Timer("Main script runtime"):
 
             # Normalize tweets
             with Timer("Normalizing tweets' text"):
-                preprocessed_corpus = preprocess_corpus(corpus)
+                preprocessed_corpus = preprocess_v1(corpus)
 
             # Get rid of duplicate processed tweets (this should take care of duplicate, spammy tweets)
             with Timer("Removing duplicate tweets (bot protection)"):

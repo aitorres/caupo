@@ -13,7 +13,7 @@ from sklearn.decomposition import NMF, LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics import silhouette_score
 
-from caupo.preprocessing import preprocess_corpus
+from caupo.preprocessing import preprocess_v1
 from caupo.utils import Timer, get_text_from_all_tweets
 
 # Instantiate logger
@@ -27,7 +27,7 @@ with Timer("Main script runtime"):
 
     # Normalize tweets
     with Timer("Normalizing tweets' text"):
-        preprocessed_corpus = preprocess_corpus(corpus)
+        preprocessed_corpus = preprocess_v1(corpus)
 
     # Get rid of duplicate processed tweets (this should take care of duplicate, spammy tweets)
     with Timer("Removing duplicate tweets (bot protection)"):
