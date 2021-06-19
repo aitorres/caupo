@@ -97,12 +97,14 @@ class KMeansClustering(BaseClustering):
 
         # Determining best K
         sil_scores = {}
+        results = {}
         for k in range(self.MIN_K, self.MAX_K + 1):
             logger.debug("Trying k=`%s`...", k)
             model = self.instantiate_model(k)
             output = model.fit_predict(vectors)
             sil_score = silhouette_score(vectors, output)
             sil_scores[k] = sil_score
+            results[k] = output
 
         # Settings best K
         max_sil = sorted(sil_scores.items(), key=lambda x: x[1], reverse=True)[0]
@@ -111,7 +113,7 @@ class KMeansClustering(BaseClustering):
         logger.debug("Maximum silhouette score achieved with k=%s (silhouette score: %s)", max_sil[0], max_sil[1])
 
         # Get and return the real result
-        return self.model.fit_predict(vectors)
+        return results[self.k]
 
 
 class KMeansNoNoiseClustering(KMeansClustering):
@@ -292,11 +294,13 @@ class SpectClustering(BaseClustering):
 
         # Determining best K
         sil_scores = {}
+        results = {}
         for k in range(self.MIN_K, self.MAX_K + 1):
             model = self.instantiate_model(k)
             output = model.fit_predict(vectors)
             sil_score = silhouette_score(vectors, output)
             sil_scores[k] = sil_score
+            results[k] = output
 
         # Settings best K
         max_sil = sorted(sil_scores.items(), key=lambda x: x[1], reverse=True)[0]
@@ -305,7 +309,7 @@ class SpectClustering(BaseClustering):
         logger.debug("Maximum silhouette score achieved with k=%s (silhouette score: %s)", max_sil[0], max_sil[1])
 
         # Recursive call will get the real result
-        return self.cluster(vectors)
+        return results[k]
 
 
 def get_clustering_functions() -> Dict[str, BaseClustering]:
