@@ -190,7 +190,7 @@ class OpticsClustering(BaseClustering):
 
         logger.debug("Initializing OpticsClustering with min_samples=`%s`",
                      min_samples)
-        self.model = OPTICS(min_samples=min_samples, n_jobs=-1)
+        self.model = OPTICS(min_samples=min_samples, metric='euclidean', n_jobs=-1)
 
     def cluster(self, vectors: List[List[float]]) -> List[int]:
         """Given a list of vectors, performs hdbscan based clustering and returns the output labels"""
