@@ -20,7 +20,7 @@ logger = logging.getLogger('backend')
 blueprint = Blueprint('clusters', __name__, url_prefix='/clusters')
 
 # Preloading data
-EMBEDDER_FUNCTION_NAMES = list(get_embedder_functions([]).keys())
+EMBEDDER_FUNCTION_NAMES = list(get_embedder_functions(["one two three four five six seven eight nine ten"]).keys())
 CLUSTERING_ALGORITHM_NAMES = list(get_clustering_functions().keys())
 
 
