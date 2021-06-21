@@ -7,13 +7,12 @@ supports WSGI applications.
 """
 
 import logging
-import os
 from typing import Any, Dict, Tuple
 
 from flask import Flask, request
 from flask_cors import CORS
 
-from backend.api import entities
+from backend.api import clusters, entities
 
 # Logger initialization
 logger = logging.getLogger('backend')
@@ -77,6 +76,7 @@ at.
 
 # Blueprints for functional endpoints
 app.register_blueprint(entities.blueprint)
+app.register_blueprint(clusters.blueprint)
 
 
 # Runs the Flask application server
