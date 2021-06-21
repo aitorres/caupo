@@ -23,6 +23,7 @@ blueprint = Blueprint('clusters', __name__, url_prefix='/clusters')
 # Preloading data
 EMBEDDER_FUNCTION_NAMES = get_embedder_function_names()
 CLUSTERING_ALGORITHM_NAMES = list(get_clustering_functions().keys())
+RESULT_COLLECTION = get_results_collection()
 
 
 # Endpoints
@@ -49,4 +50,25 @@ def get_clustering_algorithm_list() -> Tuple[Dict[str, Any], int]:
         'httpStatus': 200,
         'message': "List of clustering algorithms retrieved successfully.",
         'data': CLUSTERING_ALGORITHM_NAMES,
+    }
+
+
+@blueprint.route('/results/count/<algorithm>/<embedder>/', methods=["GET"])
+def get_result_count(algorithm: str, embedder: str) -> Tuple[Dict[str, Any], int]:
+    """
+    Returns the count of all valid results from a combination of embedder model and algorithm.
+    """
+
+    query_filter = {
+        'embedder': embedder,
+        'algorithm': algorithm,
+    }
+
+    results_count = RESULT_COLLECTION.count_documents(query_filter)
+    return {
+        'httpStatus': 200,
+        'message': "Results counted successfully.",
+        'data': {
+            'count': results_count
+        }
     }
