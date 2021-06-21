@@ -139,6 +139,7 @@ def reduce_dimensionality(embedder: Callable[[List[str]], List[float]],
 def get_embedder_functions(corpus: List[str]) -> Dict[str, Callable[[List[str]], List[float]]]:
     """
     Returns a list of the available embedders.
+    #! If updated, update next function too
     """
 
     embedders = {
@@ -158,6 +159,26 @@ def get_embedder_functions(corpus: List[str]) -> Dict[str, Callable[[List[str]],
         reduced_embedders[f"{name} (50-d)"] = reduce_dimensionality(embedder)
 
     return {**embedders, **reduced_embedders}
+
+
+def get_embedder_function_names() -> List[str]:
+    """
+    Returns a list of the available embedder names
+    """
+
+    embedder_names = [
+        'FastText (CBOW)',
+        'FastText (Skipgram)',
+        'Doc2Vec',
+        'GPT2 Small Spanish',
+        'BERT: TinyBERT-spanish-uncased-finetuned-ner',
+        'BERT: paraphrase-xlm-r-multilingual-v1',
+        'BERT: distiluse-base-multilingual-cased-v2',
+    ]
+
+    reduced_embedder_names = [f"{name} (50-d)" for name in embedder_names]
+
+    return [*embedder_names, *reduced_embedder_names]
 
 
 def main() -> None:

@@ -10,8 +10,9 @@ from typing import Any, Dict, Tuple
 
 from flask import Blueprint
 
+from caupo.database import get_results_collection
 from caupo.clustering import get_clustering_functions
-from caupo.embeddings import get_embedder_functions
+from caupo.embeddings import get_embedder_function_names
 
 # Initializing logger
 logger = logging.getLogger('backend')
@@ -20,7 +21,7 @@ logger = logging.getLogger('backend')
 blueprint = Blueprint('clusters', __name__, url_prefix='/clusters')
 
 # Preloading data
-EMBEDDER_FUNCTION_NAMES = list(get_embedder_functions(["one two three four five six seven eight nine ten"]).keys())
+EMBEDDER_FUNCTION_NAMES = get_embedder_function_names()
 CLUSTERING_ALGORITHM_NAMES = list(get_clustering_functions().keys())
 
 
