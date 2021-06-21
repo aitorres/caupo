@@ -53,13 +53,14 @@ def get_clustering_algorithm_list() -> Tuple[Dict[str, Any], int]:
     }
 
 
-@blueprint.route('/results/count/<algorithm>/<embedder>/', methods=["GET"])
-def get_result_count(algorithm: str, embedder: str) -> Tuple[Dict[str, Any], int]:
+@blueprint.route('/results/count/<frequency>/<algorithm>/<embedder>/', methods=["GET"])
+def get_result_count(frequency: str, algorithm: str, embedder: str) -> Tuple[Dict[str, Any], int]:
     """
     Returns the count of all valid results from a combination of embedder model and algorithm.
     """
 
     query_filter = {
+        'frequency': frequency,
         'embedder': embedder,
         'algorithm': algorithm,
         'success': True,  # excludes results that failed before returning a labelling of data
