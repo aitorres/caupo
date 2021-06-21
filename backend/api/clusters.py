@@ -62,6 +62,8 @@ def get_result_count(algorithm: str, embedder: str) -> Tuple[Dict[str, Any], int
     query_filter = {
         'embedder': embedder,
         'algorithm': algorithm,
+        'success': True,  # excludes results that failed before returning a labelling of data
+        'sil_score': {"$ne": None}  # excludes results that returned less than 2 valid clusters
     }
 
     results_count = RESULT_COLLECTION.count_documents(query_filter)
