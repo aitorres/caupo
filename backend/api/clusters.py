@@ -8,7 +8,7 @@ Connected to the main Flask application through a Blueprint.
 import logging
 from typing import Any, Dict, Tuple
 
-from flask import Blueprint
+from flask import Blueprint, request
 
 from caupo.database import get_results_collection
 from caupo.clustering import get_clustering_functions
@@ -50,7 +50,7 @@ def get_clustering_algorithm_list() -> Tuple[Dict[str, Any], int]:
         'httpStatus': 200,
         'message': "List of clustering algorithms retrieved successfully.",
         'data': CLUSTERING_ALGORITHM_NAMES,
-    }
+    }, 200
 
 
 @blueprint.route('/tags/list/<frequency>', methods=['GET'])
@@ -65,14 +65,26 @@ def get_valid_tags_list(frequency: str) -> Tuple[Dict[str, Any], int]:
         'httpStatus': 200,
         'message': 'List of valid tag names retrieved successfully',
         'data': sorted({tag['tag'] for tag in stored_tags}, reverse=True)
-    }
+    }, 200
 
 
-@blueprint.route('/results/silhouette/<frequency>/<tag>/<algorithm>/<embedder>/', methods=["GET"])
-def get_silhouette_score(frequency: str, tag: str, algorithm: str, embedder: str) -> Tuple[Dict[str, Any], int]:
+@blueprint.route('/results/silhouette', methods=["POST"])
+def get_silhouette_score() -> Tuple[Dict[str, Any], int]:
     """
     Returns the silhouette score for a vlid result (combinaiton of frequency, tag, algorithm and embedder)
     """
+
+    data = request.json
+    frequency = data.get('frequency')
+    embedder = data.get('embedder')
+    algorithm = data.get('algorithm')
+    tag = data.get('tag')
+    if None in [frequency, embedder, algorithm, tag]:
+        return {
+            'httpStatus': 400,
+            'message': "Invalid params!",
+            'data': None,
+        }, 400
 
     query_filter = {
         'frequency': frequency,
@@ -93,4 +105,4 @@ def get_silhouette_score(frequency: str, tag: str, algorithm: str, embedder: str
         'httpStatus': 200,
         'message': "Result fetched successfully.",
         'data': sil_score,
-    }
+    }, 200
