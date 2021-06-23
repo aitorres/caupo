@@ -86,6 +86,10 @@ def get_silhouette_score() -> Tuple[Dict[str, Any], int]:
             'data': None,
         }, 400
 
+    logger.info(
+        "Requested silhouette score with freq `%s`, embedder `%s`, algorithm `%s`, tag `%s`",
+        frequency, embedder, algorithm, tag)
+
     query_filter = {
         'frequency': frequency,
         'embedder': embedder,
