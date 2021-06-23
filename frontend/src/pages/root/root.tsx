@@ -6,8 +6,9 @@ import Header from '../../components/header/header';
 import Sidebar from '../../components/sidebar/sidebar';
 
 import '@fontsource/roboto';
-import '../../assets/css/general.css';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../../assets/css/general.css';
 
 interface RootPageProps {
   title: string,
