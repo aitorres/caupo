@@ -44,7 +44,7 @@ const EntityVariationPage: FC = () => {
         })
         .catch(() => {});
     }
-  });
+  }, []);
 
   const loader: React.ReactElement = (
     <div className="center">
