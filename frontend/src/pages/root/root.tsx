@@ -7,6 +7,7 @@ import Sidebar from '../../components/sidebar/sidebar';
 
 import '@fontsource/roboto';
 import '../../assets/css/general.css';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 interface RootPageProps {
   title: string,

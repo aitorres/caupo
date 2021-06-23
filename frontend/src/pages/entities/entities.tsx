@@ -7,8 +7,6 @@ import { EntitiesService } from '../../services/entities';
 import RootPage from '../root/root';
 import Box from '../../components/box/box';
 
-import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
-
 const EntitiesPage: FC = () => {
   const [dailyEntities, setDailyEntities] = useState('');
   const [weeklyEntities, setWeeklyEntities] = useState('');
