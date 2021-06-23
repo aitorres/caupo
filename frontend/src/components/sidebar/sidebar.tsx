@@ -15,6 +15,9 @@ const Sidebar: FC = () => (
         <a href="/#">¿Qué es esto?</a>
       </li>
       <li>
+        <Link to="/clusters">Clusters</Link>
+      </li>
+      <li>
         <Link to="/entities">Entidades</Link>
       </li>
       <li>
