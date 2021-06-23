@@ -11,13 +11,13 @@ import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 const EntityVariationPage: FC = () => {
   const [dailyEntityVariationData, setDailyEntityVariationData] = useState(
-    null as unknown as EntityVariationDataResponse,
+    null as EntityVariationDataResponse | null,
   );
   const [weeklyEntityVariationData, setWeeklyEntityVariationData] = useState(
-    null as unknown as EntityVariationDataResponse,
+    null as EntityVariationDataResponse | null,
   );
   const [monthlyEntityVariationData, setMonthlyEntityVariationData] = useState(
-    null as unknown as EntityVariationDataResponse,
+    null as EntityVariationDataResponse | null,
   );
 
   useEffect(() => {
