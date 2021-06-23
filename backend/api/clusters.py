@@ -53,6 +53,21 @@ def get_clustering_algorithm_list() -> Tuple[Dict[str, Any], int]:
     }
 
 
+@blueprint.route('/tags/list/<frequency>', methods=['GET'])
+def get_valid_tags_list(frequency: str) -> Tuple[Dict[str, Any], int]:
+    """
+    Returns the name (tag name) of all valid tags for the given frequency
+    """
+
+    stored_tags = list(RESULT_COLLECTION.find({'frequency': frequency}, {'tag': 1}))
+
+    return {
+        'httpStatus': 200,
+        'message': 'List of valid tag names retrieved successfully',
+        'data': [tag['tag'] for tag in stored_tags]
+    }
+
+
 @blueprint.route('/results/count/<frequency>/<algorithm>/<embedder>/', methods=["GET"])
 def get_result_count(frequency: str, algorithm: str, embedder: str) -> Tuple[Dict[str, Any], int]:
     """
