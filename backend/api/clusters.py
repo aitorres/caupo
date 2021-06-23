@@ -64,29 +64,33 @@ def get_valid_tags_list(frequency: str) -> Tuple[Dict[str, Any], int]:
     return {
         'httpStatus': 200,
         'message': 'List of valid tag names retrieved successfully',
-        'data': list({tag['tag'] for tag in stored_tags})
+        'data': sorted({tag['tag'] for tag in stored_tags}, reverse=True)
     }
 
 
-@blueprint.route('/results/count/<frequency>/<algorithm>/<embedder>/', methods=["GET"])
-def get_result_count(frequency: str, algorithm: str, embedder: str) -> Tuple[Dict[str, Any], int]:
+@blueprint.route('/results/silhouette/<frequency>/<tag>/<algorithm>/<embedder>/', methods=["GET"])
+def get_silhouette_score(frequency: str, tag: str, algorithm: str, embedder: str) -> Tuple[Dict[str, Any], int]:
     """
-    Returns the count of all valid results from a combination of embedder model and algorithm.
+    Returns the silhouette score for a vlid result (combinaiton of frequency, tag, algorithm and embedder)
     """
 
     query_filter = {
         'frequency': frequency,
         'embedder': embedder,
         'algorithm': algorithm,
-        'success': True,  # excludes results that failed before returning a labelling of data
-        'sil_score': {"$ne": None}  # excludes results that returned less than 2 valid clusters
+        'tag': tag,
+        'success': True,
+        'sil_score': {"$ne": None},
     }
+    result = RESULT_COLLECTION.find_one(query_filter, {'sil_score': 1})
 
-    results_count = RESULT_COLLECTION.count_documents(query_filter)
+    if not result:
+        sil_score = None
+    else:
+        sil_score = result["sil_score"]
+
     return {
         'httpStatus': 200,
-        'message': "Results counted successfully.",
-        'data': {
-            'count': results_count
-        }
+        'message': "Result fetched successfully.",
+        'data': sil_score,
     }
