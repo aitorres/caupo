@@ -59,7 +59,7 @@ def get_valid_tags_list(frequency: str) -> Tuple[Dict[str, Any], int]:
     Returns the name (tag name) of all valid tags for the given frequency
     """
 
-    stored_tags = list(RESULT_COLLECTION.find({'frequency': frequency}, {'tag': 1}))
+    stored_tags = list(RESULT_COLLECTION.find({'frequency': frequency}, {'tag': 1}).distinct('tag'))
 
     return {
         'httpStatus': 200,
