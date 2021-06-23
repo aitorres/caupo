@@ -264,7 +264,7 @@ class SpectClustering(BaseClustering):
     """
 
     MIN_K = 2
-    MAX_K = 5
+    MAX_K = 4
 
     def __init__(self, k: Optional[int] = None) -> None:
         """Initializes a new instance of the KMeans clustering algorithm"""
@@ -274,7 +274,7 @@ class SpectClustering(BaseClustering):
                 raise ValueError(k)
 
             self.k = k
-            self.model = self.instantiate_model(self.k, n_jobs=-1)
+            self.model = self.instantiate_model(self.k)
             logger.debug("Initializing SpectClustering with k=`%s`", self.k)
         else:
             self.k = None
