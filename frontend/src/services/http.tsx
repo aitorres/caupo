@@ -14,4 +14,18 @@ export class HttpService {
 
     return xhr;
   }
+
+  public static post(url: string, data: { [key: string ]: unknown }): AxiosPromise<unknown> {
+    const xhr = axios.post(
+      url,
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    return xhr;
+  }
 }

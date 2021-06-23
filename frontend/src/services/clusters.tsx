@@ -44,8 +44,16 @@ export class ClustersService {
     algorithm: string,
     embedder: string,
   ): AxiosPromise<SilhouetteScoreResponse> {
-    const url = `${this.baseUrl}/results/silhouette/${frequency}/${tag}/${algorithm}/${embedder}`;
+    const url = `${this.baseUrl}/results/silhouette`;
 
-    return HttpService.get(url) as AxiosPromise<SilhouetteScoreResponse>;
+    return HttpService.post(
+      url,
+      {
+        frequency,
+        tag,
+        algorithm,
+        embedder,
+      },
+    ) as AxiosPromise<SilhouetteScoreResponse>;
   }
 }
