@@ -69,6 +69,8 @@ const ClustersPage: FC = () => {
   );
 
   const getResultsTable: () => ReactElement = () => {
+    let highestSilScore = -2; // set to a non-valid value
+
     if (selectedTag === null) {
       return (
         <p>
@@ -87,6 +89,14 @@ const ClustersPage: FC = () => {
         }
 
         embedders.forEach((embedder) => {
+          Object.keys(resultsTable[selectedTag][algorithm]).forEach((key) => {
+            const val = resultsTable[selectedTag][algorithm][key];
+
+            if (val !== null && val >= highestSilScore) {
+              highestSilScore = val;
+            }
+          });
+
           if (!(embedder in resultsTable[selectedTag][algorithm])) {
             resultsTable[selectedTag][algorithm][embedder] = null;
             ClustersService.getSilhouetteScore(
@@ -95,7 +105,11 @@ const ClustersPage: FC = () => {
               algorithm,
               embedder,
             ).then((res) => {
-              resultsTable[selectedTag][algorithm][embedder] = res.data.data;
+              let value = res.data.data;
+              if (value !== null) {
+                value = parseFloat(value.toFixed(5));
+              }
+              resultsTable[selectedTag][algorithm][embedder] = value;
               setResultsTable(resultsTable);
             }).catch(() => {});
           }
@@ -125,7 +139,10 @@ const ClustersPage: FC = () => {
                   {embedder}
                 </td>
                 { algorithms.map((algorithm) => (
-                  <td key={`${selectedTag}-${embedder}-${algorithm}`}>
+                  <td
+                    key={`${selectedTag}-${embedder}-${algorithm}`}
+                    className={resultsTable[selectedTag][algorithm][embedder] === highestSilScore ? 'highest' : ''}
+                  >
                     { resultsTable[selectedTag][algorithm][embedder] || '😢' }
                   </td>
                 )) }
