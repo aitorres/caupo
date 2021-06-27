@@ -96,16 +96,13 @@ def get_silhouette_score() -> Tuple[Dict[str, Any], int]:
         'algorithm': algorithm,
         'tag': tag,
         'success': True,
-        'scores': {
-            'silhouette': {"$ne": None}
-        },
     }
     result = RESULT_COLLECTION.find_one(query_filter, {'scores': 1})
 
     if not result:
         sil_score = None
     else:
-        sil_score = result["scores"]["silhouette"]
+        sil_score = result["scores"].get("silhouette")
 
     return {
         'httpStatus': 200,
