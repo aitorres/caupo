@@ -21,6 +21,9 @@ const Sidebar: FC = () => (
         <Link to="/cluster-results">Clusters y temas (por fecha)</Link>
       </li>
       <li>
+        <Link to="/aggregated-results">Resultados Agregados</Link>
+      </li>
+      <li>
         <Link to="/entities">Entidades</Link>
       </li>
       <li>

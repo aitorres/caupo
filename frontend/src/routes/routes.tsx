@@ -6,9 +6,11 @@ import EntitiesPage from '../pages/entities/entities';
 import EntityVariationPage from '../pages/entity-variation/entity-variation';
 import ClustersPage from '../pages/clusters/clusters';
 import ClusterResultPage from '../pages/cluster-result/cluster-result';
+import AggregatedResultsPage from '../pages/aggregated-results/aggregated-results';
 
 const AppRoutes: FC = () => (
   <Switch>
+    <Route path="/aggregated-results" component={AggregatedResultsPage} />
     <Route path="/cluster-results" component={ClusterResultPage} />
     <Route path="/clusters" component={ClustersPage} />
     <Route path="/entity-variation" component={EntityVariationPage} />
