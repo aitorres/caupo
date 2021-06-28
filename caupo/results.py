@@ -40,6 +40,18 @@ def calculate_average_silhouette(frequency: str, data: pd.DataFrame) -> pd.DataF
     return grouped_data.mean().sort_values(by=["sil_score"], ascending=False)
 
 
+def calculate_consolidated_data(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
+    """Given raw result data, calculates a consolidated dataframe"""
+
+    assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
+
+    avg_silhouette_scores = calculate_average_silhouette(frequency, data.copy())
+    valid_entries = calculate_valid_entries(frequency, data.copy())
+
+    return pd.concat([avg_silhouette_scores, valid_entries], axis=1).sort_values(
+        by=["sil_score"], ascending=False)
+
+
 def read_csv(file_path: Path) -> pd.DataFrame:
     """Given a path to a file, reads the file and returns a dataframe"""
 
@@ -62,10 +74,7 @@ def main() -> None:
     data = read_csv(file_path)
 
     # Get average of silhouette score
-    avg_silhouette_scores = calculate_average_silhouette("daily", data.copy())
-    valid_entries = calculate_valid_entries("daily", data.copy())
-    consolidated_data = pd.concat([avg_silhouette_scores, valid_entries], axis=1).sort_values(
-        by=["sil_score"], ascending=False)
+    consolidated_data = calculate_consolidated_data(args.frequency, data.copy())
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print("Avg. Silhouette Score & valid entries for each algorithm and embedding, over all entries")
         print(consolidated_data)
