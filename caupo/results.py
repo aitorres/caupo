@@ -52,7 +52,7 @@ def calculate_consolidated_data(frequency: str, data: pd.DataFrame) -> pd.DataFr
     consolidated = pd.concat([avg_silhouette_scores, valid_entries], axis=1)
 
     max_entries_value = np.max(consolidated['valid_entries'].tolist())
-    consolidated["weighted_score"] = (consolidated["sil_score"] * max_entries_value) / consolidated["valid_entries"]
+    consolidated["weighted_score"] = (consolidated["sil_score"] * consolidated["valid_entries"]) / max_entries_value
 
     return consolidated.sort_values(by=["weighted_score", "sil_score"], ascending=False)
 
