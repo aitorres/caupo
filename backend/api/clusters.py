@@ -170,7 +170,7 @@ def get_valid_results() -> Tuple[Dict[str, Any], int]:
     }, 200
 
 
-@blueprint.route('/results/consolidated/<frequency>/', methods=['GET'])
+@blueprint.route('/results/consolidated/<frequency>', methods=['GET'])
 def get_consolidated_results(frequency: str) -> Tuple[Dict[str, Any], int]:
     """
     Returns consolidated, aggregated results
