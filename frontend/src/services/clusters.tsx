@@ -17,30 +17,32 @@ export interface SilhouetteScoreResponse extends BaseResponse {
   data: number | null
 }
 
+export interface Result {
+  frequency: string,
+  tag: string,
+  algorithm: string,
+  embedder: string,
+  clusterThemes: {
+    [key: string]: string[]
+  },
+  time: number,
+  averageSentiment: {
+    [key: string]: number
+  },
+  scores: {
+    silhouette: number | null,
+    davies_bouldin: number | null,
+    calinski_harabasz: number | null
+  },
+  tweetsAmount: number,
+  validTweetsAmount: number,
+  minClusterSize: number,
+  avgClusterSize: number,
+  maxClusterSize: number,
+}
+
 export interface ResultListResponse extends BaseResponse {
-  data: {
-    frequency: string,
-    tag: string,
-    algorithm: string,
-    embedder: string,
-    clusterThemes: {
-      [key: string]: string[]
-    },
-    time: number,
-    averageSentiment: {
-      [key: string]: string[]
-    },
-    scores: {
-      silhouette: number | null,
-      davies_bouldin: number | null,
-      calinski_harabasz: number | null
-    },
-    tweetsAmount: number,
-    validTweetsAmount: number,
-    minClusterSize: number,
-    avgClusterSize: number,
-    maxClusterSize: number,
-  }
+  data: Result[]
 }
 
 export class ClustersService {
