@@ -189,7 +189,7 @@ def get_consolidated_results(frequency: str) -> Tuple[Dict[str, Any], int]:
 
     consolidated_json = json.loads(
         consolidated_results.to_json(
-            orient='records',
+            orient='index',
         )
     )
 
