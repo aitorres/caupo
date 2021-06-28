@@ -192,9 +192,17 @@ def get_consolidated_results(frequency: str) -> Tuple[Dict[str, Any], int]:
             orient='index',
         )
     )
+    response_json = [
+        {
+            **data,
+            'algorithm': key[0],
+            'embedder': key[1]
+        }
+        for key, data in consolidated_json.items()
+    ]
 
     return {
         'httpStatus': 200,
         'message': "Aggregated data returned successfully!",
-        'data': consolidated_json,
+        'data': response_json,
     }
