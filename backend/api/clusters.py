@@ -7,6 +7,7 @@ Connected to the main Flask application through a Blueprint.
 
 import json
 import logging
+from ast import literal_eval as make_tuple
 from typing import Any, Dict, Tuple
 
 import pandas as pd
@@ -195,8 +196,8 @@ def get_consolidated_results(frequency: str) -> Tuple[Dict[str, Any], int]:
     response_json = [
         {
             **data,
-            'algorithm': key[0],
-            'embedder': key[1]
+            'algorithm': make_tuple(key)[0],
+            'embedder': make_tuple(key)[1]
         }
         for key, data in consolidated_json.items()
     ]
