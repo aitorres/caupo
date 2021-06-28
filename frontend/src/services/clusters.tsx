@@ -17,6 +17,27 @@ export interface SilhouetteScoreResponse extends BaseResponse {
   data: number | null
 }
 
+export interface ResultListResponse extends BaseResponse {
+  data: {
+    frequency: string,
+    tag: string,
+    algorithm: string,
+    embedder: string,
+    clusterThemes: {
+      [key: string]: string[]
+    },
+    time: number,
+    averageSentiment: {
+      [key: string]: string[]
+    },
+    scores: {
+      silhouette: number | null,
+      davies_bouldin: number | null,
+      calinski_harabasz: number | null
+    }
+  }
+}
+
 export class ClustersService {
   static baseUrl = 'https://api.caupo.xyz/clusters';
 
@@ -55,5 +76,20 @@ export class ClustersService {
         embedder,
       },
     ) as AxiosPromise<SilhouetteScoreResponse>;
+  }
+
+  public static getResultList(
+    frequency: CaupoFrequency,
+    tag: string,
+  ): AxiosPromise<ResultListResponse> {
+    const url = `${this.baseUrl}/results/list`;
+
+    return HttpService.post(
+      url,
+      {
+        frequency,
+        tag,
+      },
+    ) as AxiosPromise<ResultListResponse>;
   }
 }

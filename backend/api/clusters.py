@@ -143,7 +143,6 @@ def get_valid_results() -> Tuple[Dict[str, Any], int]:
             'tag': 1,
             'algorithm': 1,
             'embedder': 1,
-            'topics': 1,
             'clusterThemes': 1,
             'time': 1,
             'averageSentiment': 1,
