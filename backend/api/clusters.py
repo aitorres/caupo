@@ -139,6 +139,7 @@ def get_valid_results() -> Tuple[Dict[str, Any], int]:
     results = list(RESULT_COLLECTION.find(
         query_filter,
         {
+            '_id': 0,
             'frequency': 1,
             'tag': 1,
             'algorithm': 1,
