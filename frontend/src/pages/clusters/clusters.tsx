@@ -191,7 +191,7 @@ const ClustersPage: FC = () => {
               <br />
               <p>
                 Actualmente está escogida la frecuencia&nbsp;
-                {frequency}
+                {frequency === 'daily' ? 'diaria' : 'semanal'}
                 &nbsp;con&nbsp;
                 {tags.length}
                 &nbsp;elementos (resultados) en el servidor.
