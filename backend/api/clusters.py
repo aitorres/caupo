@@ -141,6 +141,11 @@ def get_valid_results() -> Tuple[Dict[str, Any], int]:
         {
             '_id': 0,
             'frequency': 1,
+            'tweetsAmount': 1,
+            'validTweetsAmount': 1,
+            'minClusterSize': 1,
+            'maxClusterSize': 1,
+            'avgClusterSize': 1,
             'tag': 1,
             'algorithm': 1,
             'embedder': 1,

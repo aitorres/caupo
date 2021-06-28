@@ -34,7 +34,12 @@ export interface ResultListResponse extends BaseResponse {
       silhouette: number | null,
       davies_bouldin: number | null,
       calinski_harabasz: number | null
-    }
+    },
+    tweetsAmount: number,
+    validTweetsAmount: number,
+    minClusterSize: number,
+    avgClusterSize: number,
+    maxClusterSize: number,
   }
 }
 
