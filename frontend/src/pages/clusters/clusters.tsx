@@ -24,6 +24,9 @@ const ClustersPage: FC = () => {
   const [algorithms, setAlgorithms] = useState([] as string[]);
   const [embedders, setEmbedders] = useState([] as string[]);
   const [resultsTable, setResultsTable] = useState({} as ResultsTable);
+  const [updateValue, setUpdateValue] = useState(0); // workaround
+
+  const forceUpdate = () => setUpdateValue(updateValue + 1);
 
   const changeFrequency = (freq: CaupoFrequency) => {
     setTags([] as string[]);
@@ -111,6 +114,7 @@ const ClustersPage: FC = () => {
               }
               resultsTable[selectedTag][algorithm][embedder] = value;
               setResultsTable(resultsTable);
+              forceUpdate();
             }).catch(() => {});
           }
         });
