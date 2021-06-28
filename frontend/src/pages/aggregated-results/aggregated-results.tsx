@@ -46,9 +46,9 @@ const AggregatedResultsPage: FC = () => {
             <tr>
               <th>Algorithm</th>
               <th>Embedder</th>
+              <th>Valid Results</th>
               <th>Avg. Sil. Score</th>
               <th>Weighted Score</th>
-              <th>Valid Results</th>
             </tr>
           </thead>
           <tbody>
@@ -57,9 +57,9 @@ const AggregatedResultsPage: FC = () => {
                 <tr key={`${frequency}-${result.embedder}-${result.algorithm}`}>
                   <td>{ result.algorithm }</td>
                   <td>{ result.embedder }</td>
+                  <td>{ result.valid_entries }</td>
                   <td>{ result.sil_score?.toFixed(7) }</td>
                   <td>{ result.weighted_score?.toFixed(7) }</td>
-                  <td>{ result.valid_entries }</td>
                 </tr>
               ))
             }
