@@ -9,9 +9,8 @@ module.exports = {
     "max-len": [2, {
       "code": 120,
     }],
-    "jsx-a11y/label-has-associated-control": [ 2, {
-      "assert": "either",
-    }]
+    "jsx-a11y/label-has-associated-control": "off",
+    "jsx-a11y/control-has-associated-label": "off"
   },
   extends: [
     "eslint:recommended",
