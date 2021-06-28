@@ -5,9 +5,11 @@ import HomePage from '../pages/home/home';
 import EntitiesPage from '../pages/entities/entities';
 import EntityVariationPage from '../pages/entity-variation/entity-variation';
 import ClustersPage from '../pages/clusters/clusters';
+import ClusterResultPage from '../pages/cluster-result/cluster-result';
 
 const AppRoutes: FC = () => (
   <Switch>
+    <Route path="/cluster-results" component={ClusterResultPage} />
     <Route path="/clusters" component={ClustersPage} />
     <Route path="/entity-variation" component={EntityVariationPage} />
     <Route path="/entities" component={EntitiesPage} />
