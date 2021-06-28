@@ -157,7 +157,7 @@ def get_valid_results() -> Tuple[Dict[str, Any], int]:
     ))
 
     valid_results = [r for r in results if r["scores"]["silhouette"] is not None]
-    sorted_results = sorted(valid_results, key=lambda r: r["scores"]["silhouette"])
+    sorted_results = sorted(valid_results, key=lambda r: r["scores"]["silhouette"], reverse=True)
 
     return {
         'httpStatus': 200,
