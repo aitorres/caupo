@@ -47,6 +47,7 @@ const AggregatedResultsPage: FC = () => {
               <th>Algorithm</th>
               <th>Embedder</th>
               <th>Avg. Sil. Score</th>
+              <th>Weighted Score</th>
               <th>Valid Results</th>
             </tr>
           </thead>
@@ -57,6 +58,7 @@ const AggregatedResultsPage: FC = () => {
                   <td>{ result.algorithm }</td>
                   <td>{ result.embedder }</td>
                   <td>{ result.sil_score?.toFixed(7) }</td>
+                  <td>{ result.weighted_score?.toFixed(7) }</td>
                   <td>{ result.valid_entries }</td>
                 </tr>
               ))

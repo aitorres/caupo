@@ -50,6 +50,7 @@ export interface ConsolidatedResult {
   embedder: string,
   valid_entries: number,
   sil_score: number | null,
+  weighted_score: number | null,
 }
 
 export interface ConsolidatedResultsResponse extends BaseResponse {
