@@ -10,7 +10,6 @@ import Box from '../../components/box/box';
 const EntitiesPage: FC = () => {
   const [dailyEntities, setDailyEntities] = useState('');
   const [weeklyEntities, setWeeklyEntities] = useState('');
-  const [monthlyEntities, setMonthlyEntities] = useState('');
 
   useEffect(() => {
     if (dailyEntities === '') {
@@ -25,14 +24,6 @@ const EntitiesPage: FC = () => {
       EntitiesService.getWordcloud('weekly')
         .then((res) => {
           setWeeklyEntities(res.data.data);
-        })
-        .catch(() => {});
-    }
-
-    if (monthlyEntities === '') {
-      EntitiesService.getWordcloud('monthly')
-        .then((res) => {
-          setMonthlyEntities(res.data.data);
         })
         .catch(() => {});
     }
@@ -83,23 +74,6 @@ const EntitiesPage: FC = () => {
     );
   };
 
-  const getMonthlyWordCloud: () => React.ReactElement = () => {
-    if (monthlyEntities === '') {
-      return (
-        <>
-          <p>Loading monthly entities...</p>
-          { loader }
-        </>
-      );
-    }
-
-    return (
-      <p>
-        <img className="center" src={`data:image/png;base64,${monthlyEntities}`} alt="Wordcloud" />
-      </p>
-    );
-  };
-
   return (
     <RootPage title="Entidades">
       <Row>
@@ -120,8 +94,6 @@ const EntitiesPage: FC = () => {
               { getDailyWordCloud() }
               <h2>Análisis semanal</h2>
               { getWeeklyWordCloud() }
-              <h2>Análisis mensual</h2>
-              { getMonthlyWordCloud() }
             </>
           </Box>
         </Col>

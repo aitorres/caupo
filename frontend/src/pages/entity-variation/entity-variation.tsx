@@ -16,9 +16,6 @@ const EntityVariationPage: FC = () => {
   const [weeklyEntityVariationData, setWeeklyEntityVariationData] = useState(
     null as EntityVariationDataResponse | null,
   );
-  const [monthlyEntityVariationData, setMonthlyEntityVariationData] = useState(
-    null as EntityVariationDataResponse | null,
-  );
 
   useEffect(() => {
     if (dailyEntityVariationData === null) {
@@ -33,14 +30,6 @@ const EntityVariationPage: FC = () => {
       EntitiesService.getEntityVariationData('weekly')
         .then((res) => {
           setWeeklyEntityVariationData(res.data);
-        })
-        .catch(() => {});
-    }
-
-    if (monthlyEntityVariationData === null) {
-      EntitiesService.getEntityVariationData('monthly')
-        .then((res) => {
-          setMonthlyEntityVariationData(res.data);
         })
         .catch(() => {});
     }
@@ -145,50 +134,6 @@ const EntityVariationPage: FC = () => {
     );
   };
 
-  const getMonthlyWordCloud: () => React.ReactElement = () => {
-    if (monthlyEntityVariationData === null) {
-      return loader;
-    }
-
-    const tagElement = monthlyEntityVariationData.data.map((tagData) => (
-      <>
-        <h3>{ tagData.tag }</h3>
-        <Row>
-          <Col md={3}>
-            <h5>Nuevas entidades</h5>
-            <ul>
-              { tagData.persons.added.map((entity) => <li key={entity}>{entity}</li>) }
-            </ul>
-          </Col>
-          <Col md={3}>
-            <h5>Entidades eliminadas</h5>
-            <ul>
-              { tagData.persons.removed.map((entity) => <li key={entity}>{entity}</li>) }
-            </ul>
-          </Col>
-          <Col md={3}>
-            <h5>Nuevos hashtags</h5>
-            <ul>
-              { tagData.hashtags.added.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
-            </ul>
-          </Col>
-          <Col md={3}>
-            <h5>Hashtags eliminados</h5>
-            <ul>
-              { tagData.hashtags.removed.map((hashtag) => <li key={hashtag}>{hashtag}</li>) }
-            </ul>
-          </Col>
-        </Row>
-      </>
-    ));
-
-    return (
-      <>
-        { tagElement }
-      </>
-    );
-  };
-
   return (
     <RootPage title="Variación de Entidades">
       <Row>
@@ -207,8 +152,6 @@ const EntityVariationPage: FC = () => {
               { getDailyWordCloud() }
               <h2>Análisis semanal</h2>
               { getWeeklyWordCloud() }
-              <h2>Análisis mensual</h2>
-              { getMonthlyWordCloud() }
             </>
           </Box>
         </Col>

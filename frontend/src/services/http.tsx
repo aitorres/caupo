@@ -1,6 +1,6 @@
 import axios, { AxiosPromise } from 'axios';
 
-export type CaupoFrequency = 'daily' | 'weekly' | 'monthly';
+export type CaupoFrequency = 'daily' | 'weekly';
 
 export interface BaseResponse {
   httpStatus: number,
