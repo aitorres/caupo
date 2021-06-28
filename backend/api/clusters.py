@@ -5,14 +5,17 @@ extracted from the dataset of tweets periodically.
 Connected to the main Flask application through a Blueprint.
 """
 
+import json
 import logging
 from typing import Any, Dict, Tuple
 
+import pandas as pd
 from flask import Blueprint, request
 
-from caupo.database import get_results_collection
 from caupo.clustering import get_clustering_functions
+from caupo.database import get_results_collection
 from caupo.embeddings import get_embedder_function_names
+from caupo.results import calculate_consolidated_data
 
 # Initializing logger
 logger = logging.getLogger('backend')
@@ -164,3 +167,34 @@ def get_valid_results() -> Tuple[Dict[str, Any], int]:
         'message': "Results fetched successfully.",
         'data': sorted_results,
     }, 200
+
+
+@blueprint.route('/results/consolidated/<frequency>/', methods=['GET'])
+def get_consolidated_results(frequency: str) -> Tuple[Dict[str, Any], int]:
+    """
+    Returns consolidated, aggregated results
+    """
+
+    file_path = f"/root/tesis/outputs/cluster_tags/{frequency}/results.csv"
+    data = pd.read_csv(file_path)
+
+    try:
+        consolidated_results = calculate_consolidated_data(frequency, data)
+    except AssertionError:
+        return {
+            'httpStatus': 400,
+            'message': "Invalid params!",
+            'data': None,
+        }, 400
+
+    consolidated_json = json.loads(
+        consolidated_results.to_json(
+            orient='records',
+        )
+    )
+
+    return {
+        'httpStatus': 200,
+        'message': "Aggregated data returned successfully!",
+        'data': consolidated_json,
+    }
