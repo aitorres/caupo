@@ -45,6 +45,17 @@ export interface ResultListResponse extends BaseResponse {
   data: Result[]
 }
 
+export interface ConsolidatedResult {
+  algorithm: string,
+  embedder: string,
+  valid_entries: number,
+  sil_score: number | null,
+}
+
+export interface ConsolidatedResultsResponse extends BaseResponse {
+  data: ConsolidatedResult[]
+}
+
 export class ClustersService {
   static baseUrl = 'https://api.caupo.xyz/clusters';
 
@@ -98,5 +109,11 @@ export class ClustersService {
         tag,
       },
     ) as AxiosPromise<ResultListResponse>;
+  }
+
+  public static getConsolidatedResults(frequency: string): AxiosPromise<ConsolidatedResultsResponse> {
+    const url = `${this.baseUrl}/results/consolidated/${frequency}`;
+
+    return HttpService.get(url) as AxiosPromise<ConsolidatedResultsResponse>;
   }
 }
