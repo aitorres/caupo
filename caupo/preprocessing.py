@@ -45,7 +45,9 @@ def get_stopwords() -> Set[str]:
     Returns a set with the stopwords to consider in the project
     """
 
-    spanish_stopwords = set(stopwords.words('spanish')).union({"q", "wtf", "csm", "bla", "blah", "xq", "etc", "vs"})
+    spanish_stopwords = set(stopwords.words('spanish')).union(
+        {"q", "wtf", "csm", "bla", "blah", "xq", "etc", "vs", "xd"}
+    )
     spanish_stopwords_no_accent = set(list(map(map_strange_characters, spanish_stopwords)))
 
     # We manually add laughter
