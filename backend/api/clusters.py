@@ -109,3 +109,53 @@ def get_silhouette_score() -> Tuple[Dict[str, Any], int]:
         'message': "Result fetched successfully.",
         'data': sil_score,
     }, 200
+
+
+@blueprint.route('/results/list', methods=["POST"])
+def get_valid_results() -> Tuple[Dict[str, Any], int]:
+    """
+    Returns all valid silhouette scores for a valid result (combinaiton of frequency and tag)
+    """
+
+    data = request.json
+    frequency = data.get('frequency')
+    tag = data.get('tag')
+    if None in [frequency, tag]:
+        return {
+            'httpStatus': 400,
+            'message': "Invalid params!",
+            'data': None,
+        }, 400
+
+    logger.info(
+        "Requested silhouette score with freq `%s`, tag `%s`",
+        frequency, tag)
+
+    query_filter = {
+        'frequency': frequency,
+        'tag': tag,
+        'success': True,
+    }
+    results = list(RESULT_COLLECTION.find(
+        query_filter,
+        {
+            'frequency': 1,
+            'tag': 1,
+            'algorithm': 1,
+            'embedder': 1,
+            'topics': 1,
+            'clusterThemes': 1,
+            'time': 1,
+            'averageSentiment': 1,
+            'scores': 1
+        }
+    ))
+
+    valid_results = [r for r in results if r["scores"]["silhouette"] is not None]
+    sorted_results = sorted(valid_results, key=lambda r: r["scores"]["silhouette"])
+
+    return {
+        'httpStatus': 200,
+        'message': "Results fetched successfully.",
+        'data': sorted_results,
+    }, 200
