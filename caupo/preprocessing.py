@@ -71,6 +71,10 @@ def map_strange_characters(phrase):
         'í': 'i',
         'ó': 'o',
         'ú': 'u',
+        'ü': 'u',
+        'ç': 'c',
+        'å': 'a',
+        'ã': 'a',
         '\n': ' ',
     }
 
@@ -143,16 +147,15 @@ def preprocess_v2(tweet: str, should_stem: bool = False) -> str:
 
     stopwords = get_stopwords()
 
-    # remove digits, numbers, @mentions
-    tweet = " ".join(
-        filter(
-            lambda x: not x.startswith("@") and not x.startswith('http') and not x.isdigit() and not x[0].isdigit() and not x[-1].isdigit(),
-            tweet.split()
-        )
-    )
+    def keep_token(token: str) -> bool:
+        """Determines whether a token should remain in the tweet text"""
+        if token.startswith("@") or token.startswith("#") or token.startswith("http"):
+            return False
 
-    # remove meoji
-    tweet = remove_emoji(tweet)
+        return not token.isdigit() and not token[0].isdigit() and not token[-1].isdigit()
+
+    # remove emoji, digits, numbers, @mentions, #hashtags, urls
+    tweet = remove_emoji(" ".join(filter(keep_token, tweet.split())))
 
     # remove punctuation
     base_tweet = " ".join(
