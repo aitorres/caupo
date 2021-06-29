@@ -68,7 +68,8 @@ def transform_types_for_database(obj: Any) -> Any:
 def get_results_collection() -> pymongo.collection.Collection:
     """Returns the appropriate collection where results information should be stored"""
 
-    return db.results
+    # return db.results
+    return db.new_results
 
 
 def result_already_exists(frequency: str, tag: str, algorithm: str, embedder: str) -> bool:
