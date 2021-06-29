@@ -71,6 +71,7 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
     # Normalizing tweets
     logger.debug("Cleaning tweets")
     cleaned_tweets = list(set(map(preprocess_v2, tweets)))
+    cleaned_tweets = [c for c in cleaned_tweets if len(c) > 0]
     logger.info("Collection of cleaned tweets has a size of %s tweets", len(cleaned_tweets))
 
     # Applying clustering and reporting tweets
@@ -321,6 +322,7 @@ def main() -> None:
 
     logger.debug("Cleaning corpus")
     cleaned_corpus = list(set(map(preprocess_v2, corpus)))
+    cleaned_corpus = [c for c in cleaned_corpus if len(c) > 0]
     logger.info("Cleaned corpus has %s tweets", len(cleaned_corpus))
 
     # Getting vector embedders
