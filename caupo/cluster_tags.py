@@ -211,9 +211,9 @@ def cluster_tag(tag: Tag, embedder_functions: Dict[str, Callable[[List[str]], Li
             tweet_clusters = get_clusters_from_labels(cleaned_tweets, labels)
 
             top_n_amount_per_frequency = {
-                'daily': 3,
-                'weekly': 4,
-                'monthly': 6,
+                'daily': 5,
+                'weekly': 8,
+                'monthly': 10,
             }
             top_n_amount = top_n_amount_per_frequency[frequency]
             cluster_themes = {}
