@@ -15,7 +15,10 @@ def get_top_ngrams(phrases: List[str], top_n_amount: int = 3, ngram_size: int = 
     """Returns a string containing the `n` top bigrams of a set of phrases"""
 
     tokenized_phrases = [word_tokenize(phrase, language="spanish") for phrase in phrases]
-    tokenized_phrases = [token for token in tokenized_phrases if len(token) > 2]
+    tokenized_phrases = [
+        [token for token in phrase if len(token) > 2]
+        for phrase in tokenized_phrases
+    ]
     ngrams_list = [ngrams(tkn_phrase, ngram_size) for tkn_phrase in tokenized_phrases]
     ngrams_flat_list = [ngram for ngram_list in ngrams_list for ngram in ngram_list]
     ngrams_distribution = FreqDist(ngrams_flat_list)
