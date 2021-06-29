@@ -46,7 +46,7 @@ def get_stopwords() -> Set[str]:
     """
 
     spanish_stopwords = set(stopwords.words('spanish')).union(
-        {"q", "wtf", "csm", "bla", "blah", "xq", "etc", "vs", "xd"}
+        {"q", "wtf", "csm", "bla", "blah", "xq", "etc", "vs", "xd", "jajajajjajajajajaa"}
     )
     spanish_stopwords_no_accent = set(list(map(map_strange_characters, spanish_stopwords)))
 
