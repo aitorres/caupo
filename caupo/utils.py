@@ -149,7 +149,7 @@ def get_text_from_all_tweets(exclude_uninteresting_usernames=True, exclude_unint
     return [t["full_text"] for t in tweets]
 
 
-def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True):
+def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True, point_size=2):
     """
     Given a numpy array with (2D-assumed) vectors, a filename, and a series of labels, stores
     a scatterplot and stores it as a PNG image in the received filename.
@@ -167,8 +167,8 @@ def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True):
         labels = [label for label in labels if label != -1]
 
     if len(set(labels)) <= 14:
-        color_palette = ['#00394B', '#FF6792', '#66ff66', '#8855BB', '#FFFF11', '#1BFCFF', '#88bbff',
-                         '#3300FF', '#87dd72', '#DA66AC', '#dfb026', '#FF89AC', '#FFACBF', '#b13504']
+        color_palette = ['#b13504', '#87dd72', '#4aa6f5', '#00394B', '#FF6792', '#66ff66', '#dfb026',
+                         '#8855BB', '#FFFF11', '#1BFCFF', '#3300FF', '#DA66AC', '#FF89AC', '#FFACBF']
     elif len(set(labels)) <= 51:
         color_palette = ['#b13504', '#00394B', '#4aa6f5', '#8fa755', '#FF6792', '#66ff66', '#8855BB',
                          '#B08286', '#005B6E', '#fd902a', '#58fd14', '#FF6792', '#2D3E48', '#59555C',
@@ -197,7 +197,7 @@ def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True):
         color_palette.append("#A6A6A6")  # gray would be used for a "-1" label)
 
     colors = [color_palette[i] for i in labels]
-    plt.scatter(vectors[:, 0], vectors[:, 1], c=colors, s=2)
+    plt.scatter(vectors[:, 0], vectors[:, 1], c=colors, s=point_size)
     plt.title(title)
     plt.savefig(filename)
     plt.close()
