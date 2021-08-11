@@ -170,14 +170,14 @@ def plot_clusters(vectors, filename, title, labels=None, plot_outliers=True):
         color_palette = ['#00394B', '#FF6792', '#66ff66', '#8855BB', '#FFFF11', '#1BFCFF', '#88bbff',
                          '#3300FF', '#87dd72', '#DA66AC', '#dfb026', '#FF89AC', '#FFACBF', '#b13504']
     elif len(set(labels)) <= 51:
-        color_palette = ['#00394B', '#FF6792', '#66ff66', '#8855BB', '#005BAF', '#1122dd', '#88bbff',
+        color_palette = ['#b13504', '#00394B', '#4aa6f5', '#8fa755', '#FF6792', '#66ff66', '#8855BB',
                          '#B08286', '#005B6E', '#fd902a', '#58fd14', '#FF6792', '#2D3E48', '#59555C',
                          '#6A5E65', '#FFCCFF', '#967479', '#1B353F', '#dfb026', '#0A2C37', '#DA66AC',
                          '#615961', '#012733', '#736269', '#9BCADB', '#00AAAA', '#36424C', '#846B71',
-                         '#13303B', '#3300FF', '#FFFF11', '#1BFCFF', '#f2f510', '#474B54', '#7C676D',
+                         '#13303B', '#3300FF', '#FFFF11', '#1BFCFF', '#f2f510', '#474B54', '#1122dd',
                          '#9F797D', '#505058', '#E59D9F', '#243944', '#3E4750', '#CA9092', '#04668C',
-                         '#8f47ab', '#a30765', '#23dd94', '#4aa6f5', '#8fa755', '#f3efa4', '#0259c9',
-                         '#b13504', '#755b01']
+                         '#8f47ab', '#a30765', '#23dd94', '#f3efa4', '#0259c9', '#005BAF', '#7C676D',
+                         '#88bbff', '#755b01']
     else:
         logger.warning("Won't plot more than 51 clusters!")
         return
