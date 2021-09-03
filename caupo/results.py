@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import ludovico
 
 VALID_FREQUENCIES = [
     'daily',
@@ -41,6 +42,30 @@ def calculate_average_silhouette(frequency: str, data: pd.DataFrame) -> pd.DataF
     return grouped_data.mean().sort_values(by=["sil_score"], ascending=False)
 
 
+def calculate_average_davies_bouldin(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
+    """Given raw result data, finds average davies bouldin data for a given frequency"""
+
+    assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
+
+    data = data.loc[data["frequency"] == frequency]
+    data["db_score"] = data["db_score"].apply(lambda x: "NaN" if str(x) == "None" else x).astype("float32")
+
+    grouped_data = data[["algorithm", "embedder", "db_score"]].groupby(["algorithm", "embedder"])
+    return grouped_data.mean().sort_values(by=["db_score"], ascending=False)
+
+
+def calculate_average_calinski_harabasz(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
+    """Given raw result data, finds average davies bouldin data for a given frequency"""
+
+    assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
+
+    data = data.loc[data["frequency"] == frequency]
+    data["ch_score"] = data["ch_score"].apply(lambda x: "NaN" if str(x) == "None" else x).astype("float32")
+
+    grouped_data = data[["algorithm", "embedder", "ch_score"]].groupby(["algorithm", "embedder"])
+    return grouped_data.mean().sort_values(by=["ch_score"], ascending=False)
+
+
 def calculate_consolidated_data(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
     """Given raw result data, calculates a consolidated dataframe"""
 
@@ -55,6 +80,31 @@ def calculate_consolidated_data(frequency: str, data: pd.DataFrame) -> pd.DataFr
     consolidated["weighted_score"] = (consolidated["sil_score"] * consolidated["valid_entries"]) / max_entries_value
 
     return consolidated.sort_values(by=["weighted_score", "sil_score"], ascending=False)
+
+
+def consolidate_three_averages(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
+    """Given raw result data, consolidates the average of the three measurements"""
+
+    assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
+
+    avg_silhouette_scores = calculate_average_silhouette(frequency, data.copy())
+    avg_davies_bouldin = calculate_average_davies_bouldin(frequency, data.copy())
+    avg_calinski_harabasz = calculate_average_calinski_harabasz(frequency, data.copy())
+
+    consolidated = pd.concat(
+        [avg_silhouette_scores, avg_davies_bouldin, avg_calinski_harabasz],
+        axis=1
+    ).rename(
+        {
+            'embedder': 'Modelo',
+            'algorithm': 'Algoritmo',
+            'sil_score': 'Silueta',
+            'db_score': 'Davies-Bouldin',
+            'ch_score': 'Calinski-Harabasz',
+        }
+    )
+
+    return consolidated.sort_values(by=["Silueta"], ascending=False)
 
 
 def read_csv(file_path: Path) -> pd.DataFrame:
@@ -84,6 +134,27 @@ def main() -> None:
         print("Avg. Silhouette Score & valid entries for each algorithm and embedding, over all entries")
         print(consolidated_data)
     consolidated_data.to_csv(output_file_path)
+
+    # Get consolidated table with three measurements
+    consolidated_three_averages_data = consolidate_three_averages(args.frequency, data.copy())
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print("Avg metrics for each algorithm and embedding, over all entries")
+        print(consolidated_three_averages_data)
+    print(f"Printing TeX table for Three averages with frequency={args.frequency}")
+    table = ludovico.generate_comparison_for_two_columns(
+        consolidated_three_averages_data.round(3).reset_index(),
+        "Algoritmo",
+        "Modelo",
+        ["Silueta", "Davies-Bouldin", "Calinski-Harabasz"],
+        add_hlines=True,
+        data_highlight={
+            'Silueta': 'max',
+            'Davies-Bouldin': 'min',
+            'Calinski-Harabasz': 'max',
+        },
+        table_width=0.5,
+    )
+    print(table)
 
 
 if __name__ == "__main__":
