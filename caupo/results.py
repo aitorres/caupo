@@ -105,8 +105,9 @@ def consolidate_three_averages(frequency: str, data: pd.DataFrame) -> pd.DataFra
             'ch_score': 'Calinski-Harabasz',
         }
     )
+    short_names = get_embedder_function_short_names()
     consolidated["Modelo"] = [
-        get_embedder_function_short_names(modelo)
+        short_names[modelo]
         for modelo in consolidated["Modelo"].tolist()
     ]
 
