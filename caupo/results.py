@@ -94,8 +94,8 @@ def consolidate_three_averages(frequency: str, data: pd.DataFrame) -> pd.DataFra
     consolidated = pd.concat(
         [avg_silhouette_scores, avg_davies_bouldin, avg_calinski_harabasz],
         axis=1
-    ).rename(
-        {
+    ).round(3).reset_index().rename(
+        columns={
             'embedder': 'Modelo',
             'algorithm': 'Algoritmo',
             'sil_score': 'Silueta',
@@ -142,7 +142,7 @@ def main() -> None:
         print(consolidated_three_averages_data)
     print(f"Printing TeX table for Three averages with frequency={args.frequency}")
     table = ludovico.generate_comparison_for_two_columns(
-        consolidated_three_averages_data.round(3).reset_index(),
+        consolidated_three_averages_data,
         "Algoritmo",
         "Modelo",
         ["Silueta", "Davies-Bouldin", "Calinski-Harabasz"],
