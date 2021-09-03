@@ -181,6 +181,29 @@ def get_embedder_function_names() -> List[str]:
     return [*embedder_names, *reduced_embedder_names]
 
 
+def get_embedder_function_short_names() -> Dict[str, str]:
+    """
+    Returns a mapping of short names for the available embedders names
+    """
+
+    embedder_names = {
+        'FastText (CBOW)': 'FastText (CBOW)',
+        'FastText (Skipgram)': 'FastText (Skipgram)',
+        'Doc2Vec': 'Doc2Vec',
+        'GPT2 Small Spanish': 'GPT2 Small Spanish',
+        'BERT: TinyBERT-spanish-uncased-finetuned-ner': 'BERT: TinyBERT',
+        'BERT: paraphrase-xlm-r-multilingual-v1': 'BERT: paraphrase-multi',
+        'BERT: distiluse-base-multilingual-cased-v2': 'BERT: distiluse-multi',
+    }
+
+    reduced_embedder_names = {
+        f"{key} (50-d)": f"{value} (50-d)"
+        for key, value in embedder_names.items()
+    }
+
+    return {**embedder_names, **reduced_embedder_names}
+
+
 def main() -> None:
     """
     Run a small test program for embedders

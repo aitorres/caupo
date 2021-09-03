@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 import ludovico
 
+from caupo.embeddings import get_embedder_function_short_names
+
 VALID_FREQUENCIES = [
     'daily',
     'weekly',
@@ -103,6 +105,10 @@ def consolidate_three_averages(frequency: str, data: pd.DataFrame) -> pd.DataFra
             'ch_score': 'Calinski-Harabasz',
         }
     )
+    consolidated["Modelo"] = [
+        get_embedder_function_short_names(modelo)
+        for modelo in consolidated["Modelo"].tolist()
+    ]
 
     return consolidated.sort_values(by=["Silueta"], ascending=False)
 
@@ -152,7 +158,7 @@ def main() -> None:
             'Davies-Bouldin': 'min',
             'Calinski-Harabasz': 'max',
         },
-        table_width=0.5,
+        table_width=0.75,
     )
     print(table)
 
