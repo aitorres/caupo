@@ -115,6 +115,47 @@ def consolidate_three_averages(frequency: str, data: pd.DataFrame) -> pd.DataFra
     return consolidated.sort_values(by=["Silueta"], ascending=False)
 
 
+def consolidate_three_weighted_averages(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Given raw result data, consolidates the weighted average of the three measurements
+    according to the valid entries they did
+    """
+
+    assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
+
+    avg_silhouette_scores = calculate_average_silhouette(frequency, data.copy())
+    avg_davies_bouldin = calculate_average_davies_bouldin(frequency, data.copy())
+    avg_calinski_harabasz = calculate_average_calinski_harabasz(frequency, data.copy())
+    valid_entries = calculate_valid_entries(frequency, data.copy())
+
+    consolidated = pd.concat(
+        [avg_silhouette_scores, avg_davies_bouldin, avg_calinski_harabasz, valid_entries],
+        axis=1
+    ).reset_index()
+
+    max_entries_value = np.max(consolidated['valid_entries'].tolist())
+    consolidated["sil_score"] = (consolidated["sil_score"] * consolidated["valid_entries"]) / max_entries_value
+    consolidated["db_score"] = (consolidated["db_score"] * consolidated["valid_entries"]) / max_entries_value
+    consolidated["ch_score"] = (consolidated["ch_score"] * consolidated["valid_entries"]) / max_entries_value
+
+    consolidated = consolidated.rename(
+        columns={
+            'embedder': 'Modelo',
+            'algorithm': 'Algoritmo',
+            'sil_score': 'Silueta',
+            'db_score': 'Davies-Bouldin',
+            'ch_score': 'Calinski-Harabasz',
+        }
+    )
+    short_names = get_embedder_function_short_names()
+    consolidated["Modelo"] = [
+        short_names[modelo]
+        for modelo in consolidated["Modelo"].tolist()
+    ]
+
+    return consolidated.sort_values(by=["Silueta"], ascending=False).round(3)
+
+
 def read_csv(file_path: Path) -> pd.DataFrame:
     """Given a path to a file, reads the file and returns a dataframe"""
 
@@ -186,6 +227,37 @@ def main() -> None:
     table_list.append(table_three_averages)
     print(table_three_averages)
 
+    # Get consolidated table with three weighted measurements
+    consolidated_three_weighted_averages_data = consolidate_three_weighted_averages(args.frequency, data.copy())
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print("Weighted avg metrics for each algorithm and embedding, over all entries")
+        print(consolidated_three_weighted_averages_data)
+    print(f"Printing TeX table for Three weighted averages with frequency={args.frequency}")
+    table_three_weighted_averages = ludovico.generate_comparison_for_two_columns(
+        consolidated_three_weighted_averages_data,
+        "Modelo",
+        "Algoritmo",
+        ["Silueta", "Davies-Bouldin", "Calinski-Harabasz"],
+        add_hlines=True,
+        data_highlight={
+            'Silueta': 'max',
+            'Davies-Bouldin': 'min',
+            'Calinski-Harabasz': 'max',
+        },
+        table_width=1,
+        table_label="tabla_tres_metricas_ponderadas",
+        table_name=(
+            "Promedio ponderado de métricas de validación interna por resultados válidos "
+            f"según configuración experimental con frecuencia {frequency_name}"
+        ),
+        table_long_name=(
+            "Promedio ponderado de métricas de validación interna (coeficiente de silueta, "
+            "coeficiente de Davies-Bouldin y coeficiente de Calinski-Harabasz) por resultados válidos"
+            f" según algoritmo y modelo utilizados con frecuencia {frequency_name}."
+        )
+    )
+    table_list.append(table_three_weighted_averages)
+    print(table_three_weighted_averages)
 
     # Storing tables
     with open(output_table_file_path, "w") as file_handler:
