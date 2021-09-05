@@ -145,6 +145,7 @@ def consolidate_three_weighted_averages(frequency: str, data: pd.DataFrame) -> p
             'sil_score': 'Silueta',
             'db_score': 'Davies-Bouldin',
             'ch_score': 'Calinski-Harabasz',
+            'valid_entries': 'Resultados válidos',
         }
     )
     short_names = get_embedder_function_short_names()
@@ -237,12 +238,13 @@ def main() -> None:
         consolidated_three_weighted_averages_data,
         "Modelo",
         "Algoritmo",
-        ["Silueta", "Davies-Bouldin", "Calinski-Harabasz"],
+        ["Silueta", "Davies-Bouldin", "Calinski-Harabasz", "Resultados válidos"],
         add_hlines=True,
         data_highlight={
             'Silueta': 'max',
             'Davies-Bouldin': 'min',
             'Calinski-Harabasz': 'max',
+            'Resultados válidos': 'max',
         },
         table_width=1,
         table_label="tabla_tres_metricas_ponderadas",
