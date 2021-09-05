@@ -188,12 +188,12 @@ def get_embedder_function_short_names() -> Dict[str, str]:
 
     embedder_names = {
         'FastText (CBOW)': 'FastText (CBOW)',
-        'FastText (Skipgram)': 'FastText (Skipgram)',
+        'FastText (Skipgram)': 'FastText (SG)',
         'Doc2Vec': 'Doc2Vec',
-        'GPT2 Small Spanish': 'GPT2 Small Spanish',
+        'GPT2 Small Spanish': 'GPT2 Small Sp.',
         'BERT: TinyBERT-spanish-uncased-finetuned-ner': 'BERT: TinyBERT',
-        'BERT: paraphrase-xlm-r-multilingual-v1': 'BERT: paraphrase-multi',
-        'BERT: distiluse-base-multilingual-cased-v2': 'BERT: distiluse-multi',
+        'BERT: paraphrase-xlm-r-multilingual-v1': 'BERT: paraphrase',
+        'BERT: distiluse-base-multilingual-cased-v2': 'BERT: distiluse',
     }
 
     reduced_embedder_names = {
