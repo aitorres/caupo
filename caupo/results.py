@@ -151,7 +151,7 @@ def consolidate_three_averages(frequency: str, data: pd.DataFrame) -> pd.DataFra
         for modelo in consolidated["Modelo"].tolist()
     ]
 
-    return consolidated.sort_values(by=["Silueta"], ascending=False)
+    return consolidated.sort_values(by=["Modelo", "Algoritmo"])
 
 
 def consolidate_three_weighted_averages(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
@@ -193,7 +193,7 @@ def consolidate_three_weighted_averages(frequency: str, data: pd.DataFrame) -> p
         for modelo in consolidated["Modelo"].tolist()
     ]
 
-    return consolidated.sort_values(by=["Silueta"], ascending=False).round(3)
+    return consolidated.round(3).sort_values(by=["Modelo", "Algoritmo"])
 
 
 def consolidate_cluster_nature_values(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
@@ -228,7 +228,7 @@ def consolidate_cluster_nature_values(frequency: str, data: pd.DataFrame) -> pd.
         for modelo in consolidated["Modelo"].tolist()
     ]
 
-    return consolidated.round(3)
+    return consolidated.round(3).sort_values(by=["Modelo", "Algoritmo"])
 
 
 def read_csv(file_path: Path) -> pd.DataFrame:
