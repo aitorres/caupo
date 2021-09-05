@@ -53,7 +53,7 @@ def calculate_average_noise_percentage(frequency: str, data: pd.DataFrame) -> pd
 
     data = data.loc[data["frequency"] == frequency]
     data = data.loc[data["noise_percentage"] != "None"]
-    data["noise_percentage"] = data["noise_percentage"].astype("float32")
+    data["noise_percentage"] = data["noise_percentage"].astype("float32") * 100.0
 
     grouped_data = data[["algorithm", "embedder", "noise_percentage"]].groupby(["algorithm", "embedder"])
     return grouped_data.mean().sort_values(by=["noise_percentage"], ascending=False)
