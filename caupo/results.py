@@ -282,7 +282,7 @@ def main() -> None:
             'Calinski-Harabasz': 'max',
         },
         table_width=1,
-        table_label="tabla_tres_metricas",
+        table_label=f"tabla_tres_metricas_{frequency_name}",
         table_name=(
             "Promedio de métricas de validación interna según configuración "
             f"experimental con frecuencia {frequency_name}"
@@ -315,7 +315,7 @@ def main() -> None:
             'Resultados válidos': 'max',
         },
         table_width=1,
-        table_label="tabla_tres_metricas_ponderadas",
+        table_label=f"tabla_tres_metricas_ponderadas_{frequency_name}",
         table_name=(
             "Promedio ponderado de métricas de validación interna por resultados válidos "
             f"según configuración experimental con frecuencia {frequency_name}"
@@ -342,7 +342,7 @@ def main() -> None:
         ["Cantidad de clústers", "Tamaño de clústers", "Ruido (%)",],
         add_hlines=True,
         table_width=1,
-        table_label="tabla_nat_clusters",
+        table_label=f"tabla_nat_clusters_{frequency_name}",
         table_name=(
             "Promedios de cantidad de clústers, tamaño de clústers, y porcentaje de ruido "
             f"según configuración experimental con frecuencia {frequency_name}"
