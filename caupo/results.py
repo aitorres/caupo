@@ -143,6 +143,7 @@ def main() -> None:
 
     print("Eliminating 50 dimension models from data")
     data = data[~data["embedder"].str.contains("50")]
+    frequency_name = "diaria" if args.frequency == 'daily' else 'mensual'
 
     # Get average of silhouette score
     consolidated_data = calculate_consolidated_data(args.frequency, data.copy())
@@ -159,7 +160,7 @@ def main() -> None:
         print("Avg metrics for each algorithm and embedding, over all entries")
         print(consolidated_three_averages_data)
     print(f"Printing TeX table for Three averages with frequency={args.frequency}")
-    table = ludovico.generate_comparison_for_two_columns(
+    table_three_averages = ludovico.generate_comparison_for_two_columns(
         consolidated_three_averages_data,
         "Modelo",
         "Algoritmo",
@@ -172,16 +173,18 @@ def main() -> None:
         },
         table_width=1,
         table_label="tabla_tres_metricas",
-        table_name="Comparación de métricas de validación interna según configuración experimental",
+        table_name=(
+            "Promedio de métricas de validación interna según configuración "
+            f"experimental con frecuencia {frequency_name}"
+        ),
         table_long_name=(
-            "Comparación de métricas de validación interna (coeficiente de silueta, "
+            "Promedio de métricas de validación interna (coeficiente de silueta, "
             "coeficiente de Davies-Bouldin y coeficiente de Calinski-Harabasz) según "
-            "algoritmo y modelo utilizados. Se resalta el mejor valor obtenido"
-            " para cada métrica."
+            f"algoritmo y modelo utilizados con frecuencia {frequency_name}."
         )
     )
-    table_list.append(table)
-    print(table)
+    table_list.append(table_three_averages)
+    print(table_three_averages)
 
 
     # Storing tables
