@@ -33,6 +33,39 @@ def calculate_valid_entries(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
     return grouped_data.count()
 
 
+def calculate_average_n_clusters(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
+    """Given raw result data, finds average n_clusters data for a given frequency"""
+
+    assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
+
+    data = data.loc[data["frequency"] == frequency]
+
+    grouped_data = data[["algorithm", "embedder", "n_clusters"]].groupby(["algorithm", "embedder"])
+    return grouped_data.mean().sort_values(by=["n_clusters"], ascending=False)
+
+
+def calculate_average_noise_percentage(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
+    """Given raw result data, finds average noise_percentage data for a given frequency"""
+
+    assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
+
+    data = data.loc[data["frequency"] == frequency]
+
+    grouped_data = data[["algorithm", "embedder", "noise_percentage"]].groupby(["algorithm", "embedder"])
+    return grouped_data.mean().sort_values(by=["noise_percentage"], ascending=False)
+
+
+def calculate_average_avg_cluster_size(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
+    """Given raw result data, finds average avg_cluster_size data for a given frequency"""
+
+    assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
+
+    data = data.loc[data["frequency"] == frequency]
+
+    grouped_data = data[["algorithm", "embedder", "avg_cluster_size"]].groupby(["algorithm", "embedder"])
+    return grouped_data.mean().sort_values(by=["avg_cluster_size"], ascending=False)
+
+
 def calculate_average_silhouette(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
     """Given raw result data, finds average silhouette data for a given frequency"""
 
@@ -157,6 +190,41 @@ def consolidate_three_weighted_averages(frequency: str, data: pd.DataFrame) -> p
     return consolidated.sort_values(by=["Silueta"], ascending=False).round(3)
 
 
+def consolidate_cluster_nature_values(frequency: str, data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Given raw result data, consolidates the weighted average of the three measurements
+    according to the valid entries they did
+    """
+
+    assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
+
+    avg_n_clusters = calculate_average_n_clusters(frequency, data.copy())
+    avg_noise_percentage = calculate_average_noise_percentage(frequency, data.copy())
+    avg_cluster_size = calculate_average_avg_cluster_size(frequency, data.copy())
+
+    consolidated = pd.concat(
+        [avg_n_clusters, avg_noise_percentage, avg_cluster_size],
+        axis=1
+    ).reset_index()
+
+    consolidated = consolidated.rename(
+        columns={
+            'embedder': 'Modelo',
+            'algorithm': 'Algoritmo',
+            'n_clusters': 'Cantidad de clústers',
+            'noise_percentage': 'Ruido (%)',
+            'cluster_size': 'Tamaño de clústers',
+        }
+    )
+    short_names = get_embedder_function_short_names()
+    consolidated["Modelo"] = [
+        short_names[modelo]
+        for modelo in consolidated["Modelo"].tolist()
+    ]
+
+    return consolidated.round(3)
+
+
 def read_csv(file_path: Path) -> pd.DataFrame:
     """Given a path to a file, reads the file and returns a dataframe"""
 
@@ -260,6 +328,32 @@ def main() -> None:
     )
     table_list.append(table_three_weighted_averages)
     print(table_three_weighted_averages)
+
+    # Get consolidated table with cluster nature measurements
+    consolidated_cluster_data = consolidate_cluster_nature_values(args.frequency, data.copy())
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print("Cluster nature metrics for each algorithm and embedding, over all entries")
+        print(consolidated_cluster_data)
+    print(f"Printing TeX table for Cluster nature metrics with frequency={args.frequency}")
+    table_cluster_data = ludovico.generate_comparison_for_two_columns(
+        consolidated_cluster_data,
+        "Modelo",
+        "Algoritmo",
+        ["Cantidad de clústers", "Tamaño de clústers", "Ruido (%)",],
+        add_hlines=True,
+        table_width=1,
+        table_label="tabla_nat_clusters",
+        table_name=(
+            "Promedios de cantidad de clústers, tamaño de clústers, y porcentaje de ruido "
+            f"según configuración experimental con frecuencia {frequency_name}"
+        ),
+        table_long_name=(
+            "Promedios de cantidad de clústers, tamaño de clústers, y porcentaje de ruido"
+            f" según algoritmo y modelo utilizados con frecuencia {frequency_name}."
+        )
+    )
+    table_list.append(table_cluster_data)
+    print(table_cluster_data)
 
     # Storing tables
     with open(output_table_file_path, "w") as file_handler:
