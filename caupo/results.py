@@ -39,6 +39,8 @@ def calculate_average_n_clusters(frequency: str, data: pd.DataFrame) -> pd.DataF
     assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
 
     data = data.loc[data["frequency"] == frequency]
+    data = data.loc[data["n_clusters"] != "None"]
+    data["n_clusters"] = data["n_clusters"].astype("int")
 
     grouped_data = data[["algorithm", "embedder", "n_clusters"]].groupby(["algorithm", "embedder"])
     return grouped_data.mean().sort_values(by=["n_clusters"], ascending=False)
@@ -50,6 +52,8 @@ def calculate_average_noise_percentage(frequency: str, data: pd.DataFrame) -> pd
     assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
 
     data = data.loc[data["frequency"] == frequency]
+    data = data.loc[data["noise_percentage"] != "None"]
+    data["noise_percentage"] = data["noise_percentage"].astype("float32")
 
     grouped_data = data[["algorithm", "embedder", "noise_percentage"]].groupby(["algorithm", "embedder"])
     return grouped_data.mean().sort_values(by=["noise_percentage"], ascending=False)
@@ -61,6 +65,8 @@ def calculate_average_avg_cluster_size(frequency: str, data: pd.DataFrame) -> pd
     assert frequency in VALID_FREQUENCIES, "Unknown frequency value"
 
     data = data.loc[data["frequency"] == frequency]
+    data = data.loc[data["avg_cluster_size"] != "None"]
+    data["avg_cluster_size"] = data["avg_cluster_size"].astype("float32")
 
     grouped_data = data[["algorithm", "embedder", "avg_cluster_size"]].groupby(["algorithm", "embedder"])
     return grouped_data.mean().sort_values(by=["avg_cluster_size"], ascending=False)
@@ -213,7 +219,7 @@ def consolidate_cluster_nature_values(frequency: str, data: pd.DataFrame) -> pd.
             'algorithm': 'Algoritmo',
             'n_clusters': 'Cantidad de clústers',
             'noise_percentage': 'Ruido (%)',
-            'cluster_size': 'Tamaño de clústers',
+            'avg_cluster_size': 'Tamaño de clústers',
         }
     )
     short_names = get_embedder_function_short_names()
