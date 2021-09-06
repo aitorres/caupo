@@ -6,6 +6,7 @@ import bson.regex
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+from wordcloud import WordCloud
 
 from caupo.database import get_db
 
@@ -231,3 +232,33 @@ def plot_top_words(model, feature_names, n_top_words, title, filename):
     plt.subplots_adjust(top=0.90, bottom=0.05, wspace=0.90, hspace=0.3)
     plt.savefig(filename)
     plt.close()
+
+
+def generate_wordcloud_from_tag(frequency: str, tag: str, filename: str) -> None:
+    """Generates a wordcloud on filename for the given frequency and tag"""
+
+    collection_name = f"entities_{frequency}"
+    collection = getattr(db, collection_name)
+    entities = collection.find(
+        {
+            'tag': tag,
+        },
+        {
+        "_id": False,
+        "tag": True,
+        "frequency": True,
+        "tweets_amount": True,
+        "entities": True,
+        "hashtags": True,
+        }
+    ).limit(1)
+
+    entities = list(entities)
+    if not entities:
+
+        return
+
+    entity = entities[0]
+
+    wc = WordCloud(width=700, height=350, min_word_length=4, max_words=80).generate(" ".join(entity['entities']['persons']['list']))
+    wc.to_image().save(filename, 'png')
