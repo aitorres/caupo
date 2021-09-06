@@ -40,6 +40,7 @@ def calculate_average_n_clusters(frequency: str, data: pd.DataFrame) -> pd.DataF
 
     data = data.loc[data["frequency"] == frequency]
     data = data.loc[data["n_clusters"] != "None"]
+    data = data.loc[data["sil_score"] != "None"]
     data["n_clusters"] = data["n_clusters"].astype("int")
 
     grouped_data = data[["algorithm", "embedder", "n_clusters"]].groupby(["algorithm", "embedder"])
@@ -53,6 +54,7 @@ def calculate_average_noise_percentage(frequency: str, data: pd.DataFrame) -> pd
 
     data = data.loc[data["frequency"] == frequency]
     data = data.loc[data["noise_percentage"] != "None"]
+    data = data.loc[data["sil_score"] != "None"]
     data["noise_percentage"] = data["noise_percentage"].astype("float32") * 100.0
 
     grouped_data = data[["algorithm", "embedder", "noise_percentage"]].groupby(["algorithm", "embedder"])
@@ -66,6 +68,7 @@ def calculate_average_avg_cluster_size(frequency: str, data: pd.DataFrame) -> pd
 
     data = data.loc[data["frequency"] == frequency]
     data = data.loc[data["avg_cluster_size"] != "None"]
+    data = data.loc[data["sil_score"] != "None"]
     data["avg_cluster_size"] = data["avg_cluster_size"].astype("float32")
 
     grouped_data = data[["algorithm", "embedder", "avg_cluster_size"]].groupby(["algorithm", "embedder"])
@@ -228,7 +231,29 @@ def consolidate_cluster_nature_values(frequency: str, data: pd.DataFrame) -> pd.
         for modelo in consolidated["Modelo"].tolist()
     ]
 
-    return consolidated.round(3).sort_values(by=["Modelo", "Algoritmo"])
+    consolidated = consolidated.round(3)
+
+    # workaround
+    for alg, mod in [
+        ("Mean-Shift", "BERT: paraphrase",),
+        ("Mean-Shift", "BERT: distiluse",),
+    ]:
+        combination_does_not_exist = (
+            consolidated
+            .loc[consolidated["Modelo"] == mod]
+            .loc[consolidated["Algoritmo"] == alg]
+            .shape[0]) == 0
+        if combination_does_not_exist:
+            print(f"Filling {mod}-{alg}-{frequency} on third table")
+            consolidated = consolidated.append({
+                'Modelo': mod,
+                'Algoritmo': alg,
+                'Cantidad de clústers': float('nan'),
+                'Ruido (%)': float('nan'),
+                'Tamaño de clústers': float('nan'),
+            }, ignore_index=True)
+
+    return consolidated.sort_values(by=["Modelo", "Algoritmo"]).round(3)
 
 
 def read_csv(file_path: Path) -> pd.DataFrame:
