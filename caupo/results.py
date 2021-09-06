@@ -284,7 +284,7 @@ def main() -> None:
 
     print("Eliminating 50 dimension models from data")
     data = data[~data["embedder"].str.contains("50")]
-    frequency_name = "diaria" if args.frequency == 'daily' else 'mensual'
+    frequency_name = "diaria" if args.frequency == 'daily' else 'semanal'
 
     # Get average of silhouette score
     consolidated_data = calculate_consolidated_data(args.frequency, data.copy())
