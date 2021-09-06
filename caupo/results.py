@@ -386,6 +386,72 @@ def main() -> None:
     table_list.append(table_cluster_data)
     print(table_cluster_data)
 
+    # Table for specific case: april 28 2021
+    data_april_28 = data[data["tag"] == "2021-04-28"]
+    consolidated_three_averages_data_april_28 = consolidate_three_averages(args.frequency, data_april_28.copy())
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print("Avg metrics for each algorithm and embedding for april 28")
+        print(consolidated_three_averages_data_april_28)
+    print(f"Printing TeX table for Three averages with frequency={args.frequency} for april 28")
+    table_three_averages_april_28 = ludovico.generate_comparison_for_two_columns(
+        consolidated_three_averages_data_april_28,
+        "Modelo",
+        "Algoritmo",
+        ["Silueta", "Davies-Bouldin", "Calinski-Harabasz"],
+        add_hlines=True,
+        data_highlight={
+            'Silueta': 'max',
+            'Davies-Bouldin': 'min',
+            'Calinski-Harabasz': 'max',
+        },
+        table_width=1,
+        table_label=f"tabla_tres_metricas_{frequency_name}_28_abril",
+        table_name=(
+            "Resultado de métricas de validación interna según configuración "
+            f"experimental para el 28 de abril de 2021"
+        ),
+        table_long_name=(
+            "Resultado de métricas de validación interna (coeficiente de silueta, "
+            "coeficiente de Davies-Bouldin y coeficiente de Calinski-Harabasz) según "
+            f"algoritmo y modelo utilizados para el 28 de abril de 2021."
+        )
+    )
+    table_list.append(table_three_averages_april_28)
+    print(table_three_averages_april_28)
+
+    # Table for specific case: april 28 2021
+    data_june_7 = data[data["tag"] == "2021-06-07"]
+    consolidated_three_averages_data_june_7 = consolidate_three_averages(args.frequency, data_june_7.copy())
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print("Avg metrics for each algorithm and embedding for june 7")
+        print(consolidated_three_averages_data_june_7)
+    print(f"Printing TeX table for Three averages with frequency={args.frequency} for june 7")
+    table_three_averages_june_7 = ludovico.generate_comparison_for_two_columns(
+        consolidated_three_averages_data_june_7,
+        "Modelo",
+        "Algoritmo",
+        ["Silueta", "Davies-Bouldin", "Calinski-Harabasz"],
+        add_hlines=True,
+        data_highlight={
+            'Silueta': 'max',
+            'Davies-Bouldin': 'min',
+            'Calinski-Harabasz': 'max',
+        },
+        table_width=1,
+        table_label=f"tabla_tres_metricas_{frequency_name}_7_junio",
+        table_name=(
+            "Resultado de métricas de validación interna según configuración "
+            f"experimental para el 7 de junio de 2021"
+        ),
+        table_long_name=(
+            "Resultado de métricas de validación interna (coeficiente de silueta, "
+            "coeficiente de Davies-Bouldin y coeficiente de Calinski-Harabasz) según "
+            f"algoritmo y modelo utilizados para el 7 de junio de 2021."
+        )
+    )
+    table_list.append(table_three_averages_june_7)
+    print(table_three_averages_june_7)
+
     # Storing tables
     with open(output_table_file_path, "w") as file_handler:
         file_handler.writelines([f"{table}\n\n" for table in table_list])
