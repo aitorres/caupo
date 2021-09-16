@@ -305,12 +305,11 @@ def main() -> None:
         consolidated_three_averages_data,
         "Modelo",
         "Algoritmo",
-        ["Silueta", "Davies-Bouldin", "Calinski-Harabasz"],
+        ["Silueta", "Davies-Bouldin"],
         add_hlines=True,
         data_highlight={
             'Silueta': 'max',
             'Davies-Bouldin': 'min',
-            'Calinski-Harabasz': 'max',
         },
         table_width=1,
         table_label=f"tabla_tres_metricas_{frequency_name}",
@@ -337,12 +336,11 @@ def main() -> None:
         consolidated_three_weighted_averages_data,
         "Modelo",
         "Algoritmo",
-        ["Silueta", "Davies-Bouldin", "Calinski-Harabasz", "Resultados válidos"],
+        ["Silueta", "Davies-Bouldin", "Resultados válidos"],
         add_hlines=True,
         data_highlight={
             'Silueta': 'max',
             'Davies-Bouldin': 'min',
-            'Calinski-Harabasz': 'max',
             'Resultados válidos': 'max',
         },
         table_width=1,
@@ -397,12 +395,11 @@ def main() -> None:
         consolidated_three_averages_data_april_28,
         "Modelo",
         "Algoritmo",
-        ["Silueta", "Davies-Bouldin", "Calinski-Harabasz"],
+        ["Silueta", "Davies-Bouldin"],
         add_hlines=True,
         data_highlight={
             'Silueta': 'max',
             'Davies-Bouldin': 'min',
-            'Calinski-Harabasz': 'max',
         },
         table_width=1,
         table_label=f"tabla_tres_metricas_{frequency_name}_28_abril",
@@ -419,7 +416,7 @@ def main() -> None:
     table_list.append(table_three_averages_april_28)
     print(table_three_averages_april_28)
 
-    # Table for specific case: april 28 2021
+    # Table for specific case: june 07 2021
     data_june_7 = data[data["tag"] == "2021-06-07"]
     consolidated_three_averages_data_june_7 = consolidate_three_averages(args.frequency, data_june_7.copy())
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
@@ -430,12 +427,11 @@ def main() -> None:
         consolidated_three_averages_data_june_7,
         "Modelo",
         "Algoritmo",
-        ["Silueta", "Davies-Bouldin", "Calinski-Harabasz"],
+        ["Silueta", "Davies-Bouldin"],
         add_hlines=True,
         data_highlight={
             'Silueta': 'max',
             'Davies-Bouldin': 'min',
-            'Calinski-Harabasz': 'max',
         },
         table_width=1,
         table_label=f"tabla_tres_metricas_{frequency_name}_7_junio",
