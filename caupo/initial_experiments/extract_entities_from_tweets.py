@@ -5,14 +5,11 @@ and generating word clouds to visualize the result
 
 import logging
 import os
-import time
 from datetime import datetime
 
-import es_core_news_md
-import matplotlib as mpl
 from wordcloud import WordCloud
 
-from caupo.preprocessing import get_stopwords
+from caupo.preprocessing import get_stopwords, nlp
 from caupo.utils import Timer, get_city_modes, get_text_from_all_tweets
 
 # Instantiate logger
@@ -25,7 +22,6 @@ BASE_OUTPUT_FOLDER = f"outputs/extract_entities_from_tweets/{ timestamp }"
 os.makedirs(BASE_OUTPUT_FOLDER)
 
 with Timer("Main script runtime"):
-    nlp = es_core_news_md.load()
     city_modes = get_city_modes().items()
     stop_words = get_stopwords()
 

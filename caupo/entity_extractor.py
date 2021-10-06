@@ -12,10 +12,9 @@ import logging
 from datetime import date
 from typing import Any, Dict, List, Set
 
-import es_core_news_md
 import pymongo
 
-from caupo.preprocessing import map_strange_characters
+from caupo.preprocessing import map_strange_characters, nlp
 from caupo.tags import (Tag, exclude_preexisting_tags,
                         get_collection_by_frequency, get_tags_by_frequency)
 
@@ -219,14 +218,11 @@ class EntityTag(Tag):
                     continue
                 self.hashtags.append(hashtag)
 
-    def extract_entities(self, nlp=None) -> None:
+    def extract_entities(self) -> None:
         """Extracts and stores several lists of categorized entities within the object's state"""
 
         if self.all_entities:
             return
-
-        if nlp is None:
-            nlp = es_core_news_md.load()
 
         processed_tweets = [nlp(tweet) for tweet in self.tweets]
         # Excluding mentions and/or hashtags from entities
@@ -257,7 +253,7 @@ class EntityTag(Tag):
 
         collection.insert_one(object)
 
-    def fetch_and_store(self, nlp=None) -> None:
+    def fetch_and_store(self) -> None:
         """Given a freshly initialized instance, fetches and extracts information and stores result in DB"""
 
         # Loading info
@@ -270,7 +266,7 @@ class EntityTag(Tag):
         logger.debug("[Tag %s] Extracting hashtags", self.tag)
         self.extract_hashtags()
         logger.debug("[Tag %s] Extracting entities", self.tag)
-        self.extract_entities(nlp)
+        self.extract_entities()
 
         logger.debug("[Tag %s] Successfully extracted %s hashtags and %s entities", self.tag,
                      len(self.hashtags), len(self.all_entities))
@@ -307,10 +303,6 @@ def main() -> None:
     recalculate = args.recalculate
 
     logger.debug("Main execution started")
-
-    # Initialize nlp model
-    nlp = es_core_news_md.load()
-    logger.debug("NLP model initialized")
 
     # Get tags for requested frequency
     tags = get_tags_by_frequency(frequency)
