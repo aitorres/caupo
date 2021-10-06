@@ -219,13 +219,15 @@ class EntityTag(Tag):
                     continue
                 self.hashtags.append(hashtag)
 
-    def extract_entities(self) -> None:
+    def extract_entities(self, nlp=None) -> None:
         """Extracts and stores several lists of categorized entities within the object's state"""
 
         if self.all_entities:
             return
 
-        nlp = es_core_news_md.load()
+        if nlp is None:
+            nlp = es_core_news_md.load()
+
         processed_tweets = [nlp(tweet) for tweet in self.tweets]
         # Excluding mentions and/or hashtags from entities
         droppable_entity = lambda X: X.text.startswith("@") or X.text.startswith("#")
@@ -255,7 +257,7 @@ class EntityTag(Tag):
 
         collection.insert_one(object)
 
-    def fetch_and_store(self) -> None:
+    def fetch_and_store(self, nlp=None) -> None:
         """Given a freshly initialized instance, fetches and extracts information and stores result in DB"""
 
         # Loading info
@@ -268,7 +270,7 @@ class EntityTag(Tag):
         logger.debug("[Tag %s] Extracting hashtags", self.tag)
         self.extract_hashtags()
         logger.debug("[Tag %s] Extracting entities", self.tag)
-        self.extract_entities()
+        self.extract_entities(nlp)
 
         logger.debug("[Tag %s] Successfully extracted %s hashtags and %s entities", self.tag,
                      len(self.hashtags), len(self.all_entities))
@@ -306,6 +308,10 @@ def main() -> None:
 
     logger.debug("Main execution started")
 
+    # Initialize nlp model
+    nlp = es_core_news_md.load()
+    logger.debug("NLP model initialized")
+
     # Get tags for requested frequency
     tags = get_tags_by_frequency(frequency)
     logger.info("Amount of tags: %s", len(tags))
@@ -321,7 +327,7 @@ def main() -> None:
 
     # Storing individual tags
     for entity_tag in entity_tags:
-        entity_tag.fetch_and_store()
+        entity_tag.fetch_and_store(nlp)
 
     # Updating tags with variations
     EntityTag.calculate_related_attributes(frequency)
