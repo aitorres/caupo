@@ -319,7 +319,7 @@ def main() -> None:
 
     # Storing individual tags
     for entity_tag in entity_tags:
-        entity_tag.fetch_and_store(nlp)
+        entity_tag.fetch_and_store()
 
     # Updating tags with variations
     EntityTag.calculate_related_attributes(frequency)
