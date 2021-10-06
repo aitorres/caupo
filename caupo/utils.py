@@ -83,7 +83,7 @@ def get_non_unique_tweets():
                     }
                 }
             }
-        ]
+        ], allowDiskUse=True
     )
 
 
