@@ -65,7 +65,7 @@ Pillow==9.0.1
 pip-upgrader==1.4.15
 preshed==3.0.5
 prompt-toolkit==3.0.18
-protobuf==3.15.7
+protobuf==3.18.3
 psutil==5.8.0
 ptyprocess==0.7.0
 pyasn1==0.4.8
