@@ -106,7 +106,7 @@ thinc==8.0.3
 threadpoolctl==2.1.0
 tokenizers==0.10.2
 toml==0.10.2
-torch==1.8.1
+torch==1.13.1
 tqdm==4.60.0
 traitlets==5.0.5
 transformers==4.6.0
