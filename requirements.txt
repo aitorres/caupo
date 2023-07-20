@@ -74,7 +74,7 @@ pybind11==2.6.2
 pycodestyle==2.7.0
 pydantic==1.7.4
 pyflakes==2.3.1
-Pygments==2.8.1
+Pygments==2.15.0
 pylint==2.8.2
 pymongo==3.11.4
 pynndescent==0.5.2
