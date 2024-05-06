@@ -117,6 +117,6 @@ umap-learn==0.5.1
 urllib3==1.26.18
 wasabi==0.8.2
 wcwidth==0.2.5
-Werkzeug==3.0.1
+Werkzeug==3.0.3
 wordcloud==1.8.1
 wrapt==1.12.1
