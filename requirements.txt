@@ -50,7 +50,7 @@ MarkupSafe==2.0.1
 matplotlib==3.4.3
 mccabe==0.6.1
 murmurhash==1.0.5
-nltk==3.6.6
+nltk==3.9
 numba==0.53.1
 numpy==1.22.0
 oauthlib==3.1.0
